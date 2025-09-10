@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8905c64a62343cb4cadba09ac83a5005
+timeCreated: 1480960724
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 68531
+  packageName: Bolide 347
+  packageVersion: 1.0
+  assetPath: Assets/Bolide347/Prefab/Bolide.prefab
+  uploadId: 150796

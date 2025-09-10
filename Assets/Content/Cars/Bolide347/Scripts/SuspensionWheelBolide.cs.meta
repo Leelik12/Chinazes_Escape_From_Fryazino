@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 8d6fc08af52131440a53f7a406b0e912
+timeCreated: 1480965658
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 68531
+  packageName: Bolide 347
+  packageVersion: 1.0
+  assetPath: Assets/Bolide347/Scripts/SuspensionWheelBolide.cs
+  uploadId: 150796

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: 5b5bba24f5f9e4447a00840345332abb
+timeCreated: 1481020628
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 68531
+  packageName: Bolide 347
+  packageVersion: 1.0
+  assetPath: Assets/Bolide347/Scripts/SuspensionTraction.cs
+  uploadId: 150796

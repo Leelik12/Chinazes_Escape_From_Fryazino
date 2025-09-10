@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 603cc52975a748b4d8d6652db7205fac
+timeCreated: 1480960085
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 68531
+  packageName: Bolide 347
+  packageVersion: 1.0
+  assetPath: Assets/Bolide347/Materials/GT_Bol1_diffuse.mat
+  uploadId: 150796
