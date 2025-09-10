@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: dd25188290477e0458810712d01003cd
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 194940
+  packageName: Transformer box
+  packageVersion: 1.0
+  assetPath: Assets/transformer_box/demo_scene.unity
+  uploadId: 432195

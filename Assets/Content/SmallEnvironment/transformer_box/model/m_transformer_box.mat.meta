@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 38533478a91c88f4aa624602ebd1750a
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 194940
+  packageName: Transformer box
+  packageVersion: 1.0
+  assetPath: Assets/transformer_box/model/m_transformer_box.mat
+  uploadId: 432195

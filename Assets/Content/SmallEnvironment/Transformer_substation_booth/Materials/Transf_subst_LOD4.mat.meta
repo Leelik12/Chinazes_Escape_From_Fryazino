@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 67372dad682285346951ee2f8dea1f5b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 253838
+  packageName: Transformer substation booth
+  packageVersion: 1.0.1
+  assetPath: Assets/Transformer_substation_booth/Materials/Transf_subst_LOD4.mat
+  uploadId: 581053
