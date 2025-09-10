@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 82462bd06e708ca4d9493568b058efd8
+timeCreated: 1526851551
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 119037
+  packageName: Old Hangar
+  packageVersion: 1.0
+  assetPath: Assets/Old Hangar/Materials/RustyMetal_Mat.mat
+  uploadId: 247192

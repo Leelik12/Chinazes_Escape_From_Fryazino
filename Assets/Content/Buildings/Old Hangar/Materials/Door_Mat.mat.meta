@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 3616ee87905360c498159f87640571f6
+timeCreated: 1526851551
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 119037
+  packageName: Old Hangar
+  packageVersion: 1.0
+  assetPath: Assets/Old Hangar/Materials/Door_Mat.mat
+  uploadId: 247192

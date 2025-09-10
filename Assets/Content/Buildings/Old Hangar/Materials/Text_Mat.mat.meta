@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: f51da9884f6e5f144a776053ebc38e91
+timeCreated: 1526851551
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 119037
+  packageName: Old Hangar
+  packageVersion: 1.0
+  assetPath: Assets/Old Hangar/Materials/Text_Mat.mat
+  uploadId: 247192

@@ -1,0 +1,19 @@
+fileFormatVersion: 2
+guid: fc3e9bd2af4844e4cb734482f04baa02
+timeCreated: 1521227835
+licenseType: Store
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 119037
+  packageName: Old Hangar
+  packageVersion: 1.0
+  assetPath: Assets/Old Hangar/Demo/Script/ThirdPersonCamera.cs
+  uploadId: 247192

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1f9b45769ce01d4408daeb63f09056a5
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 29090
+  packageName: Tower Pack 1
+  packageVersion: v1.0
+  assetPath: Assets/TowerPack/Perfabs/Tower5.prefab
+  uploadId: 53076
