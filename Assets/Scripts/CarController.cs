@@ -3,44 +3,44 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class CarController : MonoBehaviour
 {
-    [Header("Настройки движения")]
-    public float acceleration = 15000f;   // сила разгона
-    public float steering = 45f;         // угол поворота
-    public float maxSpeed = 50f;         // максимальная скорость
+    [Header("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")]
+    public float acceleration = 15000f;   // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    public float steering = 45f;         // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    public float maxSpeed = 50f;         // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-    [Header("Настройки физики")]
-    public float drag = 0.98f;           // сопротивление
-    public float angularDrag = 0.95f;    // сопротивление вращению
-    [Header("Дополнительно")]
-    public float downforce = 100f; // сила прижатия к земле
+    [Header("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ")]
+    public float drag = 0.98f;           // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    public float angularDrag = 0.95f;    // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    [Header("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")]
+    public float downforce = 100f; // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ
     private Rigidbody rb;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.centerOfMass = new Vector3(0, -0.5f, 0); // центр масс ниже для устойчивости
+        rb.centerOfMass = new Vector3(0, -0.5f, 0); // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     }
 
     private void FixedUpdate()
     {
-        float moveInput = Input.GetAxis("Vertical");   // W/S или 
-        float steerInput = Input.GetAxis("Horizontal"); // A/D или 
+        float moveInput = Input.GetAxis("Vertical");   // W/S пїЅпїЅпїЅ 
+        float steerInput = Input.GetAxis("Horizontal"); // A/D пїЅпїЅпїЅ 
 
-        // ограничение скорости
-        if (rb.velocity.magnitude < maxSpeed)
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        if (rb.linearVelocity.magnitude < maxSpeed)
         {
             rb.AddForce(transform.forward * moveInput * acceleration * Time.fixedDeltaTime);
         }
 
-        // поворот (работает только если машина двигается)
-        if (rb.velocity.magnitude > 0.1f)
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+        if (rb.linearVelocity.magnitude > 0.1f)
         {
             rb.MoveRotation(rb.rotation * Quaternion.Euler(0, steerInput * steering * Time.fixedDeltaTime, 0));
         }
 
-        // добавляем "трение"
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅпїЅпїЅпїЅ"
         rb.linearVelocity *= drag;
         rb.angularVelocity *= angularDrag;
-        rb.AddForce(-transform.up * downforce * rb.velocity.magnitude);
+        rb.AddForce(-transform.up * downforce * rb.linearVelocity.magnitude);
     }
 }
