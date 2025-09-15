@@ -2,14 +2,13 @@ using UnityEngine;
 
 public class Checkpoint : MonoBehaviour
 {
-    // —сылка на центральный менеджер
-    public CheckpointManager checkpointManager;
+    public CheckpointManager manager;
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player")) // провер€ем, что это машина игрока
+        if (other.CompareTag("Player"))
         {
-            checkpointManager.PassCheckpoint(this);
+            manager.ReachCheckpoint(transform);
         }
     }
 }

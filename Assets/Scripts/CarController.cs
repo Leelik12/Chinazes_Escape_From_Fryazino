@@ -92,7 +92,7 @@ public class CarController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E)) ShiftUp();
         if (Input.GetKeyDown(KeyCode.Q)) ShiftDown();
 
-        float downforce = rb.velocity.magnitude * 500f;
+        float downforce = rb.linearVelocity.magnitude * 300f;
         rb.AddForce(-transform.up * downforce);
 
         UpdateGauges();
@@ -100,7 +100,7 @@ public class CarController : MonoBehaviour
 
     void FixedUpdate()
     {
-        float speed = rb.velocity.magnitude * 3.6f;
+        float speed = rb.linearVelocity.magnitude * 3.6f;
 
         // Руль
         float speedFactor = Mathf.Clamp01(speed / 200f);
@@ -114,7 +114,7 @@ public class CarController : MonoBehaviour
         int gearIndex = Mathf.Clamp(currentGear + 1, 0, gearRatios.Length - 1);
         float torque = maxMotorTorque * motorInput * Mathf.Abs(gearRatios[gearIndex]);
 
-        if (rb.velocity.magnitude < 1f)
+        if (rb.linearVelocity.magnitude < 1f)
             torque = Mathf.Max(torque, minStartTorque * Mathf.Abs(gearRatios[gearIndex]));
 
         if (engineRPM >= maxRPM) torque = 0f;
@@ -171,7 +171,7 @@ public class CarController : MonoBehaviour
 
     void UpdateGauges()
     {
-        float speed = rb.velocity.magnitude * 3.6f;
+        float speed = rb.linearVelocity.magnitude * 3.6f;
 
         if (speedText) speedText.text = $"{Mathf.RoundToInt(speed)} km/h";
         if (rpmText) rpmText.text = $"{Mathf.RoundToInt(engineRPM)} rpm";

@@ -1,40 +1,45 @@
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
+using UnityEngine.SceneManagement;
 
 public class CheckpointManager : MonoBehaviour
 {
-    public List<Checkpoint> checkpoints; // все чекпоинты трассы в порядке
-    private int nextCheckpointIndex = 0;  // индекс следующего чекпоинта
-    public int lapsCompleted = 0;
+    [Header("Чекпоинты")]
+    public List<Transform> checkpoints; // список всех чекпоинтов трассы
 
-    public void PassCheckpoint(Checkpoint cp)
+    [Header("UI")]
+    public TMP_Text checkpointText;
+
+
+    private int currentCheckpoint = 0;
+
+    void Start()
     {
-        if (checkpoints[nextCheckpointIndex] == cp)
-        {
-            // Пройден правильный чекпоинт
-            nextCheckpointIndex++;
+        UpdateUI();
+    }
 
-            if (nextCheckpointIndex >= checkpoints.Count)
-            {
-                // Круг завершён
-                lapsCompleted++;
-                nextCheckpointIndex = 0;
-                Debug.Log("Круг завершён! Кругов пройдено: " + lapsCompleted);
-            }
-            else
-            {
-                Debug.Log("Чекпоинт пройден: " + nextCheckpointIndex);
-            }
-        }
-        else
+    public void ReachCheckpoint(Transform checkpoint)
+    {
+        if (currentCheckpoint >= checkpoints.Count) return;
+
+        // Проверяем, что игрок дошёл до нужного чекпоинта по порядку
+        if (checkpoints[currentCheckpoint] == checkpoint)
         {
-            // Игрок прошёл чекпоинт не по порядку
-            Debug.Log("Пропущен чекпоинт или не по порядку!");
+            currentCheckpoint++;
+            UpdateUI();
+            if (currentCheckpoint == checkpoints.Count)
+            {
+                SceneManager.LoadScene(1);
+            }
         }
     }
 
-    public int GetNextCheckpointIndex()
+    void UpdateUI()
     {
-        return nextCheckpointIndex;
+        if (checkpointText)
+        {
+            checkpointText.text = $"{currentCheckpoint} / {checkpoints.Count}";
+        }
     }
 }
