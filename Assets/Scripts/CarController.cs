@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using TMPro;
 
@@ -18,27 +17,21 @@ public class CarController : MonoBehaviour
 
     [Header("Параметры машины")]
     public float maxMotorTorque = 1500f;
+    public float minStartTorque = 200f;
     public float maxSteeringAngle = 30f;
-    public float brakeForce = 3000f;
+    public float brakeForce = 15000f;
+    public float idleRPM = 900f;
+    public float maxRPM = 7000f;
+    public float engineSmoothTime = 0.2f;
 
     [Header("Коробка передач")]
-    public bool automatic = true;
-    public int currentGear = 1;
-    public int maxGear = 6;
-    public float[] gearRatios = { -3f, 0f, 3f, 2.2f, 1.6f, 1.2f, 1f };
-    // 0 = задняя, 1 = нейтраль, 2..6 = вперёд
+    public int currentGear = 1; // -1 = задняя, 0 = нейтраль, 1..n = вперед
+    public int maxGear = 5;
+    public float[] gearRatios = { -3f, 0f, 3.6f, 2.2f, 1.6f, 1.2f };
 
-    [Header("Двигатель")]
-    public float maxRPM = 7000f;
-    public float idleRPM = 900f;
-    public float engineRPM;
-    public float engineResponse = 5f;
-
-    [Header("UI Текст")]
+    [Header("UI")]
     public TMP_Text speedText;
     public TMP_Text rpmText;
-
-    [Header("UI Стрелки")]
     public RectTransform speedNeedle;
     public RectTransform rpmNeedle;
     public float speedMaxAngle = -220f;
@@ -51,15 +44,17 @@ public class CarController : MonoBehaviour
     private float motorInput;
     private float steeringInput;
     private float brakeInput;
+    private float handbrakeInput;
 
+    private float engineRPM;
+    private float rpmVelocity;
     private Quaternion flRotOffset, frRotOffset, rlRotOffset, rrRotOffset;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        rb.centerOfMass = new Vector3(0, -0.7f, 0);
+        rb.centerOfMass = new Vector3(0, -0.5f, 0);
 
-        // сохраняем смещения колёс
         flRotOffset = frontLeftTransform.localRotation;
         frRotOffset = frontRightTransform.localRotation;
         rlRotOffset = rearLeftTransform.localRotation;
@@ -69,80 +64,110 @@ public class CarController : MonoBehaviour
     void Update()
     {
         steeringInput = Input.GetAxis("Horizontal");
-        motorInput = Mathf.Clamp01(Input.GetAxis("Vertical")); // только газ, без заднего хода
-        brakeInput = Input.GetKey(KeyCode.Space) ? 1f : Input.GetAxis("Jump");
+        float vertical = Input.GetAxis("Vertical"); // W=1, S=-1
 
-        if (!automatic)
+        // Обработка коробки передач
+        if (currentGear == -1)
         {
-            if (Input.GetKeyDown(KeyCode.E)) ShiftUp();
-            if (Input.GetKeyDown(KeyCode.Q)) ShiftDown();
+            // Задняя передача: W → движение назад, S → тормоз
+            motorInput = vertical > 0f ? vertical : 0f;
+            brakeInput = vertical < 0f ? -vertical : 0f;
+        }
+        else if (currentGear == 0)
+        {
+            // Нейтраль: газ не двигает, S → тормоз
+            motorInput = 0f;
+            brakeInput = vertical < 0f ? -vertical : 0f;
+        }
+        else
+        {
+            // Передачи вперед: W → вперед, S → тормоз
+            motorInput = vertical > 0f ? vertical : 0f;
+            brakeInput = vertical < 0f ? -vertical : 0f;
         }
 
-        UpdateGauges();
+        handbrakeInput = Input.GetKey(KeyCode.Space) ? 1f : 0f;
 
+        // Переключение передач вручную
+        if (Input.GetKeyDown(KeyCode.E)) ShiftUp();
+        if (Input.GetKeyDown(KeyCode.Q)) ShiftDown();
+
+        float downforce = rb.velocity.magnitude * 500f;
+        rb.AddForce(-transform.up * downforce);
+
+        UpdateGauges();
     }
 
     void FixedUpdate()
     {
         float speed = rb.velocity.magnitude * 3.6f;
 
-        // динамический руль
-        float speedFactor = Mathf.Clamp01(speed / 100f);
+        // Руль
+        float speedFactor = Mathf.Clamp01(speed / 200f);
         float dynamicSteer = Mathf.Lerp(maxSteeringAngle, maxSteeringAngle * 0.2f, speedFactor);
-        float steering = dynamicSteer * steeringInput;
-        frontLeftWheel.steerAngle = steering;
-        frontRightWheel.steerAngle = steering;
+        frontLeftWheel.steerAngle = dynamicSteer * steeringInput;
+        frontRightWheel.steerAngle = dynamicSteer * steeringInput;
 
-        if (automatic) AutoGearbox();
+        // RPM двигателя
+        UpdateEngine();
 
-        // обновляем обороты
-        UpdateEngine(motorInput);
+        int gearIndex = Mathf.Clamp(currentGear + 1, 0, gearRatios.Length - 1);
+        float torque = maxMotorTorque * motorInput * Mathf.Abs(gearRatios[gearIndex]);
 
-        // считаем крутящий момент
-        float gearRatio = gearRatios[currentGear + 1];
-        float torque = (engineRPM / maxRPM) * maxMotorTorque * gearRatio;
-        rearLeftWheel.motorTorque = torque * motorInput;
-        rearRightWheel.motorTorque = torque * motorInput;
+        if (rb.velocity.magnitude < 1f)
+            torque = Mathf.Max(torque, minStartTorque * Mathf.Abs(gearRatios[gearIndex]));
 
-        // тормоз
+        if (engineRPM >= maxRPM) torque = 0f;
+
+        // Применяем моторный момент
+        if (currentGear == -1)
+        {
+            rearLeftWheel.motorTorque = -torque;
+            rearRightWheel.motorTorque = -torque;
+        }
+        else
+        {
+            rearLeftWheel.motorTorque = torque;
+            rearRightWheel.motorTorque = torque;
+        }
+
+        // Тормоз
         float brake = brakeForce * brakeInput;
         frontLeftWheel.brakeTorque = brake;
         frontRightWheel.brakeTorque = brake;
         rearLeftWheel.brakeTorque = brake;
         rearRightWheel.brakeTorque = brake;
 
-        // визуализация колёс
+        // Ручник
+        float handbrake = brakeForce * 1.5f * handbrakeInput;
+        rearLeftWheel.brakeTorque += handbrake;
+        rearRightWheel.brakeTorque += handbrake;
+
+        // Визуализация колёс
         UpdateWheelPose(frontLeftWheel, frontLeftTransform, flRotOffset);
         UpdateWheelPose(frontRightWheel, frontRightTransform, frRotOffset);
         UpdateWheelPose(rearLeftWheel, rearLeftTransform, rlRotOffset);
         UpdateWheelPose(rearRightWheel, rearRightTransform, rrRotOffset);
-
-        //float downforce = torque * motorInput * 10f; // сила пропорциональна скорости
-        //rb.AddForce(-transform.up * downforce);
     }
 
-    void UpdateEngine(float throttle)
+    void UpdateEngine()
     {
-        // среднее RPM задних колёс (в реале оно связано через трансмиссию)
-        float wheelRPM = (rearLeftWheel.rpm + rearRightWheel.rpm);
+        int gearIndex = Mathf.Clamp(currentGear + 1, 0, gearRatios.Length - 1);
+        float wheelRPM = (rearLeftWheel.rpm + rearRightWheel.rpm) * 0.5f;
+        float targetRPM = idleRPM + wheelRPM * Mathf.Abs(gearRatios[gearIndex]);
 
-        // считаем обороты двигателя через передачу
-        float gearRatio = gearRatios[currentGear + 1];
-        float targetRPM = Mathf.Abs(wheelRPM * gearRatio);
-
-        // если машина стоит, даём газ → обороты растут сами (букс на сцеплении)
-        if (rb.velocity.magnitude < 1f && throttle > 0.1f)
-        {
-            targetRPM = Mathf.Lerp(engineRPM, maxRPM * throttle, Time.deltaTime * engineResponse);
-        }
-
-        // не даём опускаться ниже холостых
-        targetRPM = Mathf.Max(targetRPM, idleRPM);
-
-        // сглаживаем
-        engineRPM = Mathf.Lerp(engineRPM, targetRPM, Time.deltaTime * engineResponse);
+        engineRPM = Mathf.SmoothDamp(engineRPM, targetRPM, ref rpmVelocity, engineSmoothTime);
+        engineRPM = Mathf.Clamp(engineRPM, idleRPM, maxRPM);
     }
 
+    void UpdateWheelPose(WheelCollider collider, Transform wheelTransform, Quaternion rotOffset)
+    {
+        Vector3 pos;
+        Quaternion quat;
+        collider.GetWorldPose(out pos, out quat);
+        wheelTransform.position = pos;
+        wheelTransform.rotation = quat * rotOffset;
+    }
 
     void UpdateGauges()
     {
@@ -164,50 +189,13 @@ public class CarController : MonoBehaviour
         }
     }
 
-    void UpdateWheelPose(WheelCollider collider, Transform wheelTransform, Quaternion rotOffset)
-    {
-        Vector3 pos;
-        Quaternion quat;
-        collider.GetWorldPose(out pos, out quat);
-
-        wheelTransform.position = pos;
-        wheelTransform.rotation = quat * rotOffset;
-    }
-
     void ShiftUp()
     {
-        if (currentGear < maxGear)
-        {
-            currentGear++;
-            RecalculateRPM();
-        }
+        if (currentGear < maxGear) currentGear++;
     }
 
     void ShiftDown()
     {
-        if (currentGear > -1)
-        {
-            currentGear--;
-            RecalculateRPM();
-        }
-    }
-
-    void RecalculateRPM()
-    {
-        float wheelRPM = (rearLeftWheel.rpm + rearRightWheel.rpm) * 0.5f;
-        float gearRatio = gearRatios[currentGear + 1];
-        engineRPM = Mathf.Max(idleRPM, Mathf.Abs(wheelRPM * gearRatio));
-    }
-
-    void AutoGearbox()
-    {
-        float speed = rb.velocity.magnitude * 3.6f;
-
-        if (speed < 10f) currentGear = 1;
-        else if (speed < 25f) currentGear = 2;
-        else if (speed < 45f) currentGear = 3;
-        else if (speed < 70f) currentGear = 4;
-        else if (speed < 100f) currentGear = 5;
-        else currentGear = 6;
+        if (currentGear > -1) currentGear--;
     }
 }
