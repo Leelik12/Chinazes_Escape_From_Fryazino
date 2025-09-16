@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: dda90467789cc684a942fa8760c21118
+DefaultImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 178338
+  packageName: Car AI (Pathfinding& Vehicle Behaviour)
+  packageVersion: 1.0
+  assetPath: Assets/CarAI/documentation.pdf
+  uploadId: 490355

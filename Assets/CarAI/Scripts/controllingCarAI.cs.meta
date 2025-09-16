@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: ac79dc69f5d5a5b47b6e0ad00255305e
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 178338
+  packageName: Car AI (Pathfinding& Vehicle Behaviour)
+  packageVersion: 1.0
+  assetPath: Assets/CarAI/Scripts/controllingCarAI.cs
+  uploadId: 490355

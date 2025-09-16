@@ -1,8 +1,13 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class CarController : MonoBehaviour
 {
+    [Header("Звуки")]
+    public AudioSource Engine;
+    public AudioClip Idle;
+    public AudioClip Racing;
     [Header("Колёса (WheelColliders)")]
     public WheelCollider frontLeftWheel;
     public WheelCollider frontRightWheel;
@@ -32,6 +37,7 @@ public class CarController : MonoBehaviour
     [Header("UI")]
     public TMP_Text speedText;
     public TMP_Text rpmText;
+    public TMP_Text GearText;
     public RectTransform speedNeedle;
     public RectTransform rpmNeedle;
     public float speedMaxAngle = -220f;
@@ -49,7 +55,8 @@ public class CarController : MonoBehaviour
     private float engineRPM;
     private float rpmVelocity;
     private Quaternion flRotOffset, frRotOffset, rlRotOffset, rrRotOffset;
-
+    private bool fl;
+    private bool lastfl;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
@@ -63,6 +70,7 @@ public class CarController : MonoBehaviour
 
     void Update()
     {
+
         steeringInput = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical"); // W=1, S=-1
 
@@ -87,7 +95,10 @@ public class CarController : MonoBehaviour
         }
 
         handbrakeInput = Input.GetKey(KeyCode.Space) ? 1f : 0f;
-
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            SceneManager.LoadScene(0);
+        }
         // Переключение передач вручную
         if (Input.GetKeyDown(KeyCode.E)) ShiftUp();
         if (Input.GetKeyDown(KeyCode.Q)) ShiftDown();
@@ -118,7 +129,30 @@ public class CarController : MonoBehaviour
             torque = Mathf.Max(torque, minStartTorque * Mathf.Abs(gearRatios[gearIndex]));
 
         if (engineRPM >= maxRPM) torque = 0f;
-
+        Debug.Log(engineRPM);
+        if (engineRPM <= 1000)
+        {
+            Engine.clip = Idle;
+            fl = true;
+        }
+        else
+        {
+            Engine.clip = Racing;
+            fl = false;
+            if (currentGear <= 1)
+            {
+                Engine.pitch = 1;
+            }
+            else
+            {
+                Engine.pitch = 1 + 0.1f * currentGear;
+            }
+        }
+        if (fl != lastfl)
+        {
+            lastfl = fl;
+            Engine.Play();
+        }
         // Применяем моторный момент
         if (currentGear == -1)
         {
@@ -175,7 +209,7 @@ public class CarController : MonoBehaviour
 
         if (speedText) speedText.text = $"{Mathf.RoundToInt(speed)} km/h";
         if (rpmText) rpmText.text = $"{Mathf.RoundToInt(engineRPM)} rpm";
-
+        if (GearText) GearText.text = $"{currentGear}";
         if (speedNeedle)
         {
             float speedNorm = Mathf.Clamp01(speed / maxSpeed);
