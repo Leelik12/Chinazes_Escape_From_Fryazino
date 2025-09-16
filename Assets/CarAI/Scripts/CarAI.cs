@@ -96,7 +96,7 @@ public class CarAI : MonoBehaviour
             {
                 PostionToFollow = waypoints[currentWayPoint];
                 allowMovement = true;
-                if (Vector3.Distance(carFront.position, PostionToFollow) < 10)
+                if (Vector3.Distance(carFront.position, PostionToFollow) < 18)
                     currentWayPoint++;
             }
 
@@ -247,10 +247,10 @@ public class CarAI : MonoBehaviour
 
     private void ApplyBrakes() // Apply brake torque 
     {
-        frontLeft.brakeTorque = 5000;
-        frontRight.brakeTorque = 5000;
-        backLeft.brakeTorque = 5000;
-        backRight.brakeTorque = 5000;
+        frontLeft.brakeTorque = 9000;
+        frontRight.brakeTorque = 9000;
+        backLeft.brakeTorque = 9000;
+        backRight.brakeTorque = 9000;
     }
 
 
