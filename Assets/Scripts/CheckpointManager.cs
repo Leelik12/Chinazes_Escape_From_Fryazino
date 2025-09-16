@@ -11,7 +11,7 @@ public class CheckpointManager : MonoBehaviour
     [Header("UI")]
     public TMP_Text checkpointText;
 
-
+    public GameManager gameManager;
     private int currentCheckpoint = 0;
 
     void Start()
@@ -30,7 +30,7 @@ public class CheckpointManager : MonoBehaviour
             UpdateUI();
             if (currentCheckpoint == checkpoints.Count)
             {
-                SceneManager.LoadScene(1);
+                gameManager.PlayerOver = true;
             }
         }
     }
