@@ -38,7 +38,7 @@ public class CarAI : MonoBehaviour
 
     private Vector3 PostionToFollow = Vector3.zero;
     private int currentWayPoint;
-    private float AIFOV = 60;
+    private float AIFOV = 180;
     private bool allowMovement;
     private int NavMeshLayerBite;
     private List<Vector3> waypoints = new List<Vector3>();
@@ -96,7 +96,7 @@ public class CarAI : MonoBehaviour
             {
                 PostionToFollow = waypoints[currentWayPoint];
                 allowMovement = true;
-                if (Vector3.Distance(carFront.position, PostionToFollow) < 2)
+                if (Vector3.Distance(carFront.position, PostionToFollow) < 10)
                     currentWayPoint++;
             }
 

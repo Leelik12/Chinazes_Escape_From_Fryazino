@@ -129,7 +129,6 @@ public class CarController : MonoBehaviour
             torque = Mathf.Max(torque, minStartTorque * Mathf.Abs(gearRatios[gearIndex]));
 
         if (engineRPM >= maxRPM) torque = 0f;
-        Debug.Log(engineRPM);
         if (engineRPM <= 1000)
         {
             Engine.clip = Idle;
