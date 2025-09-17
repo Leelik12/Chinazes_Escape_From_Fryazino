@@ -9,4 +9,8 @@ public static class StaticHolder
     public static string BestTime;
     public static float BestTimeFloat;
     public static bool Record; //
+
+    //настройки и звук
+    public static float MusikVolume = 0f;
+    public static float EngineVolume = 0f;
 }
