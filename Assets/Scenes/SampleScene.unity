@@ -79283,6 +79283,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1420892248259492, guid: ec91b949a29ea3b4fb7e070fe48ff1c2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1682149777}
+    - targetCorrespondingSourceObject: {fileID: 1420892248259492, guid: ec91b949a29ea3b4fb7e070fe48ff1c2, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1682149781}
     - targetCorrespondingSourceObject: {fileID: 1105482499404432, guid: ec91b949a29ea3b4fb7e070fe48ff1c2, type: 3}
       insertIndex: -1
       addedObject: {fileID: 318093137}
@@ -79304,7 +79307,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1682149773}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d667d9ce869a780478b1215f76155628, type: 3}
   m_Name: 
@@ -79387,6 +79390,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vehicleTransform: {fileID: 1682149774}
   rigidbody: {fileID: 1682149776}
+--- !u!114 &1682149781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1682149773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9bb2250f7b98584b8e49b0365225096, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  inputControllerReader: {fileID: 11400000, guid: 8268bb9eff5a1954492cd4817fb37528, type: 2}
+  axleInfos:
+  - leftWheel: {fileID: 1838685324}
+    rightWheel: {fileID: 867722216}
+    motor: 0
+    steering: 1
+  - leftWheel: {fileID: 1742171716}
+    rightWheel: {fileID: 1372021986}
+    motor: 1
+    steering: 0
+  maxMotorTorque: 225
+  maxSteeringAngle: 15
+  gearRatios:
+  - 0
+  - 3.6
+  - 2.2
+  - 1.6
+  - 1.2
+  Engine: {fileID: 0}
+  Idle: {fileID: 0}
+  Racing: {fileID: 0}
 --- !u!1 &1682733334
 GameObject:
   m_ObjectHideFlags: 0
