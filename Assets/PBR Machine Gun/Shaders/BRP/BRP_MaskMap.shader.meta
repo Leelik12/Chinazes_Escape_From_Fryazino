@@ -1,0 +1,17 @@
+fileFormatVersion: 2
+guid: caf47134c45389a4dbdf777f15b3b12b
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  preprocessorOverride: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 254971
+  packageName: PBR Machine Gun
+  packageVersion: 1.0
+  assetPath: Assets/PBR Machine Gun/Shaders/BRP/BRP_MaskMap.shader
+  uploadId: 596883
