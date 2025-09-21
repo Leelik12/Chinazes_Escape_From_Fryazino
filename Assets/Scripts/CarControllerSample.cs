@@ -99,7 +99,7 @@ public class CarControllerSample : MonoBehaviour
         //выход на меню
         if (inputControllerReader.Return)
         {
-            SceneManager.LoadSceneAsync(1);
+            SceneManager.LoadSceneAsync(0);
         }
         //UI
         if (speedText) speedText.text = $"{Mathf.RoundToInt(speed)} km/h";

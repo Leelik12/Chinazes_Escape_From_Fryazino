@@ -3860,6 +3860,7 @@ GameObject:
   - component: {fileID: 2003796116}
   - component: {fileID: 2003796115}
   - component: {fileID: 2003796114}
+  - component: {fileID: 2003796117}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -3898,7 +3899,7 @@ MonoBehaviour:
   headlessStartMode: 0
   editorAutoStart: 0
   sendRate: 60
-  offlineScene: Assets/Scenes/SampleScene.unity
+  offlineScene: Assets/Scenes/MainMenu.unity
   onlineScene: Assets/Scenes/SovietCity.unity
   offlineSceneLoadDelay: 0
   transport: {fileID: 0}
@@ -3941,6 +3942,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2003796117
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2003796113}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 015b5079e143fe445a31eb590a1024e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2011174903
 GameObject:
   m_ObjectHideFlags: 0
