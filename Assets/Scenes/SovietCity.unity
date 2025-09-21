@@ -1868,6 +1868,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 50176001}
+  - component: {fileID: 50176002}
   m_Layer: 0
   m_Name: General
   m_TagString: Untagged
@@ -1891,6 +1892,22 @@ Transform:
   - {fileID: 831301984}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &50176002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 50176000}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 565e1f5ff4d541043b66b319c87f7260, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  driverHead: {fileID: 970710509}
+  gunnerHead: {fileID: 1868099164}
+  driverNode: 0
+  gunnerNode: 1
 --- !u!1 &51605917
 GameObject:
   m_ObjectHideFlags: 0
