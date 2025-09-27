@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Audio;
@@ -62,7 +61,6 @@ public class MenuManager : MonoBehaviour
         float dB = Mathf.Lerp(-20f, 20f, volume); // volume от 0 до 1
         MusikMixer.SetFloat("MusikVolume", dB);
         StaticHolder.MusikVolume = volume;
-        Debug.Log("qqqqqqqqqqqqqqqq");
     }
 
     public void SetVolumeEngine(float volume)
@@ -70,7 +68,6 @@ public class MenuManager : MonoBehaviour
         float dB = Mathf.Lerp(-20f, 20f, volume); // volume от 0 до 1
         audioMixer.SetFloat("EngineVolume", dB);
         StaticHolder.EngineVolume = volume;
-        Debug.Log("wwwwwwwwwwwwww");
     }
 
     public void StartGame()

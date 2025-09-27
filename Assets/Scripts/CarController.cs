@@ -1,8 +1,9 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using Photon.Pun;
 
-public class CarController : MonoBehaviour
+public class CarController : MonoBehaviourPun
 {
     [Header("Звуки")]
     public AudioSource Engine;
@@ -59,6 +60,17 @@ public class CarController : MonoBehaviour
     private bool lastfl;
     void Start()
     {
+        MachineGun turret = FindObjectOfType<MachineGun>();
+        if (turret != null)
+        {
+            turret.transform.SetParent(transform);
+            turret.transform.localPosition = new Vector3(0, 2.4f, -0.5f);
+            turret.transform.localRotation = Quaternion.identity;
+            Debug.Log("Машина сама прицепила турель");
+        }
+        var cam = GetComponentInChildren<Camera>(true);
+        if (cam != null) cam.gameObject.SetActive(photonView.IsMine);
+
         rb = GetComponent<Rigidbody>();
         rb.centerOfMass = new Vector3(0, -0.5f, 0);
 
@@ -70,7 +82,7 @@ public class CarController : MonoBehaviour
 
     void Update()
     {
-
+        if (!photonView.IsMine) return;
         steeringInput = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical"); // W=1, S=-1
 
@@ -111,6 +123,7 @@ public class CarController : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (!photonView.IsMine) return;
         float speed = rb.linearVelocity.magnitude * 3.6f;
 
         // Руль

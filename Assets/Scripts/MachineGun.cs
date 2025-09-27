@@ -1,12 +1,13 @@
+using Photon.Pun;
 using UnityEngine;
 
-public class MachineGun : MonoBehaviour
+public class MachineGun : MonoBehaviourPun
 {
     [Header("Rotation Settings")]
     public float horizontalSpeed = 2.0f;
     public float verticalSpeed = 2.0f;
-    public float maxVerticalAngle = 45f;
-    public float minVerticalAngle = -30f;
+    public float maxVerticalAngle = 35f;
+    public float minVerticalAngle = -20f;
 
     [Header("Shooting Settings")]
     public float fireRate = 10f;
@@ -27,6 +28,11 @@ public class MachineGun : MonoBehaviour
 
     void Start()
     {
+        if (!photonView.IsMine)
+        {
+            var cam = GetComponentInChildren<Camera>(true);
+            if (cam != null) cam.gameObject.SetActive(false);
+        }
         // Настраиваем AudioSource
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.playOnAwake = false;
@@ -37,6 +43,7 @@ public class MachineGun : MonoBehaviour
 
     void Update()
     {
+        if (!photonView.IsMine) return;
         HandleRotation();
         HandleShooting();
     }
