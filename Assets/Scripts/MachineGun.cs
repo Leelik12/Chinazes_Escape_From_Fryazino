@@ -51,8 +51,8 @@ public class MachineGun : MonoBehaviourPun
     void HandleRotation()
     {
         // Получаем ввод мыши
-        float mouseX = Input.GetAxis("Mouse X") * horizontalSpeed;
-        float mouseY = Input.GetAxis("Mouse Y") * verticalSpeed;
+        float mouseX = Input.GetAxis("Horizontal") * horizontalSpeed;
+        float mouseY = Input.GetAxis("Vertical") * verticalSpeed;
 
         // Изменяем углы вращения
         currentHorizontalAngle += mouseX;

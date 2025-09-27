@@ -8,6 +8,14 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
     public string roomName = "Room1";
     public byte maxPlayers = 2;
 
+    void Awake()
+    {
+        // Количество сетевых обновлений в секунду (по умолчанию 10)
+        PhotonNetwork.SendRate = 90;
+
+        // Сколько раз в секунду PUN сериализует данные объектов (по умолчанию 10)
+        PhotonNetwork.SerializationRate = 90;
+    }
     void Start()
     {
         // Автоматическая синхронизация сцен (по желанию)

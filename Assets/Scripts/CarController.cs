@@ -60,7 +60,7 @@ public class CarController : MonoBehaviourPun
     private bool lastfl;
     void Start()
     {
-        MachineGun turret = FindObjectOfType<MachineGun>();
+        TurretRotation turret = FindObjectOfType<TurretRotation>();
         if (turret != null)
         {
             turret.transform.SetParent(transform);
