@@ -54,11 +54,11 @@ public class MachineGunVR : MonoBehaviourPun
     }
     void Update()
     {
-        //Debug.Log("Левый грип" + LeftGrip.action.ReadValue<float>());
-        //Debug.Log("Левый тригер" + LeftTrigger.action.ReadValue<float>());
-        //Debug.Log("Правый грип" + RightGrip.action.ReadValue<float>());
-        //Debug.Log("Правый Тригер" + RightTrigger.action.ReadValue<float>());
-        // Проверка ввода через Input System
+        Debug.Log("Левый грип" + LeftGrip.action.ReadValue<float>());
+        Debug.Log("Левый тригер" + LeftTrigger.action.ReadValue<float>());
+        Debug.Log("Правый грип" + RightGrip.action.ReadValue<float>());
+        Debug.Log("Правый Тригер" + RightTrigger.action.ReadValue<float>());
+        //Проверка ввода через Input System
         //Debug.Log(grabInteractable.attachTransform);
         if (grabInteractable.attachTransform != null)
         {
@@ -68,9 +68,9 @@ public class MachineGunVR : MonoBehaviourPun
 
         //Debug.Log(grabInteractable.attachTransform.name);
         //if (triggerAction.action != null && triggerAction.action.ReadValue<float>() > 0.8f && Time.time >= nextFireTime && grabInteractable.isSelected && IsLoaded)
-        if (((LeftGrip.action.ReadValue<float>() > 0.8f && LeftTrigger.action.ReadValue<float>() > 0.8f && ap.Contains("L")) || (RightGrip.action.ReadValue<float>() > 0.8f && RightTrigger.action.ReadValue<float>() > 0.8f && ap.Contains("R"))) && Time.time >= nextFireTime && grabInteractable.isSelected)
+        if (((LeftGrip.action.ReadValue<float>() > 0.8f && LeftTrigger.action.ReadValue<float>() > 0.8f) || (RightGrip.action.ReadValue<float>() > 0.8f && RightTrigger.action.ReadValue<float>() > 0.8f)) && Time.time >= nextFireTime && grabInteractable.isSelected)
         {
-            //Debug.Log("Выстрел игрока!");
+            Debug.Log("Выстрел игрока!");
             nextFireTime = Time.time + fireRate;
             Shoot();
         }
