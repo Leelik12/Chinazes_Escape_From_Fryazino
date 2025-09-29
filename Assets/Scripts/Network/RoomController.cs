@@ -24,7 +24,7 @@ public class RoomController : MonoBehaviourPunCallbacks
     public void OnReadyButtonPressed()
     {
         if (isLocalReady) return;
-
+        Debug.Log("Кнопка готовности нажата");
         isLocalReady = true;
 
         // Устанавливаем CustomProperty "IsReady"
