@@ -1,6 +1,7 @@
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.InputSystem;
@@ -43,6 +44,10 @@ public class MachineGunVR : MonoBehaviourPun
     public string enemyTag = ""; // Тег врага
     private float nextFireTime = 0f;
 
+    [Header("Tracer Settings")]
+    [SerializeField] private GameObject tracerPrefab; // Префаб трассера (LineRenderer или пуля)
+    [SerializeField] private float tracerSpeed = 200f; // скорость движения трассера
+    [SerializeField] private float tracerLifetime = 1f; // сколько живёт трассер
 
     void Awake()
     {
@@ -137,8 +142,38 @@ public class MachineGunVR : MonoBehaviourPun
                     if (target != null) { target.TakeDamage(finalDamage); }
                 }
             }
+            // Создаём трассер
+            if (tracerPrefab != null)
+            {
+                StartCoroutine(SpawnTracer(firePoint.position, hit.point));
+            }
+        }
+        else
+        {
+            StartCoroutine(SpawnTracer(firePoint.position, firePoint.position + firePoint.forward * range));
         }
     }
+    IEnumerator SpawnTracer(Vector3 start, Vector3 end)
+    {
+        GameObject tracer = Instantiate(tracerPrefab, start, Quaternion.identity);
+
+        float distance = Vector3.Distance(start, end);
+        float time = 0f;
+        float duration = distance / tracerSpeed;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = time / duration;
+            tracer.transform.position = Vector3.Lerp(start, end, t);
+            yield return null;
+        }
+
+        tracer.transform.position = end;
+        if (tracer.transform.position == end) Destroy(tracer);
+        Destroy(tracer, tracerLifetime);
+    }
+
 
     IEnumerator MuzzleLightFlash()
     {

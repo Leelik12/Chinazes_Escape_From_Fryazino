@@ -774,7 +774,7 @@ MonoBehaviour:
   grabInteractable: {fileID: 3373749241883742303}
   fireRate: 0.3
   damage: 1
-  range: 100
+  range: 1000
   muzzleFlash: {fileID: 5760782250411353398}
   muzzleLight: {fileID: 7718545993001289813}
   lightDuration: 0.03
@@ -894,6 +894,9 @@ MonoBehaviour:
   audioSource: {fileID: 6999700595175138571}
   shotSound: {fileID: 8300000, guid: 223a553ee0bd6b741aa726d8738e7a46, type: 3}
   enemyTag: Enemy
+  tracerPrefab: {fileID: 5256042373875655927, guid: d606865608ca6de4ca761277c96c8e22, type: 3}
+  tracerSpeed: 300
+  tracerLifetime: 1
 --- !u!114 &8105727791952454666
 MonoBehaviour:
   m_ObjectHideFlags: 0
