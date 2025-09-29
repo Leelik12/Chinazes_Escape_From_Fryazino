@@ -60,7 +60,6 @@ public class MachineGunVR : MonoBehaviourPun
 
     void Update()
     {
-        if (!photonView.IsMine) return;
         Debug.Log("Левый грип" + LeftGrip.action.ReadValue<float>());
         Debug.Log("Левый тригер" + LeftTrigger.action.ReadValue<float>());
         Debug.Log("Правый грип" + RightGrip.action.ReadValue<float>());
