@@ -112,7 +112,7 @@ public class MachineGunVR : MonoBehaviourPun
     IEnumerator SpawnTracer(Vector3 start, Vector3 end)
     {
         GameObject tracer = PhotonNetwork.Instantiate(tracerPrefab.name, start, Quaternion.identity);
-
+        Debug.Log("трасер полетел");
         float distance = Vector3.Distance(start, end);
         float duration = distance / tracerSpeed;
         float time = 0f;

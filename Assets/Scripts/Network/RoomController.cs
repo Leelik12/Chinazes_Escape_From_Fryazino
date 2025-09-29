@@ -78,6 +78,7 @@ public class RoomController : MonoBehaviourPunCallbacks
                 gunnerRig.SetActive(true);
                 TurretView.TransferOwnership(PhotonNetwork.LocalPlayer);
                 MachineGunView.TransferOwnership(PhotonNetwork.LocalPlayer);
+                Debug.Log("Права на туррель и пулемет выданы");
             }
         }
     }
