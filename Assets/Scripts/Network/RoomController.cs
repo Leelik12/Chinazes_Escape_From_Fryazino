@@ -57,6 +57,7 @@ public class RoomController : MonoBehaviourPunCallbacks
             {
                 driverRig.SetActive(true);
                 carView.TransferOwnership(PhotonNetwork.LocalPlayer);
+                Debug.Log("Права на машину выданы");
             }
             if (gunnerRig != null)
             {
