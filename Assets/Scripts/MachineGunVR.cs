@@ -2,6 +2,7 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 using UnityEngine.InputSystem;
 using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
@@ -34,11 +35,15 @@ public class MachineGunVR : MonoBehaviourPun
     [SerializeField] private float hitEffectLifetime = 100f;
     [SerializeField] private float effectOffset = 0.01f;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip shotSound;
+
     [Header("Прочее")]
     public string enemyTag = ""; // Тег врага
     private float nextFireTime = 0f;
 
-    string ap = null;
+
     void Awake()
     {
         triggerAction.action.Enable();
@@ -47,6 +52,7 @@ public class MachineGunVR : MonoBehaviourPun
         LeftTrigger.action.Enable();
         RightTrigger.action.Enable();
     }
+
     void Update()
     {
         Debug.Log("Левый грип" + LeftGrip.action.ReadValue<float>());
@@ -55,11 +61,6 @@ public class MachineGunVR : MonoBehaviourPun
         Debug.Log("Правый Тригер" + RightTrigger.action.ReadValue<float>());
         //Проверка ввода через Input System
         //Debug.Log(grabInteractable.attachTransform);
-        if (grabInteractable.attachTransform != null)
-        {
-            ap = grabInteractable.attachTransform.name;
-        }
-        else { ap = null; }
 
         //Debug.Log(grabInteractable.attachTransform.name);
         //if (triggerAction.action != null && triggerAction.action.ReadValue<float>() > 0.8f && Time.time >= nextFireTime && grabInteractable.isSelected && IsLoaded)
@@ -80,6 +81,8 @@ public class MachineGunVR : MonoBehaviourPun
         }
         if (muzzleLight != null)
             StartCoroutine(MuzzleLightFlash());
+        if (audioSource != null && shotSound != null)
+            audioSource.PlayOneShot(shotSound);
         RaycastHit hit;
         if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
         {

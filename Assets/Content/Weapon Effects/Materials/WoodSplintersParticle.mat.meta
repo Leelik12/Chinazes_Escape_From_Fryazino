@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: fd8ebe3c7242d364bae68f1548ae70bf
+timeCreated: 1473952868
+licenseType: Store
+NativeFormatImporter:
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 170222
+  packageName: XR Interaction ToolKit Starter Kit
+  packageVersion: 1.6.250208
+  assetPath: Assets/Assets/ParticlePack/EffectExamples/Weapon Effects/Materials/WoodSplintersParticle.mat
+  uploadId: 731461
