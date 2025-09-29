@@ -7,10 +7,10 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using Photon.Pun;
 #endregion
 
-public class CarControllerSample : MonoBehaviour
+public class CarControllerSample : MonoBehaviourPun
 {
     [Header("Важное, не трогать!")]
     [SerializeField] private InputControllerReader inputControllerReader; // инпутер
@@ -28,6 +28,16 @@ public class CarControllerSample : MonoBehaviour
     [Header("UI")]
     [SerializeField] private TMP_Text speedText;
     [SerializeField] private TMP_Text GearText;
+    public RectTransform rpmNeedle;
+    public float rpmMaxAngle = -220f;
+    public float rpmMinAngle = 40f;
+
+    [Header("Временные переменные")]
+    private float speed;
+    private float motor;
+    private float steering;
+    private float finalmotor;
+    private int currentGear;
     private void Start()
     {
         Engine.Play();
@@ -36,7 +46,7 @@ public class CarControllerSample : MonoBehaviour
     }
     public void FixedUpdate()
     {
-        var speed = 0f;
+        if (!photonView.IsMine) return;
         if (inputControllerReader.Throttle != 0)
         {
             speed = inputControllerReader.Throttle;
@@ -46,63 +56,67 @@ public class CarControllerSample : MonoBehaviour
             speed = -inputControllerReader.Brake;
         }
 
-        var motor = maxMotorTorque * speed;
-        var steering = maxSteeringAngle * inputControllerReader.Steering;
-        var finalmotor = motor;
+        motor = maxMotorTorque * speed;
+        steering = maxSteeringAngle * inputControllerReader.Steering;
+        finalmotor = motor;
         //коробка
-        if(inputControllerReader.Clutch > 0.5f) // коробас отрабатывает только если сцепа выжата
+        if(inputControllerReader.Clutch > 0.6f) // коробас отрабатывает только если сцепа выжата
         {
             if (inputControllerReader.Shifter1)
             {
-                finalmotor = motor * gearRatios[1];
+                currentGear = 1;
                 if (GearText) GearText.text = "1";
             }
             else if (inputControllerReader.Shifter2)
             {
-                finalmotor = motor * gearRatios[2];
+                currentGear = 2;
                 if (GearText) GearText.text = "2";
             }
             else if (inputControllerReader.Shifter3)
             {
-                finalmotor = motor * gearRatios[3];
+                currentGear = 3;
                 if (GearText) GearText.text = "3";
             }
             else if (inputControllerReader.Shifter4)
             {
-                finalmotor = motor * gearRatios[4];
+                currentGear = 4;
                 if (GearText) GearText.text = "4";
             }
             else if (inputControllerReader.Shifter5)
             {
-                finalmotor = motor * gearRatios[5];
+                currentGear = 5;
                 if (GearText) GearText.text = "5";
             }
             else if (inputControllerReader.Shifter6)
             {
-                finalmotor = motor * gearRatios[6];
+                currentGear = 6;
                 if (GearText) GearText.text = "6";
             }
             else if (inputControllerReader.Shifter7)
             {
-                finalmotor = motor * gearRatios[7];
+                currentGear = -1;
                 if (GearText) GearText.text = "-1";
             }
             else
             {
-                finalmotor = motor * gearRatios[0];
+                currentGear = 0;
                 if (GearText) GearText.text = "N";
             }
         }
+        finalmotor = motor * gearRatios[currentGear];
         //аудио двигла
         float correction = Mathf.Lerp(1f, 1.4f, inputControllerReader.Throttle);
         Engine.pitch = correction;
         //выход на меню
-        if (inputControllerReader.Return)
-        {
-            SceneManager.LoadSceneAsync(0);
-        }
+        //if (inputControllerReader.Return)
+        //{
+        //    SceneManager.LoadSceneAsync(0);
+        //}
+
         //UI
-        if (speedText) speedText.text = $"{Mathf.RoundToInt(speed)} km/h";
+        UpdateGauges();
+
+        //передача вращающего момента
         foreach (var axleInfo in axleInfos)
         {
             if (axleInfo.steering)
@@ -126,5 +140,18 @@ public class CarControllerSample : MonoBehaviour
         public WheelCollider rightWheel;
         public bool motor; // это колесо прикреплено к мотору?
         public bool steering; // применяет ли это колесо угол поворота?
+    }
+    void UpdateGauges()
+    {
+        float speed = rb.linearVelocity.magnitude * 3.6f;
+
+        if (speedText) speedText.text = $"{Mathf.RoundToInt(speed)} km/h";
+        if (GearText) GearText.text = $"{currentGear}";
+
+        if (rpmNeedle)
+        {
+            float rpmNorm = Mathf.Clamp01(inputControllerReader.Throttle / 1);
+            rpmNeedle.localRotation = Quaternion.Euler(0, 0, Mathf.Lerp(rpmMinAngle, rpmMaxAngle, rpmNorm));
+        }
     }
 }

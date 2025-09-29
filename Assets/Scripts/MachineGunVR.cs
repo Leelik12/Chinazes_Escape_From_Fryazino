@@ -10,11 +10,6 @@ public class MachineGunVR : MonoBehaviourPun
 {
     [SerializeField] private XRGrabInteractable grabInteractable;
 
-    [Header("Подвижные части")]
-    [SerializeField] private Transform movablePart; // Подвижная часть оружия (затвор)
-    [SerializeField] private float recoilDistance = 0.2f; // Расстояние, на которое подвижная часть будет двигаться
-    [SerializeField] private float recoilDuration = 0.1f;     // сколько длится отдача (сек)
-
     [Header("Настройки стрельбы")]
     public float fireRate;
     public float damage;
@@ -83,10 +78,8 @@ public class MachineGunVR : MonoBehaviourPun
         {
             muzzleFlash.Play();
         }
-
         if (muzzleLight != null)
             StartCoroutine(MuzzleLightFlash());
-        StartCoroutine(MoveRecoil());
         RaycastHit hit;
         if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
         {
@@ -149,46 +142,5 @@ public class MachineGunVR : MonoBehaviourPun
         muzzleLight.enabled = true;
         yield return new WaitForSeconds(lightDuration);
         muzzleLight.enabled = false;
-    }
-    private IEnumerator MoveRecoil()
-    {
-        if (movablePart == null)
-        {
-            yield break;
-        }
-        // 1) Сохраняем исходную локальную позицию
-        Vector3 originalLocalPos = movablePart.localPosition;
-
-        // 2) Чистый локальный вектор отдачи: назад по локальной Z
-        Vector3 recoilOffsetLocal = new Vector3(0f, 0f, -recoilDistance);
-
-        float halfDur = recoilDuration * 0.5f;
-        float timer = 0f;
-
-        // 3) Двигаем затвор назад (половина отдачи)
-        while (timer < halfDur)
-        {
-            float t = timer / halfDur;
-            movablePart.localPosition = Vector3.Lerp(originalLocalPos,
-                                                     originalLocalPos + recoilOffsetLocal,
-                                                     t);
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        // 4) Возвращаем затвор в исходное положение (половина возврата)
-        timer = 0f;
-        while (timer < halfDur)
-        {
-            float t = timer / halfDur;
-            movablePart.localPosition = Vector3.Lerp(originalLocalPos + recoilOffsetLocal,
-                                                     originalLocalPos,
-                                                     t);
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        // 5) Гарантируем точно исходную позицию
-        movablePart.localPosition = originalLocalPos;
     }
 }
