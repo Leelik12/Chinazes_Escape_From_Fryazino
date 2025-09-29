@@ -3,16 +3,19 @@ using Photon.Realtime;
 using UnityEngine;
 using ExitGames.Client.Photon; // для Hashtable
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class RoomController : MonoBehaviourPunCallbacks
 {
     [Header("Ссылки на XR Rigs")]
     public GameObject driverRig;       // XR Rig водителя (без рук)
     public GameObject gunnerRig;       // XR Rig пулемётчика (с руками)
-
+    public GameObject car;
+    public GameObject Turret;
+    public GameObject MachineGun;
     [Header("UI Готовности")]
-    public Image firstPlayerReadyCircle;
-    public Image secondPlayerReadyCircle;
+    public UnityEngine.UI.Image firstPlayerReadyCircle;
+    public UnityEngine.UI.Image secondPlayerReadyCircle;
     public Color notReadyColor = Color.red;
     public Color readyColor = Color.green;
 
@@ -48,10 +51,12 @@ public class RoomController : MonoBehaviourPunCallbacks
     {
         if (PhotonNetwork.IsMasterClient)
         {
+            PhotonView carView = car.GetComponent<PhotonView>();
             // Мастер-клиент — водитель
             if (driverRig != null)
             {
                 driverRig.SetActive(true);
+                carView.TransferOwnership(PhotonNetwork.LocalPlayer);
             }
             if (gunnerRig != null)
             {
@@ -60,6 +65,8 @@ public class RoomController : MonoBehaviourPunCallbacks
         }
         else
         {
+            PhotonView TurretView = Turret.GetComponent<PhotonView>();
+            PhotonView MachineGunView = MachineGun.GetComponent<PhotonView>();
             // Второй игрок — пулемётчик
             if (driverRig != null)
             {
@@ -68,6 +75,8 @@ public class RoomController : MonoBehaviourPunCallbacks
             if (gunnerRig != null)
             {
                 gunnerRig.SetActive(true);
+                TurretView.TransferOwnership(PhotonNetwork.LocalPlayer);
+                MachineGunView.TransferOwnership(PhotonNetwork.LocalPlayer);
             }
         }
     }

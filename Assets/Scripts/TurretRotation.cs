@@ -11,6 +11,7 @@ public class TurretRotation : MonoBehaviourPun
 
     void Update()
     {
+        if (!photonView.IsMine) return;
         rotation = Input.GetAxis("Horizontal");
 
         if (rotation != 0f)

@@ -1,11 +1,7 @@
 using Photon.Pun;
 using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.InputSystem;
-using UnityEngine.XR;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class MachineGunVR : MonoBehaviourPun
@@ -20,38 +16,31 @@ public class MachineGunVR : MonoBehaviourPun
     [Header("Muzzle Flash")]
     public ParticleSystem muzzleFlash;
     public Light muzzleLight;
-    public float lightDuration; // длительность вспышки света
+    public float lightDuration;
 
     [Header("XR")]
-    public InputActionProperty triggerAction; // <-- сюда привязываем Input Action с триггера
-    public Transform firePoint;
     public InputActionProperty LeftTrigger;
     public InputActionProperty RightTrigger;
     public InputActionProperty LeftGrip;
     public InputActionProperty RightGrip;
+    public Transform firePoint;
 
-    [Header("Декали")]
-    [SerializeField] private GameObject hitEffectPrefabDust;
-    [SerializeField] private GameObject hitEffectPrefabSparks;
-    [SerializeField] private float hitEffectLifetime = 100f;
-    [SerializeField] private float effectOffset = 0.01f;
-
-    [Header("Audio")]
+    [Header("Декали и аудио")]
+    public GameObject hitEffectPrefabDust;
+    public GameObject hitEffectPrefabSparks;
+    public float hitEffectLifetime = 5f;
     public AudioSource audioSource;
     public AudioClip shotSound;
 
-    [Header("Прочее")]
-    public string enemyTag = ""; // Тег врага
-    private float nextFireTime = 0f;
+    [Header("Трассер")]
+    public GameObject tracerPrefab;
+    public float tracerSpeed = 200f;
+    public float tracerLifetime = 1f;
 
-    [Header("Tracer Settings")]
-    [SerializeField] private GameObject tracerPrefab; // Префаб трассера (LineRenderer или пуля)
-    [SerializeField] private float tracerSpeed = 200f; // скорость движения трассера
-    [SerializeField] private float tracerLifetime = 1f; // сколько живёт трассер
+    private float nextFireTime = 0f;
 
     void Awake()
     {
-        triggerAction.action.Enable();
         LeftGrip.action.Enable();
         RightGrip.action.Enable();
         LeftTrigger.action.Enable();
@@ -60,106 +49,73 @@ public class MachineGunVR : MonoBehaviourPun
 
     void Update()
     {
-        Debug.Log("Левый грип" + LeftGrip.action.ReadValue<float>());
-        Debug.Log("Левый тригер" + LeftTrigger.action.ReadValue<float>());
-        Debug.Log("Правый грип" + RightGrip.action.ReadValue<float>());
-        Debug.Log("Правый Тригер" + RightTrigger.action.ReadValue<float>());
-        //Проверка ввода через Input System
-        //Debug.Log(grabInteractable.attachTransform);
+        if (!photonView.IsMine) return; // управление только своим ригом
 
-        //Debug.Log(grabInteractable.attachTransform.name);
-        //if (triggerAction.action != null && triggerAction.action.ReadValue<float>() > 0.8f && Time.time >= nextFireTime && grabInteractable.isSelected && IsLoaded)
-        if (((LeftGrip.action.ReadValue<float>() > 0.8f && LeftTrigger.action.ReadValue<float>() > 0.8f) || (RightGrip.action.ReadValue<float>() > 0.8f && RightTrigger.action.ReadValue<float>() > 0.8f)) && Time.time >= nextFireTime && grabInteractable.isSelected)
+        if (((LeftGrip.action.ReadValue<float>() > 0.8f && LeftTrigger.action.ReadValue<float>() > 0.8f) ||
+             (RightGrip.action.ReadValue<float>() > 0.8f && RightTrigger.action.ReadValue<float>() > 0.8f)) &&
+            Time.time >= nextFireTime &&
+            grabInteractable.isSelected)
         {
-            Debug.Log("Выстрел игрока!");
             nextFireTime = Time.time + fireRate;
-            Shoot();
+
+            // Вызываем RPC для стрельбы, чтобы все игроки увидели
+            photonView.RPC("RPC_Shoot", RpcTarget.All, firePoint.position, firePoint.forward);
         }
     }
 
-    public void Shoot()
+    [PunRPC]
+    void RPC_Shoot(Vector3 origin, Vector3 direction)
     {
-        // Визуальный эффект
-        if (muzzleFlash != null)
-        {
-            muzzleFlash.Play();
-        }
-        if (muzzleLight != null)
-            StartCoroutine(MuzzleLightFlash());
-        if (audioSource != null && shotSound != null)
-            audioSource.PlayOneShot(shotSound);
+        // Muzzle flash и звук
+        if (muzzleFlash != null) muzzleFlash.Play();
+        if (muzzleLight != null) StartCoroutine(MuzzleLightFlash());
+        if (audioSource != null && shotSound != null) audioSource.PlayOneShot(shotSound);
+
+        // Raycast для попаданий
         RaycastHit hit;
-        if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        Vector3 hitPoint = origin + direction * range;
+        if (Physics.Raycast(origin, direction, out hit, range))
         {
-            if (hitEffectPrefabSparks != null)
+            hitPoint = hit.point;
+
+            // Декали
+            if (hitEffectPrefabDust != null && hitEffectPrefabSparks != null)
             {
-                Vector3 effectPosition = hit.point + hit.normal * 0.01f;
-
-                Quaternion effectRotation = Quaternion.LookRotation(hit.normal);
-
-                GameObject fx2 = Instantiate(hitEffectPrefabDust, effectPosition, effectRotation);
-                GameObject fx3 = Instantiate(hitEffectPrefabSparks, effectPosition, effectRotation);
-
-                Destroy(fx2, hitEffectLifetime);
-                Destroy(fx3, hitEffectLifetime);
+                GameObject fxDust = PhotonNetwork.Instantiate(hitEffectPrefabDust.name, hitPoint + hit.normal * 0.01f, Quaternion.LookRotation(hit.normal));
+                GameObject fxSparks = PhotonNetwork.Instantiate(hitEffectPrefabSparks.name, hitPoint + hit.normal * 0.01f, Quaternion.LookRotation(hit.normal));
+                Destroy(fxDust, hitEffectLifetime);
+                Destroy(fxSparks, hitEffectLifetime);
             }
 
-
-            //Debug.Log("Попадание в " + hit.collider.tag);
-            if (hit.collider.CompareTag("Head") || hit.collider.CompareTag("Leg") || hit.collider.CompareTag("Body"))
+            // Урон
+            if (hit.collider.CompareTag("Head") || hit.collider.CompareTag("Body") || hit.collider.CompareTag("Leg"))
             {
-                float finalDamage = damage;
-                // Определяем зону попадания
-                string hitPartName = hit.collider.name.ToLower();
-
-
-                if (hit.collider.CompareTag("Head"))
-                {
-                    finalDamage *= 2f;
-                    //Debug.Log("Headshot!");
-                }
-                else if (hitPartName.Contains("leg"))
-                {
-                    finalDamage *= 0.5f;
-                }
-                else
-                {
-                    // тело — обычный урон
-                    //Debug.Log("Body shot!");
-                }
-
-                EnemyHeaths target = null;
-                if (hit.collider.GetComponentInParent<EnemyHeaths>() == null)
-                {
-                    target = null;
-                }
-                else
-                {
-                    target = hit.collider.GetComponentInParent<EnemyHeaths>();
-                }
+                EnemyHeaths target = hit.collider.GetComponentInParent<EnemyHeaths>();
                 if (target != null)
                 {
-                    if (target != null) { target.TakeDamage(finalDamage); }
+                    float finalDamage = damage;
+                    if (hit.collider.CompareTag("Head")) finalDamage *= 2f;
+                    else if (hit.collider.CompareTag("Leg")) finalDamage *= 0.5f;
+
+                    target.TakeDamage(finalDamage);
                 }
             }
-            // Создаём трассер
-            if (tracerPrefab != null)
-            {
-                StartCoroutine(SpawnTracer(firePoint.position, hit.point));
-            }
         }
-        else
+
+        // Трассер
+        if (tracerPrefab != null)
         {
-            StartCoroutine(SpawnTracer(firePoint.position, firePoint.position + firePoint.forward * range));
+            StartCoroutine(SpawnTracer(origin, hitPoint));
         }
     }
+
     IEnumerator SpawnTracer(Vector3 start, Vector3 end)
     {
-        GameObject tracer = Instantiate(tracerPrefab, start, Quaternion.identity);
+        GameObject tracer = PhotonNetwork.Instantiate(tracerPrefab.name, start, Quaternion.identity);
 
         float distance = Vector3.Distance(start, end);
-        float time = 0f;
         float duration = distance / tracerSpeed;
+        float time = 0f;
 
         while (time < duration)
         {
@@ -170,10 +126,8 @@ public class MachineGunVR : MonoBehaviourPun
         }
 
         tracer.transform.position = end;
-        if (tracer.transform.position == end) Destroy(tracer);
         Destroy(tracer, tracerLifetime);
     }
-
 
     IEnumerator MuzzleLightFlash()
     {
