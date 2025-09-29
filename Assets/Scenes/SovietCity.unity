@@ -7523,6 +7523,10 @@ MonoBehaviour:
   carPrefabName: CarPrefab
   turretPrefabName: TurretPrefab
   vehicleSpawnPoint: {fileID: 635474568}
+  firstPlayerReadyCircle: {fileID: 0}
+  secondPlayerReadyCircle: {fileID: 0}
+  notReadyColor: {r: 1, g: 0, b: 0, a: 1}
+  readyColor: {r: 0, g: 1, b: 0, a: 1}
 --- !u!114 &218785755
 MonoBehaviour:
   m_ObjectHideFlags: 0

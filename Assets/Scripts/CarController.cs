@@ -60,14 +60,14 @@ public class CarController : MonoBehaviourPun
     private bool lastfl;
     void Start()
     {
-        TurretRotation turret = FindObjectOfType<TurretRotation>();
-        if (turret != null)
-        {
-            turret.transform.SetParent(transform);
-            turret.transform.localPosition = new Vector3(0, 2.4f, -0.5f);
-            turret.transform.localRotation = Quaternion.identity;
-            Debug.Log("Машина сама прицепила турель");
-        }
+        //TurretRotation turret = FindObjectOfType<TurretRotation>();
+        //if (turret != null)
+        //{
+        //    turret.transform.SetParent(transform);
+        //    turret.transform.localPosition = new Vector3(0, 2.4f, -0.5f);
+        //    turret.transform.localRotation = Quaternion.identity;
+        //    Debug.Log("Машина сама прицепила турель");
+        //}
         var cam = GetComponentInChildren<Camera>(true);
         if (cam != null) cam.gameObject.SetActive(photonView.IsMine);
 
