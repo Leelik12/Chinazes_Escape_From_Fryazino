@@ -588,9 +588,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1078134235432598, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1395458493879916, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1766980504106990, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1882020308952034, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1947328856299212, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_01b
+      objectReference: {fileID: 0}
+    - target: {fileID: 1947328856299212, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4988066152547784, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1088,9 +1108,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1049600403627416, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1056730782891924, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1132628069060346, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_01a (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1132628069060346, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1280436411978372, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1494923468796342, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4033981058288150, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1353,6 +1393,10 @@ PrefabInstance:
     - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
       propertyPath: m_Name
       value: transformer_box (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3109,6 +3153,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: rus_build_5et_06
       objectReference: {fileID: 0}
+    - target: {fileID: 1004403150051996, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1165235475826398, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1858661261470392, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1912257993660962, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992079094115214, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4782874753337956, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
       propertyPath: m_LocalPosition.x
       value: 172.12683
@@ -3167,9 +3231,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1238609219532246, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1310564486320326, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1481997068777446, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_01a
+      objectReference: {fileID: 0}
+    - target: {fileID: 1481997068777446, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1666628887605056, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1869480357886106, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4848697192325536, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3421,9 +3505,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1225082399346156, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1348139778320264, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1387697874525502, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1563941139055208, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1992869141004190, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_03 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992869141004190, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4971792748110090, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4504,9 +4608,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1180365234315520, guid: af379eb3bb200574a80c24d641fcf853, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1350735262215956, guid: af379eb3bb200574a80c24d641fcf853, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1513926803244538, guid: af379eb3bb200574a80c24d641fcf853, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1622216815002174, guid: af379eb3bb200574a80c24d641fcf853, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1740534072007872, guid: af379eb3bb200574a80c24d641fcf853, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_03c (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1740534072007872, guid: af379eb3bb200574a80c24d641fcf853, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4913603619736696, guid: af379eb3bb200574a80c24d641fcf853, type: 3}
       propertyPath: m_LocalScale.x
@@ -8098,9 +8222,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1115539847217646, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1557990700562332, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1689836037832140, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_05 (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1778235185554066, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4733902427796378, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -8306,9 +8450,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1052973066367202, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1073940388879738, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1357146015593868, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1456488331061020, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1938197716418238, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_04
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938197716418238, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4321637437612654, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
       propertyPath: m_LocalPosition.x
@@ -9148,9 +9312,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1052973066367202, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1073940388879738, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1357146015593868, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1456488331061020, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1938197716418238, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_04
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938197716418238, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4321637437612654, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
       propertyPath: m_LocalScale.x
@@ -9637,9 +9821,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1059320425776646, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459048820606096, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1578174535087510, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682579067394354, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4361620180247386, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_LocalScale.x
@@ -10131,9 +10335,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1462757276376092, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1588851580197630, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1720421314788298, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_03f
+      objectReference: {fileID: 0}
+    - target: {fileID: 1720421314788298, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747167767754810, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1908307390195284, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4978734994377454, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
       propertyPath: m_LocalScale.x
@@ -10747,9 +10971,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1051654671686540, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1093297442578220, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1375080175803280, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_01 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819664963748840, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4710726587445036, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -12119,6 +12363,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Benche (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1423210098914258574, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 5955940190115095541, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -92.564514
@@ -12266,6 +12514,26 @@ PrefabInstance:
     - target: {fileID: 1076253524014866, guid: e660989e3cd39b0439ca14e2c7369938, type: 3}
       propertyPath: m_Name
       value: rus_build_2et_01a
+      objectReference: {fileID: 0}
+    - target: {fileID: 1076253524014866, guid: e660989e3cd39b0439ca14e2c7369938, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1127763649703086, guid: e660989e3cd39b0439ca14e2c7369938, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1220121381029332, guid: e660989e3cd39b0439ca14e2c7369938, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1402832910684474, guid: e660989e3cd39b0439ca14e2c7369938, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1550023088367910, guid: e660989e3cd39b0439ca14e2c7369938, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4213617507267930, guid: e660989e3cd39b0439ca14e2c7369938, type: 3}
       propertyPath: m_LocalPosition.x
@@ -12603,6 +12871,26 @@ PrefabInstance:
     - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_03b (8)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalPosition.x
@@ -13008,6 +13296,10 @@ PrefabInstance:
     - target: {fileID: 1423210098914258574, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
       propertyPath: m_Name
       value: Benche (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1423210098914258574, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5955940190115095541, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -15442,9 +15734,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1049600403627416, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1056730782891924, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1132628069060346, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_01a (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1132628069060346, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1280436411978372, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1494923468796342, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4033981058288150, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
       propertyPath: m_LocalPosition.x
@@ -15868,6 +16180,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: transformer_box (8)
       objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -16180,9 +16496,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1115539847217646, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1557990700562332, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1689836037832140, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_05 (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1778235185554066, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4733902427796378, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_LocalScale.x
@@ -17252,6 +17588,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: rus_build_9et_03b (12)
       objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalPosition.x
       value: 222.64099
@@ -17945,9 +18301,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1049600403627416, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1056730782891924, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1132628069060346, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_01a (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1132628069060346, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1280436411978372, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1494923468796342, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4033981058288150, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
       propertyPath: m_LocalPosition.x
@@ -18139,6 +18515,26 @@ PrefabInstance:
     - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_03b
+      objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalPosition.x
@@ -18594,6 +18990,10 @@ PrefabInstance:
     - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
       propertyPath: m_Name
       value: transformer_box
+      objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -19998,6 +20398,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: rus_build_2et_01b
       objectReference: {fileID: 0}
+    - target: {fileID: 1282404491531254, guid: a121d32ef0a226a459036bdbc16455ea, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1313031360597826, guid: a121d32ef0a226a459036bdbc16455ea, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1436246721696988, guid: a121d32ef0a226a459036bdbc16455ea, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1567482504124076, guid: a121d32ef0a226a459036bdbc16455ea, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1884702645766500, guid: a121d32ef0a226a459036bdbc16455ea, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4215362236259530, guid: a121d32ef0a226a459036bdbc16455ea, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.34999996
@@ -20571,6 +20991,10 @@ PrefabInstance:
     - target: {fileID: 9165782172201475673, guid: 52a35d16d1a76e74d8003dc1ca5c4c03, type: 3}
       propertyPath: m_Name
       value: Urn
+      objectReference: {fileID: 0}
+    - target: {fileID: 9165782172201475673, guid: 52a35d16d1a76e74d8003dc1ca5c4c03, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -21736,6 +22160,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: rus_build_9et_03b (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalPosition.x
       value: -96.94519
@@ -22461,9 +22905,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1059420209883308, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1318074071336822, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1372350360747358, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1796907491475532, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1979192793806112, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02a
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979192793806112, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4757314104929366, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
       propertyPath: m_LocalPosition.x
@@ -22634,7 +23098,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4
   m_IsActive: 1
 --- !u!4 &618042179
 Transform:
@@ -22819,6 +23283,10 @@ PrefabInstance:
     - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
       propertyPath: m_Name
       value: transformer_box (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -24290,9 +24758,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1026854692844680, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1347752725710282, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1372719032071574, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
       propertyPath: m_Name
       value: rus_build_4et_01 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1372719032071574, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1867896303410342, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1920702879536118, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4651415833681492, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -24347,9 +24835,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1157037931600428, guid: cfe372357392bfc49a631f6dfb62bbb1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1334856565783354, guid: cfe372357392bfc49a631f6dfb62bbb1, type: 3}
       propertyPath: m_Name
       value: rus_build_2et_01c
+      objectReference: {fileID: 0}
+    - target: {fileID: 1334856565783354, guid: cfe372357392bfc49a631f6dfb62bbb1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1508337206743438, guid: cfe372357392bfc49a631f6dfb62bbb1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1771872366661362, guid: cfe372357392bfc49a631f6dfb62bbb1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1937841317449736, guid: cfe372357392bfc49a631f6dfb62bbb1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4391732829057842, guid: cfe372357392bfc49a631f6dfb62bbb1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -24409,9 +24917,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1078134235432598, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1395458493879916, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1766980504106990, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1882020308952034, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1947328856299212, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_01b (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1947328856299212, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4988066152547784, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
       propertyPath: m_LocalPosition.x
@@ -24984,9 +25512,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1049600403627416, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1056730782891924, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1132628069060346, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_01a
+      objectReference: {fileID: 0}
+    - target: {fileID: 1132628069060346, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1280436411978372, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1494923468796342, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4033981058288150, guid: 6f1e34f627ea823418d94ad9986dd468, type: 3}
       propertyPath: m_LocalPosition.x
@@ -25541,6 +26089,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: rus_build_9et_03b (13)
       objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalPosition.x
       value: 199.81812
@@ -25709,9 +26277,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1238609219532246, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1310564486320326, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1481997068777446, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_01a (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1481997068777446, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1666628887605056, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1869480357886106, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4848697192325536, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -26552,6 +27140,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: rus_build_5et_06 (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1004403150051996, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1165235475826398, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1858661261470392, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1912257993660962, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992079094115214, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4782874753337956, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -26906,9 +27514,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1059320425776646, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459048820606096, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1578174535087510, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682579067394354, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02 (7)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4361620180247386, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -27077,6 +27705,10 @@ PrefabInstance:
     - target: {fileID: 1423210098914258574, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
       propertyPath: m_Name
       value: Benche
+      objectReference: {fileID: 0}
+    - target: {fileID: 1423210098914258574, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5955940190115095541, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -27487,7 +28119,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4
   m_IsActive: 1
 --- !u!4 &722458647
 Transform:
@@ -28386,9 +29018,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1026854692844680, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1347752725710282, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1372719032071574, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
       propertyPath: m_Name
       value: rus_build_4et_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1372719032071574, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1867896303410342, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1920702879536118, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4651415833681492, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
       propertyPath: m_LocalScale.x
@@ -28616,9 +29268,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1059320425776646, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459048820606096, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1578174535087510, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682579067394354, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02 (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4361620180247386, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -29377,9 +30049,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1059320425776646, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459048820606096, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1578174535087510, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682579067394354, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02 (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4361620180247386, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_LocalScale.x
@@ -29922,6 +30614,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Urn
       objectReference: {fileID: 0}
+    - target: {fileID: 9165782172201475673, guid: 52a35d16d1a76e74d8003dc1ca5c4c03, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -30118,9 +30814,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1157037931600428, guid: cfe372357392bfc49a631f6dfb62bbb1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1334856565783354, guid: cfe372357392bfc49a631f6dfb62bbb1, type: 3}
       propertyPath: m_Name
       value: rus_build_2et_01c
+      objectReference: {fileID: 0}
+    - target: {fileID: 1334856565783354, guid: cfe372357392bfc49a631f6dfb62bbb1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1508337206743438, guid: cfe372357392bfc49a631f6dfb62bbb1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1771872366661362, guid: cfe372357392bfc49a631f6dfb62bbb1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1937841317449736, guid: cfe372357392bfc49a631f6dfb62bbb1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4391732829057842, guid: cfe372357392bfc49a631f6dfb62bbb1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -30751,9 +31467,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1115539847217646, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1557990700562332, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1689836037832140, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_05 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1778235185554066, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4733902427796378, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_LocalScale.x
@@ -31372,6 +32108,10 @@ PrefabInstance:
     - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
       propertyPath: m_Name
       value: transformer_box (9)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -37131,9 +37871,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1111898615725906, guid: 839cb4cbbcc4c54459297db52332efa1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219721088918870, guid: 839cb4cbbcc4c54459297db52332efa1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1629694458765696, guid: 839cb4cbbcc4c54459297db52332efa1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913915748074898, guid: 839cb4cbbcc4c54459297db52332efa1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1982368952154928, guid: 839cb4cbbcc4c54459297db52332efa1, type: 3}
       propertyPath: m_Name
       value: rus_build_2et_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1982368952154928, guid: 839cb4cbbcc4c54459297db52332efa1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4706686599759574, guid: 839cb4cbbcc4c54459297db52332efa1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -38010,9 +38770,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1462757276376092, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1588851580197630, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1720421314788298, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_03f (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1720421314788298, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747167767754810, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1908307390195284, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4978734994377454, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
       propertyPath: m_LocalScale.x
@@ -38813,9 +39593,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1059420209883308, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1318074071336822, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1372350360747358, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1796907491475532, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1979192793806112, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02a (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979192793806112, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4757314104929366, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
       propertyPath: m_LocalScale.x
@@ -39262,9 +40062,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1462757276376092, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1588851580197630, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1720421314788298, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_03f
+      objectReference: {fileID: 0}
+    - target: {fileID: 1720421314788298, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1747167767754810, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1908307390195284, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4978734994377454, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -39647,6 +40467,26 @@ PrefabInstance:
     - target: {fileID: 1004403150051996, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_06 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1004403150051996, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1165235475826398, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1858661261470392, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1912257993660962, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992079094115214, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4782874753337956, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
       propertyPath: m_LocalPosition.x
@@ -40340,9 +41180,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1051654671686540, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1093297442578220, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1375080175803280, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_01 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819664963748840, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4710726587445036, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -40851,6 +41711,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: TetrapodUp
       objectReference: {fileID: 0}
+    - target: {fileID: 6509260749465275757, guid: 3d90a05ae6c6aea4592a391a4d6b59e8, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -40869,9 +41733,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1052973066367202, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1073940388879738, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1357146015593868, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1456488331061020, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1938197716418238, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_04 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938197716418238, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4321637437612654, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
       propertyPath: m_LocalPosition.x
@@ -42740,9 +43624,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1115539847217646, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1557990700562332, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1689836037832140, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_05
+      objectReference: {fileID: 0}
+    - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1778235185554066, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4733902427796378, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -43875,6 +44779,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: transformer_box (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -44058,9 +44966,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1039358540981078, guid: 53cc8692c5de61148b5301830771ad99, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1042920087882922, guid: 53cc8692c5de61148b5301830771ad99, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_03a
+      objectReference: {fileID: 0}
+    - target: {fileID: 1042920087882922, guid: 53cc8692c5de61148b5301830771ad99, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1426669012569730, guid: 53cc8692c5de61148b5301830771ad99, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1789438310193424, guid: 53cc8692c5de61148b5301830771ad99, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1841456471250084, guid: 53cc8692c5de61148b5301830771ad99, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4649007269691902, guid: 53cc8692c5de61148b5301830771ad99, type: 3}
       propertyPath: m_LocalScale.x
@@ -48053,6 +48981,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: rus_build_9et_03b (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalPosition.x
       value: 143.81812
@@ -49097,6 +50045,26 @@ PrefabInstance:
     - target: {fileID: 1004403150051996, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_06 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1004403150051996, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1165235475826398, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1858661261470392, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1912257993660962, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992079094115214, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4782874753337956, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
       propertyPath: m_LocalPosition.x
@@ -50659,9 +51627,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1051654671686540, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1093297442578220, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1375080175803280, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819664963748840, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4710726587445036, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -50716,9 +51704,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1078134235432598, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1395458493879916, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1766980504106990, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1882020308952034, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1947328856299212, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_01b (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1947328856299212, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4988066152547784, guid: f8c03799d60ef1e4696251922cde2e33, type: 3}
       propertyPath: m_LocalPosition.x
@@ -50781,6 +51789,10 @@ PrefabInstance:
     - target: {fileID: 1423210098914258574, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
       propertyPath: m_Name
       value: Benche (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1423210098914258574, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5955940190115095541, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -51334,6 +52346,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: transformer_box (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -51352,9 +52368,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1022012842533442, guid: 486897b2b94b3664da99ce6f48ac62cb, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1211169766027848, guid: 486897b2b94b3664da99ce6f48ac62cb, type: 3}
       propertyPath: m_Name
       value: rus_build_4et_01a
+      objectReference: {fileID: 0}
+    - target: {fileID: 1211169766027848, guid: 486897b2b94b3664da99ce6f48ac62cb, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1328593623529796, guid: 486897b2b94b3664da99ce6f48ac62cb, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1495746458855052, guid: 486897b2b94b3664da99ce6f48ac62cb, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1659536463998258, guid: 486897b2b94b3664da99ce6f48ac62cb, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4244444072601190, guid: 486897b2b94b3664da99ce6f48ac62cb, type: 3}
       propertyPath: m_LocalScale.x
@@ -53187,9 +54223,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1051654671686540, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1093297442578220, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1375080175803280, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_01 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819664963748840, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4710726587445036, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_LocalScale.x
@@ -53446,9 +54502,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1051654671686540, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1093297442578220, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1375080175803280, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819664963748840, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4710726587445036, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -54234,9 +55310,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1238609219532246, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1310564486320326, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1481997068777446, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_01a (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1481997068777446, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1666628887605056, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1869480357886106, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4848697192325536, guid: cf782ee04eec8b34bb78b9bcf9dab92a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -54413,6 +55509,26 @@ PrefabInstance:
     - target: {fileID: 1116056472700570, guid: 167ccd36f78cceb46a4d150b76b96fab, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1116056472700570, guid: 167ccd36f78cceb46a4d150b76b96fab, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1253925561471120, guid: 167ccd36f78cceb46a4d150b76b96fab, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1312100293824004, guid: 167ccd36f78cceb46a4d150b76b96fab, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1410436785310156, guid: 167ccd36f78cceb46a4d150b76b96fab, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1573580550776350, guid: 167ccd36f78cceb46a4d150b76b96fab, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4835899192707740, guid: 167ccd36f78cceb46a4d150b76b96fab, type: 3}
       propertyPath: m_LocalPosition.x
@@ -55238,9 +56354,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1026854692844680, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1347752725710282, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1372719032071574, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
       propertyPath: m_Name
       value: rus_build_4et_01 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1372719032071574, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1867896303410342, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1920702879536118, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4651415833681492, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
       propertyPath: m_LocalScale.x
@@ -55750,6 +56886,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: transformer_box (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -55892,7 +57032,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4
   m_IsActive: 1
 --- !u!4 &1344984782
 Transform:
@@ -61760,6 +62900,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: rus_build_9et_03b (7)
       objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalPosition.x
       value: 154.94104
@@ -62011,6 +63171,10 @@ PrefabInstance:
     - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
       propertyPath: m_Name
       value: transformer_box (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -62689,9 +63853,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1059320425776646, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459048820606096, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1578174535087510, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682579067394354, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02 (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4361620180247386, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_LocalScale.x
@@ -62754,9 +63938,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1443233711}
     m_Modifications:
+    - target: {fileID: 1026854692844680, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1347752725710282, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1372719032071574, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
       propertyPath: m_Name
       value: rus_build_4et_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1372719032071574, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1867896303410342, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1920702879536118, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4651415833681492, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
       propertyPath: m_LocalScale.x
@@ -62824,9 +64028,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1026854692844680, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1347752725710282, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1372719032071574, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
       propertyPath: m_Name
       value: rus_build_4et_01 (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1372719032071574, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1867896303410342, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1920702879536118, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4651415833681492, guid: 74f04d972a0675c45ac56c3a8e0f30c4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -63659,9 +64883,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1443233711}
     m_Modifications:
+    - target: {fileID: 1012597739065810, guid: 8459d2d575caf3742b837875922c5e95, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1221996898385718, guid: 8459d2d575caf3742b837875922c5e95, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1305201481485302, guid: 8459d2d575caf3742b837875922c5e95, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1820578872569314, guid: 8459d2d575caf3742b837875922c5e95, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_02a
+      objectReference: {fileID: 0}
+    - target: {fileID: 1820578872569314, guid: 8459d2d575caf3742b837875922c5e95, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1895863384870834, guid: 8459d2d575caf3742b837875922c5e95, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4593895689767284, guid: 8459d2d575caf3742b837875922c5e95, type: 3}
       propertyPath: m_LocalPosition.x
@@ -64113,7 +65357,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4
   m_IsActive: 1
 --- !u!4 &1443233711
 Transform:
@@ -64817,6 +66061,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: rus_build_9et_03b (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalScale.x
       value: 0.35000002
@@ -64910,9 +66174,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1406611133261020, guid: b65f39ca66ec7fc4e8b39ef856a7125d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1489040578826738, guid: b65f39ca66ec7fc4e8b39ef856a7125d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1575282461670568, guid: b65f39ca66ec7fc4e8b39ef856a7125d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1749644207921804, guid: b65f39ca66ec7fc4e8b39ef856a7125d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1957675866387746, guid: b65f39ca66ec7fc4e8b39ef856a7125d, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_03a
+      objectReference: {fileID: 0}
+    - target: {fileID: 1957675866387746, guid: b65f39ca66ec7fc4e8b39ef856a7125d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4638039742724616, guid: b65f39ca66ec7fc4e8b39ef856a7125d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -64967,9 +66251,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1115539847217646, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1557990700562332, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1689836037832140, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_05
+      objectReference: {fileID: 0}
+    - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1778235185554066, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4733902427796378, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -65194,9 +66498,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1059320425776646, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459048820606096, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1578174535087510, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682579067394354, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02 (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4361620180247386, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -65573,6 +66897,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: transformer_box (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -65591,9 +66919,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1115539847217646, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1557990700562332, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1689836037832140, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_05 (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1778235185554066, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4733902427796378, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -65653,9 +67001,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1051654671686540, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1093297442578220, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1375080175803280, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_01 (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819664963748840, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4710726587445036, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_LocalScale.x
@@ -65931,6 +67299,10 @@ PrefabInstance:
     - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
       propertyPath: m_Name
       value: transformer_box
+      objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -68109,7 +69481,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4
   m_IsActive: 1
 --- !u!4 &1531658406
 Transform:
@@ -68644,9 +70016,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1111898615725906, guid: 839cb4cbbcc4c54459297db52332efa1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1219721088918870, guid: 839cb4cbbcc4c54459297db52332efa1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1629694458765696, guid: 839cb4cbbcc4c54459297db52332efa1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1913915748074898, guid: 839cb4cbbcc4c54459297db52332efa1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1982368952154928, guid: 839cb4cbbcc4c54459297db52332efa1, type: 3}
       propertyPath: m_Name
       value: rus_build_2et_01 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1982368952154928, guid: 839cb4cbbcc4c54459297db52332efa1, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4706686599759574, guid: 839cb4cbbcc4c54459297db52332efa1, type: 3}
       propertyPath: m_LocalPosition.x
@@ -68701,9 +70093,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1059320425776646, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459048820606096, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1578174535087510, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682579067394354, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4361620180247386, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_LocalScale.x
@@ -69842,6 +71254,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: transformer_box (6)
       objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -70543,6 +71959,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: transformer_box (4)
       objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -71064,6 +72484,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: rus_build_9et_03b (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalPosition.x
       value: 75.154785
@@ -71551,9 +72991,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1225082399346156, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1348139778320264, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1387697874525502, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1563941139055208, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1992869141004190, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_03
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992869141004190, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4971792748110090, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
       propertyPath: m_LocalPosition.x
@@ -72049,6 +73509,10 @@ PrefabInstance:
     - target: {fileID: 8559540341740942148, guid: 298a44594b5bb5545a2e4e0589c3c543, type: 3}
       propertyPath: m_Name
       value: Tetrapod
+      objectReference: {fileID: 0}
+    - target: {fileID: 8559540341740942148, guid: 298a44594b5bb5545a2e4e0589c3c543, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -72711,6 +74175,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: transformer_box (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -72882,6 +74350,10 @@ PrefabInstance:
     - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
       propertyPath: m_Name
       value: transformer_box (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -73701,9 +75173,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1059420209883308, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1318074071336822, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1372350360747358, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1796907491475532, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1979192793806112, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02a (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1979192793806112, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4757314104929366, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
       propertyPath: m_LocalPosition.x
@@ -73967,6 +75459,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Urn_2
       objectReference: {fileID: 0}
+    - target: {fileID: 8980912843621443519, guid: ff3d08ef1ec24f549906bda80d3f7a41, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -74228,9 +75724,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1037574186147688, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1132976872195808, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1268290705402204, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1404284043269724, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02b
+      objectReference: {fileID: 0}
+    - target: {fileID: 1404284043269724, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1444992945209072, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4559603791418098, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
       propertyPath: m_LocalPosition.x
@@ -74285,9 +75801,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1139193115700208, guid: d90ea0162bb47b54d903c852a6d0f618, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1310430393505872, guid: d90ea0162bb47b54d903c852a6d0f618, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1397363824085174, guid: d90ea0162bb47b54d903c852a6d0f618, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1449738612910772, guid: d90ea0162bb47b54d903c852a6d0f618, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1800176387728604, guid: d90ea0162bb47b54d903c852a6d0f618, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_03e
+      objectReference: {fileID: 0}
+    - target: {fileID: 1800176387728604, guid: d90ea0162bb47b54d903c852a6d0f618, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4380824946543810, guid: d90ea0162bb47b54d903c852a6d0f618, type: 3}
       propertyPath: m_LocalPosition.x
@@ -75119,6 +76655,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: rus_build_9et_03b (5)
       objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalPosition.x
       value: -59.645203
@@ -75381,6 +76937,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: transformer_box (10)
       objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -75405,7 +76965,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 4
   m_IsActive: 1
 --- !u!4 &1692649567
 Transform:
@@ -75888,9 +77448,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1037574186147688, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1132976872195808, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1268290705402204, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1404284043269724, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02b (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1404284043269724, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1444992945209072, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4559603791418098, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
       propertyPath: m_LocalPosition.x
@@ -76253,9 +77833,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1051654671686540, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1093297442578220, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1375080175803280, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_01 (6)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819664963748840, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4710726587445036, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_LocalScale.x
@@ -76385,9 +77985,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1225082399346156, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1348139778320264, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1387697874525502, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1563941139055208, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1992869141004190, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_03 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992869141004190, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4971792748110090, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
       propertyPath: m_LocalPosition.x
@@ -76611,6 +78231,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Benche (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 1423210098914258574, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 5955940190115095541, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
       propertyPath: m_LocalPosition.x
       value: -89.09454
@@ -76822,6 +78446,10 @@ PrefabInstance:
     - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
       propertyPath: m_Name
       value: transformer_box
+      objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -77276,9 +78904,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1059320425776646, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459048820606096, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1578174535087510, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682579067394354, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4361620180247386, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_LocalScale.x
@@ -78315,9 +79963,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1032111555517068, guid: 1f96f1899d54a8446b48d5a525237154, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1166598502457088, guid: 1f96f1899d54a8446b48d5a525237154, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_03b
+      objectReference: {fileID: 0}
+    - target: {fileID: 1166598502457088, guid: 1f96f1899d54a8446b48d5a525237154, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1412961709228552, guid: 1f96f1899d54a8446b48d5a525237154, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1535876723626846, guid: 1f96f1899d54a8446b48d5a525237154, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1798977334645462, guid: 1f96f1899d54a8446b48d5a525237154, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4636797885000500, guid: 1f96f1899d54a8446b48d5a525237154, type: 3}
       propertyPath: m_LocalScale.x
@@ -78872,9 +80540,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1052973066367202, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1073940388879738, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1357146015593868, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1456488331061020, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1938197716418238, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_04 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1938197716418238, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4321637437612654, guid: 408af9f2b6062b4449d4b84d945fdd57, type: 3}
       propertyPath: m_LocalPosition.x
@@ -79044,9 +80732,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1443233711}
     m_Modifications:
+    - target: {fileID: 1051654671686540, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1093297442578220, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1375080175803280, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_01
+      objectReference: {fileID: 0}
+    - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819664963748840, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4710726587445036, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_LocalScale.x
@@ -79563,6 +81271,26 @@ PrefabInstance:
     - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_03b (10)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalPosition.x
@@ -80225,6 +81953,10 @@ PrefabInstance:
     - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
       propertyPath: m_Name
       value: transformer_box (12)
+      objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -80972,6 +82704,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: transformer_box (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 5607374428385261387, guid: 767597e072693b34c8f989d33b23361a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -81359,6 +83095,10 @@ PrefabInstance:
     - target: {fileID: 1423210098914258574, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
       propertyPath: m_Name
       value: Benche
+      objectReference: {fileID: 0}
+    - target: {fileID: 1423210098914258574, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 5955940190115095541, guid: f0555a17cdff7dc43ab632954479231a, type: 3}
       propertyPath: m_LocalPosition.x
@@ -85764,6 +87504,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: rus_build_5et_06
       objectReference: {fileID: 0}
+    - target: {fileID: 1004403150051996, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1165235475826398, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1858661261470392, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1912257993660962, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1992079094115214, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4782874753337956, guid: d0942da8e0756d64fa0dc5f970badb08, type: 3}
       propertyPath: m_LocalPosition.x
       value: 103.41345
@@ -86069,9 +87829,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1238167320479568, guid: 30e869da5c345464eb905a3dfb869ad3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1570404780828300, guid: 30e869da5c345464eb905a3dfb869ad3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1705906602672428, guid: 30e869da5c345464eb905a3dfb869ad3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1867233408252308, guid: 30e869da5c345464eb905a3dfb869ad3, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_03
+      objectReference: {fileID: 0}
+    - target: {fileID: 1867233408252308, guid: 30e869da5c345464eb905a3dfb869ad3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1888105995237712, guid: 30e869da5c345464eb905a3dfb869ad3, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4365241942900340, guid: 30e869da5c345464eb905a3dfb869ad3, type: 3}
       propertyPath: m_LocalScale.x
@@ -87150,6 +88930,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: rus_build_9et_03b (11)
       objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalPosition.x
       value: 211.51807
@@ -87510,9 +89310,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1051654671686540, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1093297442578220, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1375080175803280, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_01 (5)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819664963748840, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4710726587445036, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -88041,9 +89861,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1037574186147688, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1132976872195808, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1268290705402204, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1404284043269724, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02b (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1404284043269724, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1444992945209072, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4559603791418098, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
       propertyPath: m_LocalPosition.x
@@ -88098,9 +89938,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1115539847217646, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1557990700562332, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1689836037832140, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_05 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1778235185554066, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4733902427796378, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -88756,6 +90616,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlasticSignalBollard_2
       objectReference: {fileID: 0}
+    - target: {fileID: 1013976576169047992, guid: e55a93b49644cee4298cccddca28c23f, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1760201462888509895, guid: e55a93b49644cee4298cccddca28c23f, type: 3}
       propertyPath: m_LocalScale.x
       value: 2
@@ -89222,9 +91086,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1115539847217646, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1557990700562332, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1689836037832140, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_05 (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1705497938415248, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1778235185554066, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4733902427796378, guid: 462efeb944acff8449ca0adecdc9842d, type: 3}
       propertyPath: m_LocalPosition.x
@@ -89637,6 +91521,26 @@ PrefabInstance:
     - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_03b (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalPosition.x
@@ -90936,9 +92840,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1180365234315520, guid: af379eb3bb200574a80c24d641fcf853, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1350735262215956, guid: af379eb3bb200574a80c24d641fcf853, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1513926803244538, guid: af379eb3bb200574a80c24d641fcf853, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1622216815002174, guid: af379eb3bb200574a80c24d641fcf853, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1740534072007872, guid: af379eb3bb200574a80c24d641fcf853, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_03c
+      objectReference: {fileID: 0}
+    - target: {fileID: 1740534072007872, guid: af379eb3bb200574a80c24d641fcf853, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4913603619736696, guid: af379eb3bb200574a80c24d641fcf853, type: 3}
       propertyPath: m_LocalScale.x
@@ -91069,6 +92993,26 @@ PrefabInstance:
     - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_03b
+      objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalPosition.x
@@ -91875,9 +93819,37 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 618042179}
     m_Modifications:
+    - target: {fileID: 1028841335964046, guid: 22a46040bf600044bbf59817f7a7bf0c, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1109768394089260, guid: 22a46040bf600044bbf59817f7a7bf0c, type: 3}
       propertyPath: m_Name
       value: Old Hangar
+      objectReference: {fileID: 0}
+    - target: {fileID: 1109768394089260, guid: 22a46040bf600044bbf59817f7a7bf0c, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1277791706596166, guid: 22a46040bf600044bbf59817f7a7bf0c, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1631829766523938, guid: 22a46040bf600044bbf59817f7a7bf0c, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1799106448302122, guid: 22a46040bf600044bbf59817f7a7bf0c, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1860055151441380, guid: 22a46040bf600044bbf59817f7a7bf0c, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1931316742835844, guid: 22a46040bf600044bbf59817f7a7bf0c, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4329712457858354, guid: 22a46040bf600044bbf59817f7a7bf0c, type: 3}
       propertyPath: m_LocalScale.x
@@ -93888,9 +95860,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1037574186147688, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1132976872195808, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1268290705402204, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1404284043269724, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02b (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1404284043269724, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1444992945209072, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4559603791418098, guid: 17ad28e3b260df24480db2f8dd6a7e09, type: 3}
       propertyPath: m_LocalPosition.x
@@ -93945,9 +95937,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1059320425776646, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459048820606096, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1578174535087510, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682579067394354, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4361620180247386, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -94007,9 +96019,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1051654671686540, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1093297442578220, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1375080175803280, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_01 (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819664963748840, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4710726587445036, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_LocalScale.x
@@ -94356,6 +96388,26 @@ PrefabInstance:
       propertyPath: m_Name
       value: rus_build_9et_03b (9)
       objectReference: {fileID: 0}
+    - target: {fileID: 1291088702013892, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1384063020062752, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1547890067811340, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1580801608335156, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1886509294273408, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 4515292266870454, guid: 5eb69a259abef0b44b353ae0837d5764, type: 3}
       propertyPath: m_LocalPosition.x
       value: 177.76392
@@ -94414,9 +96466,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1531658406}
     m_Modifications:
+    - target: {fileID: 1051654671686540, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1093297442578220, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1375080175803280, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_Name
       value: rus_build_5et_01 (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1487528082976820, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1819664963748840, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4710726587445036, guid: d671b2b3dae0c254ea0925e69cfa667b, type: 3}
       propertyPath: m_LocalPosition.x
@@ -94562,9 +96634,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1344984782}
     m_Modifications:
+    - target: {fileID: 1059320425776646, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1459048820606096, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1578174535087510, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 1682579067394354, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_Name
       value: rus_build_9et_02
+      objectReference: {fileID: 0}
+    - target: {fileID: 1738913930875800, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 4361620180247386, guid: c44a70c086ff8184e8229c420d455f5b, type: 3}
       propertyPath: m_LocalPosition.x
