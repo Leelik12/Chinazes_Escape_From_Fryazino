@@ -12984,19 +12984,26 @@ PrefabInstance:
       value: 0.396
       objectReference: {fileID: 0}
     - target: {fileID: 7513146234462417229, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
+      propertyPath: muzzleFlash
+      value: 
+      objectReference: {fileID: 198234346748616026, guid: e995355dae3a5dc4a9b0c395cc7160b1, type: 3}
+    - target: {fileID: 7513146234462417229, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
       propertyPath: hitEffectPrefabDust
       value: 
-      objectReference: {fileID: 7696382627074872733, guid: 2b0c6863db35ca147af37b255f6e6cfd, type: 3}
+      objectReference: {fileID: 7696382627074872733, guid: b480801021ed3124199b46408fbeceb5, type: 3}
     - target: {fileID: 7513146234462417229, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
       propertyPath: hitEffectPrefabSparks
       value: 
-      objectReference: {fileID: 6681638757615295765, guid: 106291eb2f0a1a84fa68f37e2684a62b, type: 3}
+      objectReference: {fileID: 6681638757615295765, guid: d193c6b047ee13d48ae2176875362613, type: 3}
+    - target: {fileID: 8105727791952454666, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
+      propertyPath: returnSpeed
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8229383595977420062, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 4134781847632884933, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:

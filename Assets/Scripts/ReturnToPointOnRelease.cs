@@ -39,7 +39,7 @@ public class ReturnToPointOnRelease : MonoBehaviour
             {
                 // моментально
                 transform.position = returnPoint.position;
-                transform.rotation = returnPoint.rotation;
+                transform.rotation = new Quaternion(0f,0f,0f,0f);
             }
         }
     }

@@ -32,11 +32,6 @@ public class MachineGunVR : MonoBehaviourPun
     public AudioSource audioSource;
     public AudioClip shotSound;
 
-    [Header("Трассер")]
-    public GameObject tracerPrefab;
-    public float tracerSpeed = 200f;
-    public float tracerLifetime = 1f;
-
     private float nextFireTime = 0f;
 
     void Awake()
@@ -102,32 +97,6 @@ public class MachineGunVR : MonoBehaviourPun
             }
         }
 
-        // Трассер
-        if (tracerPrefab != null)
-        {
-            Debug.Log("полетел");
-            StartCoroutine(SpawnTracer(origin, hitPoint));
-        }
-    }
-
-    IEnumerator SpawnTracer(Vector3 start, Vector3 end)
-    {
-        GameObject tracer = PhotonNetwork.Instantiate(tracerPrefab.name, start, Quaternion.identity);
-        Debug.Log("трасер полетел");
-        float distance = Vector3.Distance(start, end);
-        float duration = distance / tracerSpeed;
-        float time = 0f;
-
-        while (time < duration)
-        {
-            time += Time.deltaTime;
-            float t = time / duration;
-            tracer.transform.position = Vector3.Lerp(start, end, t);
-            yield return null;
-        }
-
-        tracer.transform.position = end;
-        Destroy(tracer, tracerLifetime);
     }
 
     IEnumerator MuzzleLightFlash()
