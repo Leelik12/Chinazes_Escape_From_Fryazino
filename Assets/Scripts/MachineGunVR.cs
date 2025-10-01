@@ -105,6 +105,7 @@ public class MachineGunVR : MonoBehaviourPun
         // Трассер
         if (tracerPrefab != null)
         {
+            Debug.Log("полетел");
             StartCoroutine(SpawnTracer(origin, hitPoint));
         }
     }
