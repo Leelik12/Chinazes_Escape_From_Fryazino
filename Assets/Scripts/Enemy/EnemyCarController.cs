@@ -3,6 +3,9 @@ using Photon.Pun;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(Rigidbody))]
+[RequireComponent(typeof(PhotonView))]
+[RequireComponent(typeof(PhotonTransformView))]
+[RequireComponent(typeof(NavMeshAgent))]
 public class EnemyCarController : MonoBehaviourPun
 {
     [Header("Target (Player Car)")]
@@ -33,14 +36,17 @@ public class EnemyCarController : MonoBehaviourPun
         rb = GetComponent<Rigidbody>();
         agent = GetComponent<NavMeshAgent>();
 
-        // Агент будет считать путь, но не управлять физикой
+        // Агент только считает путь, а управляем колесами вручную
         agent.updatePosition = false;
         agent.updateRotation = false;
 
-        if (!photonView.IsMine && PhotonNetwork.IsConnected)
+        if (!photonView.IsMine)
         {
-            rb.isKinematic = true;
-            return;
+            rb.isKinematic = true;   // отключаем физику у наблюдателей
+        }
+        else
+        {
+            rb.isKinematic = false;  // физика работает только у хозяина
         }
 
         if (target == null)
@@ -54,17 +60,16 @@ public class EnemyCarController : MonoBehaviourPun
     {
         if (!photonView.IsMine) return;
         if (target == null) return;
-
-        // Обновляем цель в NavMeshAgent
+        agent.nextPosition = transform.position;
+        // обновляем путь до игрока
         agent.SetDestination(target.position);
 
-        // Берём следующую точку пути
         Vector3 nextPoint = agent.steeringTarget;
         Vector3 localTarget = transform.InverseTransformPoint(nextPoint);
 
         float distance = Vector3.Distance(transform.position, target.position);
 
-        // Поворот на ближайшую точку
+        // поворот на точку
         float steer = Mathf.Clamp(localTarget.x / localTarget.magnitude, -1f, 1f);
         float steerAngle = steer * maxSteerAngle;
         frontLeftWheel.steerAngle = steerAngle;
@@ -72,14 +77,12 @@ public class EnemyCarController : MonoBehaviourPun
 
         if (distance > stoppingDistance)
         {
-            // едем
             frontLeftWheel.motorTorque = motorForce;
             frontRightWheel.motorTorque = motorForce;
             ApplyBrake(0);
         }
         else
         {
-            // тормозим
             ApplyBrake(brakeForce);
         }
 
@@ -111,4 +114,3 @@ public class EnemyCarController : MonoBehaviourPun
         mesh.rotation = quat;
     }
 }
-    
