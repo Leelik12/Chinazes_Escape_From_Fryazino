@@ -60,6 +60,10 @@ public class EnemyCarController : MonoBehaviourPun
             rb.isKinematic = true;
             return;
         }
+        else
+        {
+            rb.isKinematic = false;  // мастер управляет движением
+        }
 
         if (target == null)
         {
@@ -124,8 +128,15 @@ public class EnemyCarController : MonoBehaviourPun
                 }
                 else
                 {
+                    // Стоим ровно, не дрыгаем рулём
+                    frontLeftWheel.steerAngle = 0f;
+                    frontRightWheel.steerAngle = 0f;
+                    frontLeftWheel.motorTorque = 0f;
+                    frontRightWheel.motorTorque = 0f;
+
                     ApplyBrake(brakeForce);
                 }
+
             }
         }
 
