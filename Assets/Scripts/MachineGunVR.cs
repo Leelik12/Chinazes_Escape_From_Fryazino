@@ -10,7 +10,7 @@ public class MachineGunVR : MonoBehaviourPun
 
     [Header("Настройки стрельбы")]
     public float fireRate;
-    public float damage;
+    public int damage;
     public float range = 100f;
 
     [Header("Muzzle Flash")]
@@ -81,19 +81,10 @@ public class MachineGunVR : MonoBehaviourPun
                 Destroy(fxDust, hitEffectLifetime);
                 Destroy(fxSparks, hitEffectLifetime);
             }
-
-            // Урон
-            if (hit.collider.CompareTag("Head") || hit.collider.CompareTag("Body") || hit.collider.CompareTag("Leg"))
+            EnemyHeaths target = hit.collider.GetComponentInParent<EnemyHeaths>();
+            if (target != null)
             {
-                EnemyHeaths target = hit.collider.GetComponentInParent<EnemyHeaths>();
-                if (target != null)
-                {
-                    float finalDamage = damage;
-                    if (hit.collider.CompareTag("Head")) finalDamage *= 2f;
-                    else if (hit.collider.CompareTag("Leg")) finalDamage *= 0.5f;
-
-                    target.TakeDamage(finalDamage);
-                }
+                target.TakeDamage(damage);
             }
         }
 

@@ -20,7 +20,7 @@ public class CarControllerSample : MonoBehaviourPun
     private float maxMotorTorque; // максимальный крутящий момент, который двигатель может приложить к колесу
 
     [SerializeField] private float maxSteeringAngle; // максимальный угол поворота, который может иметь колесо
-    private float[] gearRatios = {0f, 3.8f, 2.2f, 1.5f, 1.2f , 1f, 0.8f, -0.5f}; //передатка коробки
+    [SerializeField] private float[] gearRatios = {0f, 3.8f, 2.2f, 1.5f, 1.2f , 1f, 0.8f, -0.5f}; //передатка коробки
 
     [Header("Звуки")]
     [SerializeField] private AudioSource Engine; //источник звука

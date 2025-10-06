@@ -5866,12 +5866,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
+  navigatorAgent: {fileID: 1274771673}
   motorForce: 750
   reverseForce: 800
   maxSteerAngle: 30
   brakeForce: 18000
   stoppingDistance: 20
-  carWidth: 2
+  carWidth: 1.44
   sideMargin: 0.5
   frontLeftWheel: {fileID: 141679869}
   frontRightWheel: {fileID: 172202828}
@@ -5882,8 +5883,8 @@ MonoBehaviour:
   rearLeftMesh: {fileID: 816211564}
   rearRightMesh: {fileID: 1780989242}
   sensorLength: 20
-  closeSensorDistance: 1.5
-  sideSensorAngle: 30
+  closeSensorDistance: 8
+  sideSensorAngle: 0
   avoidanceSteer: 25
   obstacleMask:
     serializedVersion: 2
@@ -5956,8 +5957,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PositionModel:
     SynchronizeEnabled: 1
-    TeleportEnabled: 0
-    TeleportIfDistanceGreaterThan: 3
+    TeleportEnabled: 1
+    TeleportIfDistanceGreaterThan: 50
     InterpolateOption: 4
     InterpolateMoveTowardsSpeed: 1
     InterpolateLerpSpeed: 1
@@ -5975,6 +5976,25 @@ MonoBehaviour:
     InterpolateOption: 0
     InterpolateMoveTowardsSpeed: 1
     InterpolateLerpSpeed: 0
+--- !u!4 &104802901 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4876364002059338, guid: 4f9a1168ab73c884bb900de3b6909c10, type: 3}
+  m_PrefabInstance: {fileID: 259676691}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &104802902
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 104802876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a4b169941bb05540af776a5b6120171, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHealth: 1000
+  currentHealth: 1000
 --- !u!1001 &109270281
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -12378,7 +12398,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4876364002059338, guid: 4f9a1168ab73c884bb900de3b6909c10, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 767.43
+      value: 725.43
       objectReference: {fileID: 0}
     - target: {fileID: 4876364002059338, guid: 4f9a1168ab73c884bb900de3b6909c10, type: 3}
       propertyPath: m_LocalPosition.y
@@ -12491,6 +12511,9 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 4876364002059338, guid: 4f9a1168ab73c884bb900de3b6909c10, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1274771674}
     - targetCorrespondingSourceObject: {fileID: 4945026729985880, guid: 4f9a1168ab73c884bb900de3b6909c10, type: 3}
       insertIndex: 7
       addedObject: {fileID: 1922392739}
@@ -12516,6 +12539,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1811444609481538, guid: 4f9a1168ab73c884bb900de3b6909c10, type: 3}
       insertIndex: -1
       addedObject: {fileID: 104802897}
+    - targetCorrespondingSourceObject: {fileID: 1811444609481538, guid: 4f9a1168ab73c884bb900de3b6909c10, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 104802902}
     - targetCorrespondingSourceObject: {fileID: 1238095174719556, guid: 4f9a1168ab73c884bb900de3b6909c10, type: 3}
       insertIndex: -1
       addedObject: {fileID: 141679869}
@@ -13173,6 +13199,10 @@ PrefabInstance:
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3199378743430622023, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.48
+      objectReference: {fileID: 0}
     - target: {fileID: 4391089790161787410, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
       propertyPath: sceneViewId
       value: 2
@@ -13221,6 +13251,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5565722044455736440, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.542
+      objectReference: {fileID: 0}
     - target: {fileID: 5686592774748647817, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
       propertyPath: m_Name
       value: TurretPrefab
@@ -13238,8 +13272,12 @@ PrefabInstance:
       value: 0.396
       objectReference: {fileID: 0}
     - target: {fileID: 7513146234462417229, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
+      propertyPath: damage
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7513146234462417229, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
       propertyPath: fireRate
-      value: 0.5
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 7513146234462417229, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
       propertyPath: muzzleFlash
@@ -13253,6 +13291,10 @@ PrefabInstance:
       propertyPath: hitEffectPrefabSparks
       value: 
       objectReference: {fileID: 6681638757615295765, guid: d193c6b047ee13d48ae2176875362613, type: 3}
+    - target: {fileID: 7718545993001289813, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
+      propertyPath: m_Range
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8105727791952454666, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
       propertyPath: returnSpeed
       value: 10
@@ -28808,6 +28850,10 @@ PrefabInstance:
     - target: {fileID: 5585150818638848003, guid: 29f32caf641cd724a9292d6de8c89b15, type: 3}
       propertyPath: m_Name
       value: CarPrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 7262483883512531954, guid: 29f32caf641cd724a9292d6de8c89b15, type: 3}
+      propertyPath: 'gearRatios.Array.data[0]'
+      value: -3
       objectReference: {fileID: 0}
     - target: {fileID: 9163218673840422044, guid: 29f32caf641cd724a9292d6de8c89b15, type: 3}
       propertyPath: m_IsActive
@@ -54438,6 +54484,83 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &1101048107
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1101048110}
+  - component: {fileID: 1101048109}
+  - component: {fileID: 1101048108}
+  m_Layer: 0
+  m_Name: NavMesh Surface
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1101048108
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1101048107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94d05cdb14e49344dbdc38cb15ffcf1a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1101048109
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1101048107}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SerializedVersion: 0
+  m_AgentTypeID: -1372625422
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 0
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 1
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 23800000, guid: f18f7e817feb9274d93f72233721189e, type: 2}
+  m_BuildHeightMesh: 0
+--- !u!4 &1101048110
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1101048107}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 728.8343, y: 64.353745, z: 638.54395}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1102595032
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -63008,6 +63131,60 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4000013950294986, guid: 2ebdc32c603c0f74a8df3ff23c55e8e0, type: 3}
   m_PrefabInstance: {fileID: 1273000794}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1274771672
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1274771674}
+  - component: {fileID: 1274771673}
+  m_Layer: 0
+  m_Name: CarNavigator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!195 &1274771673
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1274771672}
+  m_Enabled: 1
+  m_AgentTypeID: -1372625422
+  m_Radius: 3.3
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
+--- !u!4 &1274771674
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1274771672}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.9, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 104802901}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1275490451 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4971792748110090, guid: 7d2a3e6b10ff754459b3f619a0b22e90, type: 3}
@@ -109903,3 +110080,4 @@ SceneRoots:
   - {fileID: 26253832}
   - {fileID: 1656828369}
   - {fileID: 259676691}
+  - {fileID: 1101048110}
