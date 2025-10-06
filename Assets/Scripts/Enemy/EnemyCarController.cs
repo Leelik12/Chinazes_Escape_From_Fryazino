@@ -256,7 +256,7 @@ public class EnemyCarController : MonoBehaviourPun
     public Transform target;
 
     [Header("Navigator (NavMeshAgent holder)")]
-    public NavMeshAgent navigatorAgent; // дочерний объект с агентом
+    public NavMeshAgent navigatorAgent; // дочерний объект с NavMeshAgent
 
     [Header("Car Settings")]
     public float motorForce = 1500f;
@@ -264,10 +264,6 @@ public class EnemyCarController : MonoBehaviourPun
     public float maxSteerAngle = 30f;
     public float brakeForce = 3000f;
     public float stoppingDistance = 5f;
-
-    [Header("Car Dimensions")]
-    public float carWidth = 2f;
-    public float sideMargin = 0.5f;
 
     [Header("Wheels")]
     public WheelCollider frontLeftWheel;
@@ -280,23 +276,21 @@ public class EnemyCarController : MonoBehaviourPun
     public Transform rearLeftMesh;
     public Transform rearRightMesh;
 
-    [Header("Sensors")]
-    public float sensorLength = 5f;
-    public float closeSensorDistance = 1.5f;
-    public float sideSensorAngle = 30f;
-    public float avoidanceSteer = 20f;
-    public LayerMask obstacleMask = ~0;
-
     [Header("Stuck / Reverse")]
     public float reverseDuration = 1.6f;
-    public float stuckSpeedThreshold = 0.4f;
-    public float stuckTimeThreshold = 0.8f;
+    public float stuckSpeedThreshold = 0.4f;   // скорость, ниже которой считаем "почти не едет"
+    public float stuckTimeThreshold = 0.9f;    // время в секундах до признания "застревания"
+
+    [Header("Front obstacle check")]
+    public float frontCheckDistance = 1.2f;    // короткий фронтальный датчик для немедленного реверса
+    public LayerMask obstacleMask = ~0;
 
     [Header("Debug")]
-    public bool debugSensors = false;
+    public bool debugGizmos = false;
 
     private Rigidbody rb;
 
+    // состояние реверса
     private bool reversing = false;
     private float reverseTimer = 0f;
     private float stuckTimer = 0f;
@@ -306,6 +300,12 @@ public class EnemyCarController : MonoBehaviourPun
     {
         rb = GetComponent<Rigidbody>();
         rb.centerOfMass = new Vector3(0f, -0.5f, 0f);
+
+        if (navigatorAgent != null)
+        {
+            navigatorAgent.updatePosition = false;
+            navigatorAgent.updateRotation = false;
+        }
 
         if (!photonView.IsMine && PhotonNetwork.IsConnected)
         {
@@ -322,12 +322,6 @@ public class EnemyCarController : MonoBehaviourPun
             GameObject playerCar = GameObject.FindWithTag("Car");
             if (playerCar != null) target = playerCar.transform;
         }
-
-        if (navigatorAgent != null)
-        {
-            navigatorAgent.updatePosition = false;
-            navigatorAgent.updateRotation = false;
-        }
     }
 
     void FixedUpdate()
@@ -338,23 +332,26 @@ public class EnemyCarController : MonoBehaviourPun
         // навигатор строит путь
         navigatorAgent.SetDestination(target.position);
 
-        // точка, куда нужно рулить
+        // цель движения — steeringTarget агента
         Vector3 worldTarget = navigatorAgent.steeringTarget;
         Vector3 localTarget = transform.InverseTransformPoint(worldTarget);
-        float distance = Vector3.Distance(transform.position, target.position);
+        float distanceToPlayer = Vector3.Distance(transform.position, target.position);
 
+        // обновляем таймер "застревания" по скорости
         float forwardSpeed = Vector3.Dot(rb.velocity, transform.forward);
         if (Mathf.Abs(forwardSpeed) < stuckSpeedThreshold)
             stuckTimer += Time.fixedDeltaTime;
         else
             stuckTimer = 0f;
 
-        bool frontVeryClose = Physics.Raycast(transform.position + Vector3.up * 0.5f, transform.forward, closeSensorDistance, obstacleMask);
+        // короткий фронтальный чек — если упёрся слишком близко
+        bool frontVeryClose = Physics.Raycast(transform.position + Vector3.up * 0.5f, transform.forward, frontCheckDistance, obstacleMask);
 
         if (reversing)
         {
             reverseTimer -= Time.fixedDeltaTime;
 
+            // при реверсе рулём крутим в выбранную сторону, чтобы вырулить
             frontLeftWheel.steerAngle = chosenReverseSteer;
             frontRightWheel.steerAngle = chosenReverseSteer;
 
@@ -362,6 +359,7 @@ public class EnemyCarController : MonoBehaviourPun
             frontRightWheel.motorTorque = -reverseForce;
             ApplyBrake(0f);
 
+            // завершаем реверс, если время истекло и перед машиной нет близкого препятствия
             if (reverseTimer <= 0f && !frontVeryClose)
             {
                 reversing = false;
@@ -370,17 +368,20 @@ public class EnemyCarController : MonoBehaviourPun
         }
         else
         {
-            float steerAngle = CalculateSteerWithSensors(localTarget);
+            // вычисляем угол на точку из агента
+            float steerAngle = CalculateSteerToLocalTarget(localTarget);
 
-            bool inStoppingRange = distance <= stoppingDistance + 1f;
+            // не считаем застреванием остановку рядом с игроком
+            bool inStoppingRange = distanceToPlayer <= stoppingDistance + 0.5f;
 
+            // условие реверса: либо упёрся вплотную, либо долго стоял (и не потому что рядом с игроком)
             if ((frontVeryClose || stuckTimer >= stuckTimeThreshold) && !inStoppingRange)
             {
                 StartReverseMode();
             }
             else
             {
-                if (distance > stoppingDistance)
+                if (distanceToPlayer > stoppingDistance)
                 {
                     frontLeftWheel.steerAngle = steerAngle;
                     frontRightWheel.steerAngle = steerAngle;
@@ -391,12 +392,11 @@ public class EnemyCarController : MonoBehaviourPun
                 }
                 else
                 {
-                    // Стоим ровно, не дрыгаем рулём
+                    // стоим ровно, не дрыгаем рулём
                     frontLeftWheel.steerAngle = 0f;
                     frontRightWheel.steerAngle = 0f;
                     frontLeftWheel.motorTorque = 0f;
                     frontRightWheel.motorTorque = 0f;
-
                     ApplyBrake(brakeForce);
                 }
             }
@@ -404,40 +404,16 @@ public class EnemyCarController : MonoBehaviourPun
 
         UpdateWheelPoses();
 
-        // синхронизируем позицию навигатора с машиной
+        // привязываем навигатор к позиции машины, чтобы агент не "двигался"
         navigatorAgent.nextPosition = transform.position;
     }
 
-    // ======== вспомогательные методы ========
-
-    private float CalculateSteerWithSensors(Vector3 localTarget)
+    private float CalculateSteerToLocalTarget(Vector3 localTarget)
     {
         float steer = 0f;
         float localMag = localTarget.magnitude;
         if (localMag > 0.001f) steer = Mathf.Clamp(localTarget.x / localMag, -1f, 1f);
         float steerAngle = steer * maxSteerAngle;
-
-        Vector3 origin = transform.position + Vector3.up * 0.5f;
-        float sensorOffset = carWidth / 2f + sideMargin;
-
-        bool frontHit = Physics.Raycast(origin, transform.forward, sensorLength, obstacleMask);
-
-        Vector3 leftDir = Quaternion.AngleAxis(-sideSensorAngle, transform.up) * transform.forward;
-        Vector3 rightDir = Quaternion.AngleAxis(sideSensorAngle, transform.up) * transform.forward;
-
-        bool leftHit = Physics.Raycast(origin - transform.right * sensorOffset, leftDir, sensorLength, obstacleMask);
-        bool rightHit = Physics.Raycast(origin + transform.right * sensorOffset, rightDir, sensorLength, obstacleMask);
-
-        if (frontHit)
-        {
-            if (leftHit && !rightHit)
-                steerAngle += avoidanceSteer;
-            else if (!leftHit && rightHit)
-                steerAngle -= avoidanceSteer;
-            else
-                steerAngle += (Random.value > 0.5f ? avoidanceSteer : -avoidanceSteer);
-        }
-
         return Mathf.Clamp(steerAngle, -maxSteerAngle, maxSteerAngle);
     }
 
@@ -446,19 +422,18 @@ public class EnemyCarController : MonoBehaviourPun
         reversing = true;
         reverseTimer = reverseDuration;
 
+        // при реверсе выбираем сторону руления в зависимости от свободного пространства задом
         Vector3 origin = transform.position + Vector3.up * 0.5f;
-        float sensorOffset = carWidth / 2f + sideMargin;
+        Vector3 leftBackPos = origin - transform.right * 1.0f;  // проверка слева-зад
+        Vector3 rightBackPos = origin + transform.right * 1.0f; // проверка справа-зад
 
-        Vector3 leftDir = Quaternion.AngleAxis(-sideSensorAngle, transform.up) * transform.forward;
-        Vector3 rightDir = Quaternion.AngleAxis(sideSensorAngle, transform.up) * transform.forward;
+        bool leftBlocked = Physics.Raycast(leftBackPos, -transform.forward, frontCheckDistance, obstacleMask);
+        bool rightBlocked = Physics.Raycast(rightBackPos, -transform.forward, frontCheckDistance, obstacleMask);
 
-        bool leftHit = Physics.Raycast(origin - transform.right * sensorOffset, leftDir, sensorLength, obstacleMask);
-        bool rightHit = Physics.Raycast(origin + transform.right * sensorOffset, rightDir, sensorLength, obstacleMask);
-
-        if (!leftHit && rightHit)
-            chosenReverseSteer = -maxSteerAngle;
-        else if (!rightHit && leftHit)
-            chosenReverseSteer = maxSteerAngle;
+        if (!leftBlocked && rightBlocked)
+            chosenReverseSteer = -maxSteerAngle; // рулём влево — сдаём влево
+        else if (!rightBlocked && leftBlocked)
+            chosenReverseSteer = maxSteerAngle;  // рулём вправо — сдаём вправо
         else
             chosenReverseSteer = (Random.value > 0.5f ? maxSteerAngle : -maxSteerAngle);
     }
@@ -481,31 +456,34 @@ public class EnemyCarController : MonoBehaviourPun
 
     private void UpdateWheelPose(WheelCollider col, Transform mesh)
     {
-        col.GetWorldPose(out Vector3 pos, out Quaternion quat);
+        col.GetWorldPose(out Vector3 pos, out Quaternion rot);
         mesh.position = pos;
-        mesh.rotation = quat;
+        mesh.rotation = rot;
     }
 
     private void OnDrawGizmos()
     {
-        if (!debugSensors) return;
+        if (!debugGizmos) return;
 
-        Gizmos.color = Color.red;
         Vector3 origin = transform.position + Vector3.up * 0.5f;
-        float sensorOffset = carWidth / 2f + sideMargin;
 
-        Gizmos.DrawLine(origin, origin + transform.forward * sensorLength);
+        // короткий фронтальный чек
+        Gizmos.color = Color.red;
+        Gizmos.DrawLine(origin, origin + transform.forward * frontCheckDistance);
 
-        Vector3 leftDir = Quaternion.AngleAxis(-sideSensorAngle, transform.up) * transform.forward;
-        Vector3 rightDir = Quaternion.AngleAxis(sideSensorAngle, transform.up) * transform.forward;
+        // steeringTarget (из агента) — куда мы пытаемся ехать
+        if (navigatorAgent != null)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawSphere(navigatorAgent.steeringTarget, 0.2f);
+            Gizmos.DrawLine(transform.position, navigatorAgent.steeringTarget);
+        }
 
+        // показываем направление движения по передней оси
         Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(origin - transform.right * sensorOffset, origin - transform.right * sensorOffset + leftDir * sensorLength);
-        Gizmos.DrawLine(origin + transform.right * sensorOffset, origin + transform.right * sensorOffset + rightDir * sensorLength);
-
-        Gizmos.color = Color.green;
-        Gizmos.DrawLine(origin, origin + transform.forward * closeSensorDistance);
+        Gizmos.DrawLine(transform.position, transform.position + transform.forward * 2f);
     }
 }
+
 
 
