@@ -41,6 +41,8 @@ MonoBehaviour:
   - RespawnSpaceship
   - AttachTurretRPC
   - RPC_Shoot
+  - TakeDamage
+  - ShootRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

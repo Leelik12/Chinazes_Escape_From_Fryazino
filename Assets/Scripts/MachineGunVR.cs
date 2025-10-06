@@ -81,10 +81,10 @@ public class MachineGunVR : MonoBehaviourPun
                 Destroy(fxDust, hitEffectLifetime);
                 Destroy(fxSparks, hitEffectLifetime);
             }
-            EnemyHeaths target = hit.collider.GetComponentInParent<EnemyHeaths>();
+            EnemyHealth target = hit.collider.GetComponentInParent<EnemyHealth>();
             if (target != null)
             {
-                target.TakeDamage(damage);
+                target.RequestDamage((int)damage);
             }
         }
 
