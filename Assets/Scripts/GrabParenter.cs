@@ -4,6 +4,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class GrabParenter : MonoBehaviour
 {
     Vector3 gun;
+    
     public void OnGrab(SelectEnterEventArgs args)
     {
         gun = args.interactableObject.transform.localScale;

@@ -13,6 +13,7 @@ public class RoomController : MonoBehaviourPunCallbacks
     public GameObject car;
     public GameObject Turret;
     public GameObject MachineGun;
+    public GameObject Menu;
     [Header("UI Готовности")]
     public UnityEngine.UI.Image firstPlayerReadyCircle;
     public UnityEngine.UI.Image secondPlayerReadyCircle;

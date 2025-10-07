@@ -7,11 +7,35 @@ public class CarTelemetryHandler : MonoBehaviour
 {
     private const float WAIT_TIME = SendingData.WAIT_TIME / 1000f;
 
+    [Header("References")]
     [SerializeField] private Transform vehicleTransform;
     [SerializeField] private Rigidbody rigidbody;
 
+    [Header("Pitch/Roll settings")]
+    [Tooltip("Насколько сильно платформа реагирует на продольное ускорение (наклон вперёд/назад).")]
+    [SerializeField] private float accelPitchFactor = 0.02f;
+    [Tooltip("Насколько сильно платформа реагирует на боковое ускорение (наклон в повороте).")]
+    [SerializeField] private float cornerRollFactor = 0.02f;
+
+    [Header("Impact settings")]
+    [Tooltip("Множитель силы наклона при ударе.")]
+    [SerializeField] private float impactFactor = 0.015f;
+    [Tooltip("Скорость затухания эффекта удара.")]
+    [SerializeField] private float impactDamping = 2.5f;
+
+    [Header("Smoothing & Limits")]
+    [SerializeField] private float smoothSpeed = 5f;
+    [SerializeField] private float maxPitch = 10f;
+    [SerializeField] private float maxRoll = 10f;
+
     private ObjectTelemetryData _telemetryDataData;
     private SendingData _sendingData;
+
+    private Vector3 lastVelocity;
+    private float currentPitch;
+    private float currentRoll;
+    private float impactPitch;
+    private float impactRoll;
 
     private void Awake()
     {
@@ -23,6 +47,8 @@ public class CarTelemetryHandler : MonoBehaviour
     {
         StartCoroutine(TelemetryHandler());
         _sendingData.SendingStart();
+
+        lastVelocity = rigidbody.velocity;
     }
 
     public void OnDisable()
@@ -37,36 +63,57 @@ public class CarTelemetryHandler : MonoBehaviour
         {
             if (_telemetryDataData == null)
             {
-                yield return new WaitForSeconds(WAIT_TIME * 10f);
+                yield return new WaitForSeconds(WAIT_TIME * 1000f);
                 continue;
             }
 
-            UpdateAngles();
-            UpdateVelocity();
-
-            Debug.Log(_telemetryDataData.ToString());
+            UpdatePlatformMotion();
 
             yield return new WaitForSeconds(WAIT_TIME);
         }
     }
 
-    private void UpdateVelocity()
+    private void UpdatePlatformMotion()
     {
-        _telemetryDataData.Velocity = rigidbody.linearVelocity;
+        // --- ускорение ---
+        Vector3 velocity = rigidbody.velocity;
+        Vector3 acceleration = (velocity - lastVelocity) / Time.fixedDeltaTime;
+
+        float forwardAccel = Vector3.Dot(acceleration, vehicleTransform.forward);
+        float lateralAccel = Vector3.Dot(acceleration, vehicleTransform.right);
+
+        float targetPitch = -forwardAccel * accelPitchFactor; // отрицательный — при торможении наклон вперёд
+        float targetRoll = -lateralAccel * cornerRollFactor;
+
+        // --- эффект столкновений затухает ---
+        impactPitch = Mathf.Lerp(impactPitch, 0f, Time.deltaTime * impactDamping);
+        impactRoll = Mathf.Lerp(impactRoll, 0f, Time.deltaTime * impactDamping);
+
+        targetPitch += impactPitch;
+        targetRoll += impactRoll;
+
+        // --- ограничение ---
+        targetPitch = Mathf.Clamp(targetPitch, -maxPitch, maxPitch);
+        targetRoll = Mathf.Clamp(targetRoll, -maxRoll, maxRoll);
+
+        // --- сглаживание ---
+        currentPitch = Mathf.Lerp(currentPitch, targetPitch, Time.deltaTime * smoothSpeed);
+        currentRoll = Mathf.Lerp(currentRoll, targetRoll, Time.deltaTime * smoothSpeed);
+
+        // --- отправка на платформу ---
+        var euler = new Vector3(currentPitch, 0f, currentRoll);
+        _telemetryDataData.Angles = euler;
+        _telemetryDataData.Velocity = velocity;
+
+        lastVelocity = velocity;
     }
 
-    private void UpdateAngles()
+    private void OnCollisionEnter(Collision collision)
     {
-        var euler = vehicleTransform.eulerAngles;
+        float impactForce = collision.relativeVelocity.magnitude;
 
-        euler.x = Mathf.Approximately(euler.x, 180) ? 0 : euler.x;
-        euler.z = Mathf.Approximately(euler.z, 180) ? 0 : euler.z;
-        euler.y = Mathf.Approximately(euler.y, 180) ? 0 : euler.y;
-
-        euler.x = euler.x > 180 ? euler.x - 360 : euler.x;
-        euler.z = euler.z > 180 ? euler.z - 360 : euler.z;
-        euler.y = euler.y > 180 ? euler.y - 360 : euler.y;
-
-        _telemetryDataData.Angles = euler;
+        // короткий импульс в pitch/roll
+        impactPitch = -impactForce * impactFactor;
+        impactRoll = UnityEngine.Random.Range(-impactForce, impactForce) * impactFactor * 0.5f;
     }
 }
