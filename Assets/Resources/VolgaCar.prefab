@@ -1906,7 +1906,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 250467799838485463}
   - {fileID: 2941052638873677490}
-  sceneViewId: 10
+  sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!114 &250467799838485463
@@ -4128,7 +4128,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents: []
-  sceneViewId: 9
+  sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
 --- !u!1001 &7766876613422295223
@@ -4157,11 +4157,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1949027623635988392, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
       propertyPath: sceneViewId
-      value: 12
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4056728192842032565, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
       propertyPath: sceneViewId
-      value: 3
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4192709647460161716, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
       propertyPath: m_IsActive
@@ -4169,7 +4169,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4391089790161787410, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
       propertyPath: sceneViewId
-      value: 13
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5405786684256593580, guid: f0f5f03a9e75f6047acc52f3ffc96108, type: 3}
       propertyPath: m_LocalScale.x

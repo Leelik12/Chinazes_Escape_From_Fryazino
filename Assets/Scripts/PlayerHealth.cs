@@ -10,10 +10,10 @@ public class PlayerHealth : MonoBehaviourPun
 
     [Header("UI")]
     [SerializeField] private Slider healthSlider;
-
+    [SerializeField] private Slider healthSlider2;
     public event System.Action<int> OnDamageTaken;
     public event System.Action OnDeath;
-
+    public HealthBarGradient HPBAR;
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
 
@@ -21,10 +21,12 @@ public class PlayerHealth : MonoBehaviourPun
     {
         currentHealth = maxHealth;
 
-        if (healthSlider != null)
+        if (healthSlider != null && healthSlider2 != null)
         {
             healthSlider.maxValue = maxHealth;
             healthSlider.value = currentHealth;
+            healthSlider2.maxValue = maxHealth;
+            healthSlider2.value = currentHealth;
         }
     }
 
@@ -49,7 +51,7 @@ public class PlayerHealth : MonoBehaviourPun
 
         if (healthSlider != null)
         {
-            healthSlider.value = currentHealth;
+            HPBAR.SetHealth(currentHealth, maxHealth);
         }
 
         Debug.Log($"{gameObject.name} получил {damage} урона. Текущее здоровье: {currentHealth}");

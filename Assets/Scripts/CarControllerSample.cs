@@ -28,9 +28,13 @@ public class CarControllerSample : MonoBehaviourPun
     [Header("UI")]
     [SerializeField] private TMP_Text speedText;
     [SerializeField] private TMP_Text GearText;
-    public RectTransform rpmNeedle;
-    public float rpmMaxAngle = -220f;
-    public float rpmMinAngle = 40f;
+
+    [Header("Визуальный руль")]
+    [SerializeField] private Transform steeringWheelVisual; // ссылка на руль в модели
+    [SerializeField] private float visualWheelRotationAngle = 450f; // максимальный угол визуального поворота (например, ±450°)
+    [SerializeField] private float steeringSmoothness = 10f; // скорость сглаживания поворота
+
+    private float currentVisualAngle = 0f;
 
     [Header("Временные переменные")]
     private float speed;
@@ -115,7 +119,7 @@ public class CarControllerSample : MonoBehaviourPun
 
         //UI
         UpdateGauges();
-
+        UpdateSteeringWheelVisual();
         //передача вращающего момента
         foreach (var axleInfo in axleInfos)
         {
@@ -148,10 +152,20 @@ public class CarControllerSample : MonoBehaviourPun
         if (speedText) speedText.text = $"{Mathf.RoundToInt(speed)} km/h";
         if (GearText) GearText.text = $"{currentGear}";
 
-        if (rpmNeedle)
-        {
-            float rpmNorm = Mathf.Clamp01(inputControllerReader.Throttle / 1);
-            rpmNeedle.localRotation = Quaternion.Euler(0, 0, Mathf.Lerp(rpmMinAngle, rpmMaxAngle, rpmNorm));
-        }
+    }
+
+    private void UpdateSteeringWheelVisual()
+    {
+        if (steeringWheelVisual == null)
+            return;
+
+        // inputControllerReader.Steering — от -1 (влево) до 1 (вправо)
+        float targetAngle = inputControllerReader.Steering * visualWheelRotationAngle;
+
+        // Плавное движение к цели
+        currentVisualAngle = Mathf.Lerp(currentVisualAngle, targetAngle, Time.deltaTime * steeringSmoothness);
+
+        // Вращаем руль относительно локальной оси (обычно Z или Y, в зависимости от модели)
+        steeringWheelVisual.localRotation = Quaternion.Euler(0f, 0f, -currentVisualAngle);
     }
 }

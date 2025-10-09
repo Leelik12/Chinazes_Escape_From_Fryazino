@@ -2,6 +2,7 @@ using Photon.Pun;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class MachineGunVR : MonoBehaviourPun
@@ -9,14 +10,27 @@ public class MachineGunVR : MonoBehaviourPun
     [SerializeField] private XRGrabInteractable grabInteractable;
 
     [Header("Настройки стрельбы")]
-    public float fireRate;
-    public int damage;
+    public float fireRate = 0.1f;
+    public int damage = 10;
     public float range = 100f;
+
+    [Header("Перегрев")]
+    public float maxHeat = 100f;             // максимум тепла
+    public float heatPerShot = 10f;          // сколько добавляется за выстрел
+    public float coolRate = 15f;             // скорость остывания (в секунду)
+    public float overheatCooldown = 5f;      // время блокировки при перегреве
+    private float currentHeat = 0f;
+    private bool isOverheated = false;
+
+    [Header("UI перегрева")]
+    public Slider heatSlider;
+    public Gradient heatGradient;
+    public Image heatFill;
 
     [Header("Muzzle Flash")]
     public ParticleSystem muzzleFlash;
     public Light muzzleLight;
-    public float lightDuration;
+    public float lightDuration = 0.05f;
 
     [Header("XR")]
     public InputActionProperty LeftTrigger;
@@ -40,21 +54,80 @@ public class MachineGunVR : MonoBehaviourPun
         RightGrip.action.Enable();
         LeftTrigger.action.Enable();
         RightTrigger.action.Enable();
+
+        if (heatSlider)
+        {
+            heatSlider.minValue = 0;
+            heatSlider.maxValue = maxHeat;
+            heatSlider.value = 0;
+            if (heatFill) heatFill.color = heatGradient.Evaluate(0f);
+        }
     }
 
     void Update()
     {
-        if (!photonView.IsMine) return; // управление только своим ригом
+        if (!photonView.IsMine) return;
 
-        if (((LeftGrip.action.ReadValue<float>() > 0.8f && LeftTrigger.action.ReadValue<float>() > 0.8f) ||
-             (RightGrip.action.ReadValue<float>() > 0.8f && RightTrigger.action.ReadValue<float>() > 0.8f)) &&
-            Time.time >= nextFireTime &&
-            grabInteractable.isSelected)
+        // Постепенное охлаждение
+        if (currentHeat > 0)
+        {
+            currentHeat -= coolRate * Time.deltaTime;
+            currentHeat = Mathf.Clamp(currentHeat, 0, maxHeat);
+            UpdateHeatUI();
+        }
+
+        // Проверяем перегрев
+        if (isOverheated) return;
+
+        // Проверка нажатия триггеров
+        bool isFiring =
+            ((LeftGrip.action.ReadValue<float>() > 0.8f && LeftTrigger.action.ReadValue<float>() > 0.8f) ||
+             (RightGrip.action.ReadValue<float>() > 0.8f && RightTrigger.action.ReadValue<float>() > 0.8f));
+
+        if (isFiring && Time.time >= nextFireTime && grabInteractable.isSelected)
         {
             nextFireTime = Time.time + fireRate;
 
-            // Вызываем RPC для стрельбы, чтобы все игроки увидели
+            // Добавляем нагрев
+            currentHeat += heatPerShot;
+            currentHeat = Mathf.Clamp(currentHeat, 0, maxHeat);
+            UpdateHeatUI();
+
+            if (currentHeat >= maxHeat)
+            {
+                StartCoroutine(HandleOverheat());
+                return;
+            }
+
+            // Вызываем RPC для стрельбы
             photonView.RPC("RPC_Shoot", RpcTarget.All, firePoint.position, firePoint.forward);
+        }
+    }
+
+    IEnumerator HandleOverheat()
+    {
+        isOverheated = true;
+
+        // Можно добавить визуальный эффект перегрева (например, звук или вспышку)
+        Debug.Log(" Оружие перегрелось!");
+
+        yield return new WaitForSeconds(overheatCooldown);
+
+        isOverheated = false;
+        currentHeat = Mathf.Clamp(currentHeat - coolRate * overheatCooldown, 0, maxHeat);
+        UpdateHeatUI();
+    }
+
+    void UpdateHeatUI()
+    {
+        if (heatSlider)
+        {
+            heatSlider.value = currentHeat;
+            if (heatFill)
+            {
+                float t = currentHeat / maxHeat;
+                heatFill.color = heatGradient.Evaluate(t);
+            }
         }
     }
 
@@ -81,13 +154,13 @@ public class MachineGunVR : MonoBehaviourPun
                 Destroy(fxDust, hitEffectLifetime);
                 Destroy(fxSparks, hitEffectLifetime);
             }
+
             EnemyHealth target = hit.collider.GetComponentInParent<EnemyHealth>();
             if (target != null)
             {
                 target.RequestDamage((int)damage);
             }
         }
-
     }
 
     IEnumerator MuzzleLightFlash()
