@@ -9,7 +9,13 @@ public class PlayerHealth : MonoBehaviourPun
     [SerializeField] private int currentHealth = 100;
 
     [Header("UI")]
-    [SerializeField] private Slider healthSlider; // Присвойте слайдер через инспектор
+    [SerializeField] private Slider healthSlider;
+
+    public event System.Action<int> OnDamageTaken;
+    public event System.Action OnDeath;
+
+    public int CurrentHealth => currentHealth;
+    public int MaxHealth => maxHealth;
 
     void Start()
     {
@@ -41,13 +47,14 @@ public class PlayerHealth : MonoBehaviourPun
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        // Обновляем слайдер
         if (healthSlider != null)
         {
             healthSlider.value = currentHealth;
         }
 
         Debug.Log($"{gameObject.name} получил {damage} урона. Текущее здоровье: {currentHealth}");
+
+        OnDamageTaken?.Invoke(damage);
 
         if (currentHealth <= 0)
         {
@@ -58,11 +65,6 @@ public class PlayerHealth : MonoBehaviourPun
     private void Die()
     {
         Debug.Log($"{gameObject.name} умер!");
-        // Можно отключить контроллер, а потом респаун
-        // this.gameObject.SetActive(false);
+        OnDeath?.Invoke();
     }
-
-    // Геттеры для UI или других скриптов
-    public int GetCurrentHealth() => currentHealth;
-    public int GetMaxHealth() => maxHealth;
 }

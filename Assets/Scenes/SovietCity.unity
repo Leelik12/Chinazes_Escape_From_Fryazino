@@ -29666,6 +29666,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5585150818638848003, guid: 29f32caf641cd724a9292d6de8c89b15, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1238479960}
+    - targetCorrespondingSourceObject: {fileID: 5585150818638848003, guid: 29f32caf641cd724a9292d6de8c89b15, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1238479969}
     - targetCorrespondingSourceObject: {fileID: 920672822089057021, guid: 29f32caf641cd724a9292d6de8c89b15, type: 3}
       insertIndex: -1
       addedObject: {fileID: 792715635}
@@ -63510,6 +63513,23 @@ Rigidbody:
   m_CorrespondingSourceObject: {fileID: 1338070715416753954, guid: 29f32caf641cd724a9292d6de8c89b15, type: 3}
   m_PrefabInstance: {fileID: 646184217}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1238479969
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1238479948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b773f21099c1334ebd0032da531fd7b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  carRigidbody: {fileID: 1238479968}
+  carHealth: {fileID: 1238479960}
+  accelThreshold: 40
+  brakeThreshold: -40
+  sideAccelThreshold: 12
 --- !u!43 &1238585010
 Mesh:
   m_ObjectHideFlags: 0
@@ -86719,6 +86739,63 @@ PhysicsMaterial:
   m_Bounciness: 0
   m_FrictionCombine: 0
   m_BounceCombine: 0
+--- !u!1001 &1617000423
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 1441949093026986903, guid: 2129561fd5ef2284086f81f4eb432d8f, type: 3}
+      propertyPath: m_Name
+      value: '[bhaptics]'
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441949093026986904, guid: 2129561fd5ef2284086f81f4eb432d8f, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441949093026986904, guid: 2129561fd5ef2284086f81f4eb432d8f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441949093026986904, guid: 2129561fd5ef2284086f81f4eb432d8f, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441949093026986904, guid: 2129561fd5ef2284086f81f4eb432d8f, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441949093026986904, guid: 2129561fd5ef2284086f81f4eb432d8f, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441949093026986904, guid: 2129561fd5ef2284086f81f4eb432d8f, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441949093026986904, guid: 2129561fd5ef2284086f81f4eb432d8f, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441949093026986904, guid: 2129561fd5ef2284086f81f4eb432d8f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441949093026986904, guid: 2129561fd5ef2284086f81f4eb432d8f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1441949093026986904, guid: 2129561fd5ef2284086f81f4eb432d8f, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2129561fd5ef2284086f81f4eb432d8f, type: 3}
 --- !u!1001 &1617132743
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -114050,3 +114127,4 @@ SceneRoots:
   - {fileID: 1375592513}
   - {fileID: 646184217}
   - {fileID: 8849234316131872626}
+  - {fileID: 1617000423}
