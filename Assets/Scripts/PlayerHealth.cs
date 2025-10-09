@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
+using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviourPun
 {
@@ -68,5 +69,12 @@ public class PlayerHealth : MonoBehaviourPun
     {
         Debug.Log($"{gameObject.name} умер!");
         OnDeath?.Invoke();
+
+        // Перезагрузка сцены для всех игроков
+        if (PhotonNetwork.IsMasterClient)
+        {
+            // Загружаем текущую сцену заново
+            PhotonNetwork.LoadLevel(SceneManager.GetActiveScene().name);
+        }
     }
 }
