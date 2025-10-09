@@ -82,6 +82,11 @@ public class RoomController : MonoBehaviourPunCallbacks
                 Debug.Log("Права на туррель и пулемет выданы");
             }
         }
+        EnemyManager enemyManager = FindObjectOfType<EnemyManager>();
+        if (enemyManager != null)
+        {
+            enemyManager.StartGame();
+        }
     }
 
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)

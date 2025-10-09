@@ -1,11 +1,12 @@
 using UnityEngine;
 using Photon.Pun;
+using System;
 
 public class EnemyHealth : MonoBehaviourPun
 {
     [SerializeField] private int maxHealth = 1000;
     private int currentHealth;
-
+    public event Action<GameObject> OnDeath;
     void Start()
     {
         currentHealth = maxHealth;
@@ -30,6 +31,7 @@ public class EnemyHealth : MonoBehaviourPun
         if (currentHealth <= 0)
         {
             Debug.Log("Враг умер");
+            OnDeath?.Invoke(gameObject);
             PhotonNetwork.Destroy(gameObject);
         }
     }
