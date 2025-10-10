@@ -16,13 +16,13 @@ namespace Futurift
 
         [Header("Motion response")]
         [Tooltip("Насколько сильно капсула реагирует на продольное ускорение (наклон вперёд/назад).")]
-        [SerializeField] private float accelPitchFactor = 0.02f;
+        [SerializeField] private float accelPitchFactor = 0.2f;
         [Tooltip("Насколько сильно капсула реагирует на боковое ускорение (наклон в повороте).")]
-        [SerializeField] private float cornerRollFactor = 0.02f;
+        [SerializeField] private float cornerRollFactor = 0.2f;
 
         [Header("Impact response")]
         [Tooltip("Множитель силы наклона при ударе.")]
-        [SerializeField] private float impactFactor = 0.015f;
+        [SerializeField] private float impactFactor = 0.15f;
         [Tooltip("Скорость затухания эффекта удара.")]
         [SerializeField] private float impactDamping = 2.5f;
 
@@ -92,9 +92,17 @@ namespace Futurift
             currentRoll = Mathf.Lerp(currentRoll, targetRoll, Time.deltaTime * smoothSpeed);
 
             // отправка в Futurift
+            if (currentPitch < 0.01f)
+            {
+                currentPitch = 0f;
+            }
+            if (currentRoll < 0.01f)
+            {
+                currentRoll = 0f;
+            }
             _controller.Pitch = currentPitch;
             _controller.Roll = currentRoll;
-
+            Debug.Log("FUTURIFT отработал   " + _controller.Pitch + "       " + _controller.Roll);
             lastVelocity = velocity;
         }
 

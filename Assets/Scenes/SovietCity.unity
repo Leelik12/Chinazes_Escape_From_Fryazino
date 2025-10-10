@@ -115384,7 +115384,19 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 13
       objectReference: {fileID: 0}
+    - target: {fileID: 1753954169424851781, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_Interpolate
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1753954169424851781, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2119978635982333145, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2186121345161585517, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
@@ -115405,9 +115417,41 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: maxMotorTorque
+      value: 225
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: steeringWheelVisual
       value: 
       objectReference: {fileID: 7517509090840556049}
+    - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: 'gearRatios.Array.data[1]'
+      value: 36
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: 'gearRatios.Array.data[2]'
+      value: 26.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: 'gearRatios.Array.data[3]'
+      value: 19.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: 'gearRatios.Array.data[4]'
+      value: 14.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: 'gearRatios.Array.data[5]'
+      value: 9.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: 'gearRatios.Array.data[6]'
+      value: 6.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: 'gearRatios.Array.data[7]'
+      value: -3
+      objectReference: {fileID: 0}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: visualWheelRotationAngle
       value: 900
@@ -115416,9 +115460,17 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3473298334070018176, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3720777719273757681, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: sceneViewId
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 5901406650033795075, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6018244984123837698, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: sceneViewId
@@ -115493,7 +115545,9 @@ PrefabInstance:
       value: -383
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7396978826647744327, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+    - {fileID: 7052028568959621785, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 6704912473730075123, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       insertIndex: -1
