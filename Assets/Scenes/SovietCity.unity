@@ -95715,7 +95715,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -115384,6 +115384,10 @@ PrefabInstance:
       propertyPath: sceneViewId
       value: 13
       objectReference: {fileID: 0}
+    - target: {fileID: 2119978635982333145, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2361993863083622011, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: HPBAR
       value: 
@@ -115397,12 +115401,20 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2129449395}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: steeringWheelVisual
       value: 
       objectReference: {fileID: 7517509090840556049}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: visualWheelRotationAngle
       value: 900
+      objectReference: {fileID: 0}
+    - target: {fileID: 3366714752465420824, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3720777719273757681, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: sceneViewId
@@ -115467,6 +115479,10 @@ PrefabInstance:
     - target: {fileID: 8125948849969432351, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: sceneViewId
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8874258514382067931, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9015400951475462521, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_AnchoredPosition.x
