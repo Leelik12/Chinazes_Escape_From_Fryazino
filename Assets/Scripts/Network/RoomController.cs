@@ -1,9 +1,8 @@
 using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
-using ExitGames.Client.Photon; // для Hashtable
+using ExitGames.Client.Photon;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class RoomController : MonoBehaviourPunCallbacks
 {
@@ -14,13 +13,46 @@ public class RoomController : MonoBehaviourPunCallbacks
     public GameObject Turret;
     public GameObject MachineGun;
     public GameObject Menu;
+
     [Header("UI Готовности")]
-    public UnityEngine.UI.Image firstPlayerReadyCircle;
-    public UnityEngine.UI.Image secondPlayerReadyCircle;
+    public Image firstPlayerReadyCircle;
+    public Image secondPlayerReadyCircle;
     public Color notReadyColor = Color.red;
     public Color readyColor = Color.green;
 
+    [Header("UI Состояния подключения")]
+    public Image connectionStatusCircle;
+    public Color connectedColor = Color.green;
+    public Color disconnectedColor = Color.red;
+
     private bool isLocalReady = false;
+    private float connectionCheckTimer = 0f;
+    private float connectionCheckInterval = 1f;
+
+    private void Update()
+    {
+        // Проверяем подключение раз в секунду
+        connectionCheckTimer += Time.deltaTime;
+        if (connectionCheckTimer >= connectionCheckInterval)
+        {
+            connectionCheckTimer = 0f;
+            UpdateConnectionStatus();
+        }
+    }
+
+    private void UpdateConnectionStatus()
+    {
+        if (connectionStatusCircle == null) return;
+
+        if (PhotonNetwork.IsConnected && PhotonNetwork.InRoom)
+        {
+            connectionStatusCircle.color = connectedColor;
+        }
+        else
+        {
+            connectionStatusCircle.color = disconnectedColor;
+        }
+    }
 
     public void OnReadyButtonPressed()
     {
@@ -29,7 +61,7 @@ public class RoomController : MonoBehaviourPunCallbacks
         isLocalReady = true;
 
         // Устанавливаем CustomProperty "IsReady"
-        ExitGames.Client.Photon.Hashtable props = new ExitGames.Client.Photon.Hashtable { { "IsReady", true } };
+        Hashtable props = new Hashtable { { "IsReady", true } };
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
         UpdateReadyUI();
@@ -44,7 +76,7 @@ public class RoomController : MonoBehaviourPunCallbacks
                 return;
         }
 
-        // Все игроки готовы, активируем риги
+        // Все игроки готовы — активируем риги
         ActivatePlayerRigs();
     }
 
@@ -82,6 +114,7 @@ public class RoomController : MonoBehaviourPunCallbacks
                 Debug.Log("Права на туррель и пулемет выданы");
             }
         }
+
         EnemyManager enemyManager = FindObjectOfType<EnemyManager>();
         if (enemyManager != null)
         {
@@ -89,7 +122,7 @@ public class RoomController : MonoBehaviourPunCallbacks
         }
     }
 
-    public override void OnPlayerPropertiesUpdate(Player targetPlayer, ExitGames.Client.Photon.Hashtable changedProps)
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
         if (changedProps.ContainsKey("IsReady"))
         {
@@ -112,5 +145,17 @@ public class RoomController : MonoBehaviourPunCallbacks
             secondPlayerReadyCircle.color = (second.CustomProperties.ContainsKey("IsReady") && (bool)second.CustomProperties["IsReady"])
                 ? readyColor : notReadyColor;
         }
+    }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        if (connectionStatusCircle != null)
+            connectionStatusCircle.color = disconnectedColor;
+    }
+
+    public override void OnConnectedToMaster()
+    {
+        if (connectionStatusCircle != null)
+            connectionStatusCircle.color = connectedColor;
     }
 }

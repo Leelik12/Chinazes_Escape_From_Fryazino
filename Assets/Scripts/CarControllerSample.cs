@@ -46,7 +46,7 @@ public class CarControllerSample : MonoBehaviourPun
     {
         Engine.Play();
         rb = GetComponent<Rigidbody>();
-        rb.centerOfMass = new Vector3(0, -0.5f, 0);
+        rb.centerOfMass = new Vector3(0, -0.8f, 0);
     }
     public void FixedUpdate()
     {
@@ -107,7 +107,11 @@ public class CarControllerSample : MonoBehaviourPun
                 if (GearText) GearText.text = "N";
             }
         }
-        finalmotor = motor * gearRatios[currentGear];
+        if (motor > 0)
+        {
+            finalmotor = motor * gearRatios[currentGear];
+        }
+
         //аудио двигла
         float correction = Mathf.Lerp(1f, 1.4f, inputControllerReader.Throttle);
         Engine.pitch = correction;
