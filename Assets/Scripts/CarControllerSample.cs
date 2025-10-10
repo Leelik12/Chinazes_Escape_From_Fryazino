@@ -19,7 +19,8 @@ public class CarControllerSample : MonoBehaviourPun
     [SerializeField]
     private float maxMotorTorque; // максимальный крутящий момент, который двигатель может приложить к колесу
 
-    [SerializeField] private float maxSteeringAngle; // максимальный угол поворота, который может иметь колесо
+    [SerializeField] private float maxSteeringAngle;
+    [SerializeField] private float maxBrakeTorque = 10000f;// максимальный угол поворота, который может иметь колесо
     [SerializeField] private float[] gearRatios = {0f, 3.8f, 2.2f, 1.5f, 1.2f , 1f, 0.8f, -0.5f}; //передатка коробки
 
     [Header("Звуки")]
@@ -55,10 +56,7 @@ public class CarControllerSample : MonoBehaviourPun
         {
             speed = inputControllerReader.Throttle;
         }
-        else if (inputControllerReader.Brake != 0)
-        {
-            speed = -inputControllerReader.Brake;
-        }
+        float brakeInput = inputControllerReader.Brake;
 
         motor = maxMotorTorque * speed;
         steering = maxSteeringAngle * inputControllerReader.Steering;
@@ -98,7 +96,7 @@ public class CarControllerSample : MonoBehaviourPun
             }
             else if (inputControllerReader.Shifter7)
             {
-                currentGear = -1;
+                currentGear = 7;
                 if (GearText) GearText.text = "-1";
             }
             else
@@ -107,11 +105,8 @@ public class CarControllerSample : MonoBehaviourPun
                 if (GearText) GearText.text = "N";
             }
         }
-        if (motor > 0)
-        {
-            finalmotor = motor * gearRatios[currentGear];
-        }
 
+        finalmotor = motor * gearRatios[currentGear];
         //аудио двигла
         float correction = Mathf.Lerp(1f, 1.4f, inputControllerReader.Throttle);
         Engine.pitch = correction;
@@ -137,6 +132,10 @@ public class CarControllerSample : MonoBehaviourPun
             {
                 axleInfo.leftWheel.motorTorque = finalmotor;
                 axleInfo.rightWheel.motorTorque = finalmotor;
+
+                // Отдельно применяем тормоз (теперь они не исключают друг друга!)
+                axleInfo.leftWheel.brakeTorque = brakeInput * maxBrakeTorque;
+                axleInfo.rightWheel.brakeTorque = brakeInput * maxBrakeTorque;
             }
         }
     }
@@ -163,7 +162,7 @@ public class CarControllerSample : MonoBehaviourPun
         if (steeringWheelVisual == null)
             return;
 
-        // inputControllerReader.Steering — от -1 (влево) до 1 (вправо)
+        // inputControllerReader.Steering — от -1 (влево) до ф1 (вправо)
         float targetAngle = inputControllerReader.Steering * visualWheelRotationAngle;
 
         // Плавное движение к цели
