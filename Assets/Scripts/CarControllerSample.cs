@@ -1,68 +1,72 @@
-#region
-
 using System;
 using System.Collections.Generic;
 using LogitechG29.Sample.Input;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun;
-#endregion
 
 public class CarControllerSample : MonoBehaviourPun
 {
     [Header("Важное, не трогать!")]
-    [SerializeField] private InputControllerReader inputControllerReader; // инпутер
-    [SerializeField] private List<AxleInfo> axleInfos; // информация о каждой отдельной оси
+    [SerializeField] private InputControllerReader inputControllerReader;
+    [SerializeField] private List<AxleInfo> axleInfos;
     private Rigidbody rb;
-    [SerializeField]
-    private float maxMotorTorque; // максимальный крутящий момент, который двигатель может приложить к колесу
 
+    [SerializeField] private float maxMotorTorque;
     [SerializeField] private float maxSteeringAngle;
-    [SerializeField] private float maxBrakeTorque = 10000f;// максимальный угол поворота, который может иметь колесо
-    [SerializeField] private float[] gearRatios = {0f, 3.8f, 2.2f, 1.5f, 1.2f , 1f, 0.8f, -0.5f}; //передатка коробки
+    [SerializeField] private float maxBrakeTorque = 10000f;
+    [SerializeField] private float[] gearRatios = { 0f, 3.8f, 2.2f, 1.5f, 1.2f, 1f, 0.8f, -0.5f };
+
+    [Header("Ограничение скорости (км/ч)")]
+    [SerializeField] private float[] gearSpeedLimits = { 0f, 20f, 40f, 60f, 90f, 120f, 150f, 20f };
 
     [Header("Звуки")]
-    [SerializeField] private AudioSource Engine; //источник звука
-    [SerializeField] private AudioClip Racing; // звук движка
+    [SerializeField] private AudioSource Engine;
+    [SerializeField] private AudioClip Racing;
+
     [Header("UI")]
     [SerializeField] private TMP_Text speedText;
     [SerializeField] private TMP_Text GearText;
 
     [Header("Визуальный руль")]
-    [SerializeField] private Transform steeringWheelVisual; // ссылка на руль в модели
-    [SerializeField] private float visualWheelRotationAngle = 450f; // максимальный угол визуального поворота (например, ±450°)
-    [SerializeField] private float steeringSmoothness = 10f; // скорость сглаживания поворота
+    [SerializeField] private Transform steeringWheelVisual;
+    [SerializeField] private float visualWheelRotationAngle = 450f;
+    [SerializeField] private float steeringSmoothness = 10f;
 
     private float currentVisualAngle = 0f;
 
     [Header("Временные переменные")]
-    private float speed;
+    private float throttleInput;
     private float motor;
     private float steering;
     private float finalmotor;
     private int currentGear;
+    private float brakeInput;
+
     private void Start()
     {
         Engine.Play();
         rb = GetComponent<Rigidbody>();
         rb.centerOfMass = new Vector3(0, -0.8f, 0);
     }
+
     public void FixedUpdate()
     {
         if (!photonView.IsMine) return;
-        if (inputControllerReader.Throttle != 0)
-        {
-            speed = inputControllerReader.Throttle;
-        }
-        float brakeInput = inputControllerReader.Brake;
 
-        motor = maxMotorTorque * speed;
+        // Газ
+        throttleInput = inputControllerReader.Throttle;
+
+        // Тормоз
+        brakeInput = inputControllerReader.Brake > 0.2f ? inputControllerReader.Brake : 0f;
+
+        // Базовый момент
+        motor = maxMotorTorque * throttleInput;
         steering = maxSteeringAngle * inputControllerReader.Steering;
         finalmotor = motor;
-        //коробка
-        if(inputControllerReader.Clutch > 0.6f) // коробас отрабатывает только если сцепа выжата
+
+        if (inputControllerReader.Clutch > 0.6f) // коробас отрабатывает только если сцепа выжата
         {
             if (inputControllerReader.Shifter1)
             {
@@ -106,20 +110,28 @@ public class CarControllerSample : MonoBehaviourPun
             }
         }
 
-        finalmotor = motor * gearRatios[currentGear];
-        //аудио двигла
-        float correction = Mathf.Lerp(1f, 1.4f, inputControllerReader.Throttle);
-        Engine.pitch = correction;
-        //выход на меню
-        //if (inputControllerReader.Return)
-        //{
-        //    SceneManager.LoadSceneAsync(0);
-        //}
+        // Ограничение скорости по передаче
+        float currentSpeed = rb.linearVelocity.magnitude * 3.6f;
+        if (currentGear > 0 && currentGear < gearSpeedLimits.Length)
+        {
+            if (currentSpeed >= gearSpeedLimits[currentGear])
+            {
+                finalmotor = 0f; // перестаём ускоряться
+            }
+        }
 
-        //UI
+        // Применение передаточного отношения
+        finalmotor *= gearRatios[currentGear];
+
+        // Аудио двигателя
+        float correction = Mathf.Lerp(1f, 1.4f, throttleInput);
+        Engine.pitch = correction;
+
+        // UI
         UpdateGauges();
         UpdateSteeringWheelVisual();
-        //передача вращающего момента
+
+        // Передача момента и тормоза на колёса
         foreach (var axleInfo in axleInfos)
         {
             if (axleInfo.steering)
@@ -133,7 +145,6 @@ public class CarControllerSample : MonoBehaviourPun
                 axleInfo.leftWheel.motorTorque = finalmotor;
                 axleInfo.rightWheel.motorTorque = finalmotor;
 
-                // Отдельно применяем тормоз (теперь они не исключают друг друга!)
                 axleInfo.leftWheel.brakeTorque = brakeInput * maxBrakeTorque;
                 axleInfo.rightWheel.brakeTorque = brakeInput * maxBrakeTorque;
             }
@@ -145,30 +156,25 @@ public class CarControllerSample : MonoBehaviourPun
     {
         public WheelCollider leftWheel;
         public WheelCollider rightWheel;
-        public bool motor; // это колесо прикреплено к мотору?
-        public bool steering; // применяет ли это колесо угол поворота?
+        public bool motor;
+        public bool steering;
     }
-    void UpdateGauges()
+
+    private void UpdateGauges()
     {
         float speed = rb.linearVelocity.magnitude * 3.6f;
-
         if (speedText) speedText.text = $"{Mathf.RoundToInt(speed)} km/h";
-        if (GearText) GearText.text = $"{currentGear}";
-
     }
 
     private void UpdateSteeringWheelVisual()
     {
-        if (steeringWheelVisual == null)
-            return;
+        if (steeringWheelVisual == null) return;
 
-        // inputControllerReader.Steering — от -1 (влево) до ф1 (вправо)
         float targetAngle = inputControllerReader.Steering * visualWheelRotationAngle;
-
-        // Плавное движение к цели
         currentVisualAngle = Mathf.Lerp(currentVisualAngle, targetAngle, Time.deltaTime * steeringSmoothness);
-
-        // Вращаем руль относительно локальной оси (обычно Z или Y, в зависимости от модели)
         steeringWheelVisual.localRotation = Quaternion.Euler(0f, 0f, -currentVisualAngle);
     }
 }
+
+
+

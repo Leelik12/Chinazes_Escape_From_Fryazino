@@ -67,48 +67,57 @@ namespace Futurift
             if (vehicleRigidbody == null || vehicleTransform == null)
                 return;
 
+            // --- Получаем ускорение ---
             Vector3 velocity = vehicleRigidbody.velocity;
             Vector3 acceleration = (velocity - lastVelocity) / Time.fixedDeltaTime;
 
             float forwardAccel = Vector3.Dot(acceleration, vehicleTransform.forward);
             float lateralAccel = Vector3.Dot(acceleration, vehicleTransform.right);
 
-            float targetPitch = -forwardAccel * accelPitchFactor; // вперёд при торможении
-            float targetRoll = -lateralAccel * cornerRollFactor;
+            // --- Эффекты ускорения ---
+            float targetPitchEffect = -forwardAccel * accelPitchFactor; // вперёд при торможении
+            float targetRollEffect = -lateralAccel * cornerRollFactor;
 
-            // затухание удара
+            // --- Эффект удара ---
             impactPitch = Mathf.Lerp(impactPitch, 0f, Time.deltaTime * impactDamping);
             impactRoll = Mathf.Lerp(impactRoll, 0f, Time.deltaTime * impactDamping);
 
-            targetPitch += impactPitch;
-            targetRoll += impactRoll;
+            targetPitchEffect += impactPitch;
+            targetRollEffect += impactRoll;
 
-            // ограничение углов
+            // --- Угол самого автомобиля ---
+            float realPitch = vehicleTransform.localEulerAngles.x;
+            if (realPitch > 180f) realPitch -= 360f;
+
+            float realRoll = vehicleTransform.localEulerAngles.z;
+            if (realRoll > 180f) realRoll -= 360f;
+
+            // --- Смешиваем реальный наклон и эффект ---
+            float targetPitch = (realPitch * 0.5f) + (targetPitchEffect * 0.5f);
+            float targetRoll = (realRoll * 0.5f) + (targetRollEffect * 0.5f);
+
+            // --- Ограничение ---
             targetPitch = Mathf.Clamp(targetPitch, -maxPitch, maxPitch);
             targetRoll = Mathf.Clamp(targetRoll, -maxRoll, maxRoll);
 
-            // сглаживание
+            // --- Сглаживание ---
             currentPitch = Mathf.Lerp(currentPitch, targetPitch, Time.deltaTime * smoothSpeed);
             currentRoll = Mathf.Lerp(currentRoll, targetRoll, Time.deltaTime * smoothSpeed);
 
-            // отправка в Futurift
-            if (currentPitch < 0.01f)
-            {
-                currentPitch = 0f;
-            }
-            if (currentRoll < 0.01f)
-            {
-                currentRoll = 0f;
-            }
+            // --- Отправка на капсулу Futurift ---
             _controller.Pitch = currentPitch;
             _controller.Roll = currentRoll;
-            Debug.Log("FUTURIFT отработал   " + _controller.Pitch + "       " + _controller.Roll);
+
+            Debug.Log($"FUTURIFT отработал   Pitch: {_controller.Pitch:F2}°   Roll: {_controller.Roll:F2}°");
+
             lastVelocity = velocity;
         }
 
         private void OnCollisionEnter(Collision collision)
         {
             float impactForce = collision.relativeVelocity.magnitude;
+
+            // Импульс удара
             impactPitch = -impactForce * impactFactor;
             impactRoll = Random.Range(-impactForce, impactForce) * impactFactor * 0.5f;
         }

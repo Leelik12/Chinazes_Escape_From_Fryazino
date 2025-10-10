@@ -115465,7 +115465,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1753954169424851781, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Interpolate
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1753954169424851781, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_CollisionDetection
@@ -115496,8 +115496,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: maxBrakeTorque
+      value: 3000
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: maxMotorTorque
-      value: 100
+      value: 600
       objectReference: {fileID: 0}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: steeringWheelVisual
@@ -115505,35 +115509,51 @@ PrefabInstance:
       objectReference: {fileID: 7517509090840556049}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: 'gearRatios.Array.data[1]'
-      value: 36
+      value: 3.6
       objectReference: {fileID: 0}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: 'gearRatios.Array.data[2]'
-      value: 26.4
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: 'gearRatios.Array.data[3]'
-      value: 19.2
+      value: 2.5
       objectReference: {fileID: 0}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: 'gearRatios.Array.data[4]'
-      value: 14.4
+      value: 2.1
       objectReference: {fileID: 0}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: 'gearRatios.Array.data[5]'
-      value: 9.6
+      value: 1.75
       objectReference: {fileID: 0}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: 'gearRatios.Array.data[6]'
-      value: 6.4
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: 'gearRatios.Array.data[7]'
-      value: -3
+      value: -3.6
       objectReference: {fileID: 0}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: visualWheelRotationAngle
       value: 900
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: 'gearSpeedLimits.Array.data[5]'
+      value: 150
+      objectReference: {fileID: 0}
+    - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: 'gearSpeedLimits.Array.data[6]'
+      value: 210
+      objectReference: {fileID: 0}
+    - target: {fileID: 3215372379430958996, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_Range
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3215372379430958996, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_Intensity
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 3366714752465420824, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Enabled
@@ -115555,6 +115575,10 @@ PrefabInstance:
       propertyPath: cornerRollFactor
       value: 0.2
       objectReference: {fileID: 0}
+    - target: {fileID: 3449862577062240033, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_Radius
+      value: 0.34
+      objectReference: {fileID: 0}
     - target: {fileID: 3473298334070018176, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_IsActive
       value: 1
@@ -115562,6 +115586,22 @@ PrefabInstance:
     - target: {fileID: 3720777719273757681, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: sceneViewId
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 4448609742725291946, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_Radius
+      value: 0.34
+      objectReference: {fileID: 0}
+    - target: {fileID: 4759685226303708651, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_Radius
+      value: 0.34
+      objectReference: {fileID: 0}
+    - target: {fileID: 5454545794204400717, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_Range
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 5454545794204400717, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_Intensity
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 5901406650033795075, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_IsActive
@@ -115646,6 +115686,10 @@ PrefabInstance:
     - target: {fileID: 8874258514382067931, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: cornerRollFactor
       value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8933803013322083955, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: m_Radius
+      value: 0.34
       objectReference: {fileID: 0}
     - target: {fileID: 9015400951475462521, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_AnchoredPosition.x
