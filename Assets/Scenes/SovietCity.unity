@@ -115497,7 +115497,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: maxMotorTorque
-      value: 50
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 2653169087785068734, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: steeringWheelVisual
@@ -115538,6 +115538,22 @@ PrefabInstance:
     - target: {fileID: 3366714752465420824, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3366714752465420824, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: impactFactor
+      value: 0.15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3366714752465420824, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: impactDamping
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3366714752465420824, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: accelPitchFactor
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3366714752465420824, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: cornerRollFactor
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3473298334070018176, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_IsActive
