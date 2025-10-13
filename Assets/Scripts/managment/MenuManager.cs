@@ -16,25 +16,6 @@ public class MenuManager : MonoBehaviour
     public AudioMixer audioMixer;
     public AudioMixer MusikMixer;
 
-    private void Awake()
-    {
-        if (StaticHolder.PlayerWin)
-        {
-            messedge.text = "Вы выиграли";
-            Best.text = "Лучшее время: " + StaticHolder.BestTime;
-            Last.text = "Последнее время: " + StaticHolder.LastTime;
-        }
-        else if (StaticHolder.PlayerLose)
-        {
-            messedge.text = "Вы проиграли";
-            Best.text = "Лучшее время: " + StaticHolder.BestTime;
-            Last.text = "Последнее время: " + StaticHolder.LastTime;
-        }
-        if (StaticHolder.Record)
-        {
-            messedge.text = messedge.text + " и поставили рекорд!";
-        }
-    }
     void Start()
     {
 
