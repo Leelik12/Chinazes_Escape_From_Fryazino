@@ -44,6 +44,8 @@ MonoBehaviour:
   - TakeDamage
   - ShootRPC
   - Shoot
+  - SpawnNewMagazineRPC
+  - PlayRecoilRPC
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

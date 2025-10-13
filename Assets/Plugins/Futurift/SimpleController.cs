@@ -107,7 +107,7 @@ namespace Futurift
             _controller.Pitch = currentPitch;
             _controller.Roll = currentRoll;
 
-            Debug.Log($"FUTURIFT Pitch: {_controller.Pitch:F2}°  Roll: {_controller.Roll:F2}°");
+            //Debug.Log($"FUTURIFT Pitch: {_controller.Pitch:F2}°  Roll: {_controller.Roll:F2}°");
 
             lastVelocity = velocity;
         }

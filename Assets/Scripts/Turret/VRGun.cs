@@ -12,6 +12,8 @@ public class VRGun : MonoBehaviourPun
     [Header("Перезарядка")]
     [SerializeField] public float maxAmmo;
     public float currentAmmo;
+    // Ссылка на спавнер нового магазина
+    [SerializeField] private VRMagazineSpawner magazineSpawner;
     public bool IsLoaded => currentAmmo > 0;
     private VRMagazine currentMagazine;
     public bool IsCharged = true;
@@ -89,6 +91,8 @@ public class VRGun : MonoBehaviourPun
         //if (triggerAction.action != null && triggerAction.action.ReadValue<float>() > 0.8f && Time.time >= nextFireTime && grabInteractable.isSelected && IsLoaded)
         if (((LeftGrip.action.ReadValue<float>() > 0.8f && LeftTrigger.action.ReadValue<float>() > 0.8f && ap.Contains("L")) || (RightGrip.action.ReadValue<float>() > 0.8f && RightTrigger.action.ReadValue<float>() > 0.8f && ap.Contains("R"))) && Time.time >= nextFireTime && grabInteractable.isSelected && IsLoaded)
         {
+
+            currentAmmo--;
             Debug.Log("Выстрел игрока!");
             nextFireTime = Time.time + fireRate;
             photonView.RPC("Shoot", RpcTarget.All, firePoint.position, firePoint.forward);
@@ -97,7 +101,6 @@ public class VRGun : MonoBehaviourPun
     [PunRPC]
     public void Shoot(Vector3 origin, Vector3 direction)
     {
-        currentAmmo--;
         if (currentAmmo <= 0)
         {
             Debug.Log("Выстрел! Осталось патронов: " + currentAmmo);
@@ -113,7 +116,7 @@ public class VRGun : MonoBehaviourPun
         // Звук
         if (audioSource != null && shotSound != null)
             audioSource.PlayOneShot(shotSound);
-        StartCoroutine(MoveRecoil());
+        photonView.RPC("PlayRecoilRPC", RpcTarget.All);
         RaycastHit hit;
         if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
         {
@@ -169,7 +172,7 @@ public class VRGun : MonoBehaviourPun
         // Выкинуть пустой магазин
         if (currentMagazine == null && emptyMagazinePrefab != null && ejectPoint != null)
         {
-            Instantiate(emptyMagazinePrefab, ejectPoint.position, ejectPoint.rotation);
+            PhotonNetwork.Instantiate(emptyMagazinePrefab.name, ejectPoint.position, ejectPoint.rotation);
         }
         //Debug.Log("Встроенный магазин ВЫКЛ");
         // Выключить визуальный встроенный магазин
@@ -177,14 +180,23 @@ public class VRGun : MonoBehaviourPun
         internalMagazineModel.gameObject.SetActive(false);
         //Debug.Log("Отключаем встроенный магазин: " + internalMagazineModel.name);
         currentAmmo = 0;
-
-        //Debug.Log("Магазин выброшен.");
+        // Вызов спавна нового магазина через спавнер
+        if (magazineSpawner != null)
+        {
+            magazineSpawner.OnMagazineInserted();
+        }
+        Debug.Log("Магазин выброшен.");
     }
     IEnumerator MuzzleLightFlash()
     {
         muzzleLight.enabled = true;
         yield return new WaitForSeconds(lightDuration);
         muzzleLight.enabled = false;
+    }
+    [PunRPC]
+    private void PlayRecoilRPC()
+    {
+        StartCoroutine(MoveRecoil());
     }
     private IEnumerator MoveRecoil()
     {
