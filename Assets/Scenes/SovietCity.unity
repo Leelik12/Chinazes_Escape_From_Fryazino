@@ -115473,7 +115473,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2119978635982333145, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2186121345161585517, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Enabled
@@ -115556,24 +115556,32 @@ PrefabInstance:
       value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 3366714752465420824, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: maxRoll
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3366714752465420824, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: maxPitch
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3366714752465420824, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3366714752465420824, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: impactFactor
-      value: 0.15
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 3366714752465420824, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: impactDamping
-      value: 25
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3366714752465420824, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: accelPitchFactor
-      value: 0.2
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 3366714752465420824, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: cornerRollFactor
-      value: 0.2
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 3449862577062240033, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Radius
@@ -115668,12 +115676,24 @@ PrefabInstance:
       value: 9
       objectReference: {fileID: 0}
     - target: {fileID: 8874258514382067931, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: maxRoll
+      value: 18
+      objectReference: {fileID: 0}
+    - target: {fileID: 8874258514382067931, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: maxPitch
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8874258514382067931, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8874258514382067931, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
+      propertyPath: smoothSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8874258514382067931, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: impactFactor
-      value: 0.15
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8874258514382067931, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: impactDamping
@@ -115681,11 +115701,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8874258514382067931, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: accelPitchFactor
-      value: 0.2
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 8874258514382067931, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: cornerRollFactor
-      value: 0.2
+      value: 0.6
       objectReference: {fileID: 0}
     - target: {fileID: 8933803013322083955, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Radius

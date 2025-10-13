@@ -79,44 +79,44 @@ namespace Futurift
             float targetRollEffect = -lateralAccel * cornerRollFactor;
 
             // --- Эффект удара ---
-            impactPitch = Mathf.Lerp(impactPitch, 0f, Time.deltaTime * impactDamping);
-            impactRoll = Mathf.Lerp(impactRoll, 0f, Time.deltaTime * impactDamping);
+            // Убираем плавное затухание — теперь реакция мгновенная
+            impactPitch *= 0.95f;
+            impactRoll *= 0.95f;
 
             targetPitchEffect += impactPitch;
             targetRollEffect += impactRoll;
 
-            // --- Угол самого автомобиля ---
+            // --- Угол автомобиля ---
             float realPitch = vehicleTransform.localEulerAngles.x;
             if (realPitch > 180f) realPitch -= 360f;
 
             float realRoll = vehicleTransform.localEulerAngles.z;
             if (realRoll > 180f) realRoll -= 360f;
 
-            // --- Смешиваем реальный наклон и эффект ---
-            float targetPitch = (realPitch * 0.5f) + (targetPitchEffect * 0.5f);
-            float targetRoll = (realRoll * 0.5f) + (targetRollEffect * 0.5f);
+            float targetPitch = realPitch + targetPitchEffect;
+            float targetRoll = realRoll + targetRollEffect;
 
-            // --- Ограничение ---
             targetPitch = Mathf.Clamp(targetPitch, -maxPitch, maxPitch);
             targetRoll = Mathf.Clamp(targetRoll, -maxRoll, maxRoll);
 
-            // --- Сглаживание ---
-            currentPitch = Mathf.Lerp(currentPitch, targetPitch, Time.deltaTime * smoothSpeed);
-            currentRoll = Mathf.Lerp(currentRoll, targetRoll, Time.deltaTime * smoothSpeed);
+            // --- УБРАНО СГЛАЖИВАНИЕ ---
+            currentPitch = targetPitch;
+            currentRoll = targetRoll;
 
-            // --- Отправка на капсулу Futurift ---
+            // --- Отправка в капсулу ---
             _controller.Pitch = currentPitch;
             _controller.Roll = currentRoll;
 
-            Debug.Log($"FUTURIFT отработал   Pitch: {_controller.Pitch:F2}°   Roll: {_controller.Roll:F2}°");
+            Debug.Log($"FUTURIFT Pitch: {_controller.Pitch:F2}°  Roll: {_controller.Roll:F2}°");
 
             lastVelocity = velocity;
         }
 
+
         private void OnCollisionEnter(Collision collision)
         {
             float impactForce = collision.relativeVelocity.magnitude;
-
+            Debug.Log("АВАРИЯ");
             // Импульс удара
             impactPitch = -impactForce * impactFactor;
             impactRoll = Random.Range(-impactForce, impactForce) * impactFactor * 0.5f;
