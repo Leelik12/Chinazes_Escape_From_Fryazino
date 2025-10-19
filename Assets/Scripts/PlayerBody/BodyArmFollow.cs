@@ -8,8 +8,9 @@ public class VRArmIK : MonoBehaviour
 
     void OnAnimatorIK(int layerIndex)
     {
+        Debug.Log("Руки проследовали за контроллером1");
         if (animator == null) return;
-
+        Debug.Log("Руки проследовали за контроллером2");
         // Left hand
         animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
         animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
@@ -21,6 +22,6 @@ public class VRArmIK : MonoBehaviour
         animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
         animator.SetIKPosition(AvatarIKGoal.RightHand, rightTarget.position);
         animator.SetIKRotation(AvatarIKGoal.RightHand, rightTarget.rotation);
-        Debug.Log("Руки проследовали за контроллером");
+        Debug.Log("Руки проследовали за контроллером3");
     }
 }
