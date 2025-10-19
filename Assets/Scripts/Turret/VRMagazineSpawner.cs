@@ -1,5 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
+using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class VRMagazineSpawner : MonoBehaviourPun
 {
@@ -44,18 +46,45 @@ public class VRMagazineSpawner : MonoBehaviourPun
         }
 
         // Создаём новый магазин через Photon
+        // Создаём магазин
         GameObject newMag = PhotonNetwork.Instantiate(
             magazinePrefab.name,
             spawnPoint.position,
             spawnPoint.rotation
         );
 
+        // Убеждаемся, что он активен
         newMag.SetActive(true);
 
-        newMag.transform.SetParent(this.transform);
+        // Сбрасываем Rigidbody
+        Rigidbody rb = newMag.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.isKinematic = false;
+            rb.useGravity = true;
+            rb.velocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
+        }
 
-        Debug.Log("Магазин появился!");
+        // Переинициализируем XRGrabInteractable
+        var grab = newMag.GetComponent<XRGrabInteractable>();
+        if (grab != null)
+        {
+            grab.interactionManager = null;
+            grab.selectEntered.RemoveAllListeners();
+            grab.selectExited.RemoveAllListeners();
+
+            // Перезапускаем компонент (важно для второго и следующих магазинов)
+            grab.enabled = false;
+            grab.enabled = true;
+        }
+
+        // Назначаем родителя
+        newMag.transform.SetParent(this.transform, true);
+
+        Debug.Log("Магазин появился и готов к взаимодействию!");
         canSpawn = true;
+
     }
 
 }

@@ -1070,6 +1070,7 @@ MonoBehaviour:
   m_FarAttachMode: 1
   rightHandAttachTransform: {fileID: 1162694622339555187}
   leftHandAttachTransform: {fileID: 110887359976107746}
+  reenableKinematicDelay: 0.1
 --- !u!65 &7813358431848154821
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1089,8 +1090,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 0.22294115, y: 0.12443165, z: 0.2309601}
-  m_Center: {x: -0.0022699707, y: -0.18271555, z: -0.046229724}
+  m_Size: {x: 0.27165416, y: 0.28627217, z: 0.30776665}
+  m_Center: {x: 0.00551641, y: -0.17899026, z: -0.039524283}
 --- !u!114 &789595840771037160
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1106,6 +1107,7 @@ MonoBehaviour:
   grabInteractable: {fileID: 1267035403428613244}
   maxAmmo: 17
   currentAmmo: 17
+  magazineSpawner: {fileID: 0}
   IsCharged: 1
   emptyMagazinePrefab: {fileID: 5961424690434214311, guid: 55f709cc5c3bcad48bb9cc2cc4e91742, type: 3}
   ejectPoint: {fileID: 6151547630238904674}
@@ -1116,8 +1118,6 @@ MonoBehaviour:
   fireRate: 0.2
   damage: 30
   range: 100
-  laserEnabled: 0
-  laserLine: {fileID: 0}
   muzzleFlash: {fileID: 1710448422620365296}
   muzzleLight: {fileID: 6882718936322355319}
   lightDuration: 0.05

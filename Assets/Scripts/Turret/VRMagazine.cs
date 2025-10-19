@@ -1,8 +1,11 @@
+using Photon.Pun;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
+using UnityEngine.XR.Interaction.Toolkit.Interactors;
 
-public class VRMagazine : MonoBehaviour
+
+public class VRMagazine : MonoBehaviourPun
 {
     public int ammoAmount = 30;
     private Rigidbody rb;
@@ -21,9 +24,27 @@ public class VRMagazine : MonoBehaviour
         VRGun gun = other.GetComponent<VRGun>();
         if (gun != null && gun.CanInsertMagazine())
         {
+            // ѕринудительно отцепл€ем магазин от руки перед уничтожением
+            var grabInteractable = GetComponent<XRGrabInteractable>();
+            if (grabInteractable != null && grabInteractable.isSelected)
+            {
+                var interactor = grabInteractable.firstInteractorSelecting;
+                if (interactor != null)
+                {
+                    var xrInteractor = interactor as XRBaseInteractor;
+                    var xrInteractable = GetComponent<XRBaseInteractable>();
+
+                    if (xrInteractor != null && xrInteractable != null && xrInteractor.interactionManager != null)
+                    {
+                        xrInteractor.interactionManager.SelectExit((IXRSelectInteractor)xrInteractor,(IXRSelectInteractable)xrInteractable);
+                    }
+
+                }
+                grabInteractable.interactionManager.SelectExit(interactor, grabInteractable);
+            }
             gun.InsertMagazine(this);
 
-            Destroy(gameObject); // удал€ем текущий магазин
+            PhotonNetwork.Destroy(gameObject); // удал€ем текущий магазин
             Debug.Log("ћагазин вставлен!");
         }
     }
