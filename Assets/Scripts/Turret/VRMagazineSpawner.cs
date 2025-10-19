@@ -60,7 +60,7 @@ public class VRMagazineSpawner : MonoBehaviourPun
         Rigidbody rb = newMag.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.isKinematic = false;
+            rb.isKinematic = true;
             rb.useGravity = true;
             rb.velocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;

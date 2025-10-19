@@ -7,6 +7,10 @@ TagManager:
   - Enemy
   - Bullet
   - Car
+  - Ammo
+  - Weapon
+  - RightHand
+  - LeftHand
   layers:
   - Default
   - TransparentFX
@@ -15,7 +19,7 @@ TagManager:
   - Water
   - UI
   - PostProcessing
-  - 
+  - WeaponHeld
   - 
   - 
   - 

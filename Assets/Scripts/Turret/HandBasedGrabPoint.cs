@@ -44,7 +44,7 @@ public class HandBasedGrabPoint : XRGrabInteractable
         }
 
         base.OnSelectEntering(args);
-        SetLayerRecursively(gameObject, 2);
+        SetLayerRecursively(gameObject, 7);
 
         // включаем возврат кинематики с задержкой
         if (rb != null)
@@ -74,6 +74,7 @@ public class HandBasedGrabPoint : XRGrabInteractable
                 rb.collisionDetectionMode = savedCollisionMode;
             }
         }
+
     }
 
     public static void SetLayerRecursively(GameObject obj, int layer)
