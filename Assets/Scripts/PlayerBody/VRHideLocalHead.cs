@@ -1,48 +1,69 @@
 using UnityEngine;
 using Photon.Pun;
 
-public class VRHeadFollowAndHide : MonoBehaviourPun
+public class VRHeadFollowAndHide : MonoBehaviourPun, IPunObservable
 {
     [Header("Ссылки на объекты")]
-    [Tooltip("XR-камера игрока (голова XR Rig)")]
-    [SerializeField] private Transform headTarget;
-
-    [Tooltip("Кость головы модели или её объект")]
-    [SerializeField] private Transform headBone;
-
-    [Tooltip("Корень, содержащий визуальные части головы (модель, кепка, очки и т.д.)")]
-    [SerializeField] private GameObject headVisualRoot;
-
+    [SerializeField] private Transform headTarget; // XR-камера
+    [SerializeField] private Transform headBone; // Кость головы модели
+    [SerializeField] private GameObject headVisualRoot; // Голова (мэш, очки и т.д.)
     [Header("Настройки позиционирования")]
-    [Tooltip("Смещение головы относительно камеры, чтобы камера не попадала внутрь головы")]
-    [SerializeField] private Vector3 headOffset = new Vector3(0f, 0f, -0.08f);
+    [SerializeField] private Vector3 headOffset = new Vector3(0f, 0f, 0f);
+
+    private Vector3 networkedPosition;
+    private Quaternion networkedRotation;
+    private float lerpSpeed = 10f;
 
     private void Start()
     {
-        // Локальный игрок — скрываем визуал головы, чтобы не мешал камере
         if (photonView.IsMine && headVisualRoot != null)
-        {
-            SetHeadVisible(false);
-        }
+            SetHeadVisible(false); // скрываем голову у локального игрока
     }
 
     private void LateUpdate()
     {
-        if (headTarget == null || headBone == null)
+        if (headBone == null)
             return;
 
-        // Синхронизируем позицию и вращение головы
-        headBone.position = headTarget.TransformPoint(headOffset);
-        headBone.rotation = headTarget.rotation;
+        if (photonView.IsMine)
+        {
+            // Локальный игрок — двигаем по XR-камере
+            if (headTarget != null)
+            {
+                headBone.position = headTarget.TransformPoint(headOffset);
+                headBone.rotation = headTarget.rotation;
+            }
+        }
+        else
+        {
+            // Удалённые игроки — плавно интерполируем сетевые данные
+            headBone.position = Vector3.Lerp(headBone.position, networkedPosition, Time.deltaTime * lerpSpeed);
+            headBone.rotation = Quaternion.Slerp(headBone.rotation, networkedRotation, Time.deltaTime * lerpSpeed);
+        }
     }
 
     private void SetHeadVisible(bool visible)
     {
-        // Скрываем только визуальные рендеры, не трогая коллайдеры и трансформы
         var renderers = headVisualRoot.GetComponentsInChildren<Renderer>(true);
         foreach (var r in renderers)
-        {
             r.enabled = visible;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        // Передаём или принимаем позицию и вращение головы
+        if (stream.IsWriting)
+        {
+            if (headBone != null)
+            {
+                stream.SendNext(headBone.position);
+                stream.SendNext(headBone.rotation);
+            }
+        }
+        else
+        {
+            networkedPosition = (Vector3)stream.ReceiveNext();
+            networkedRotation = (Quaternion)stream.ReceiveNext();
         }
     }
 }

@@ -17,7 +17,6 @@ public class EnemyManager : MonoBehaviourPun
 
     [Header("UI")]
     [SerializeField] private TMP_Text killedTextUI; // локальный UI для игрока
-    [SerializeField] private TMP_Text killedTextUI2; // локальный UI для игрока
 
     [Header("Настройки")]
     [SerializeField] private int enemiesPerWave = 2; // количество врагов в последующих волнах
@@ -96,8 +95,7 @@ public class EnemyManager : MonoBehaviourPun
     {
         if (killedTextUI != null)
         {
-            killedTextUI.text = $"Killed: {killedEnemies}";
-            killedTextUI2.text = $"Killed: {killedEnemies}";
+            killedTextUI.text = $"Убито: {killedEnemies}";
         }
     }
 }
