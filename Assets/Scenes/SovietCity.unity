@@ -100122,7 +100122,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -122903,7 +122903,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3215372379430958996, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Intensity
-      value: 1
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 3227153000121209502, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Convex
@@ -122967,7 +122967,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3581092301159773759, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3695566904559671453, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Layer
@@ -123059,11 +123059,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5454545794204400717, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Intensity
-      value: 180.43
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 5454545794204400717, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_BounceIntensity
-      value: 311.4
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5456695228945421396, guid: 9b1e614cdb196c248bbd9fd04043dd26, type: 3}
       propertyPath: m_Layer
