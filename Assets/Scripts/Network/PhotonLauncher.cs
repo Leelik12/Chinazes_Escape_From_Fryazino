@@ -11,10 +11,10 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
     void Awake()
     {
         // Количество сетевых обновлений в секунду (по умолчанию 10)
-        PhotonNetwork.SendRate = 1;
+        PhotonNetwork.SendRate = 180;
 
         // Сколько раз в секунду PUN сериализует данные объектов (по умолчанию 10)
-        PhotonNetwork.SerializationRate = 1;
+        PhotonNetwork.SerializationRate = 180;
     }
     void Start()
     {
