@@ -120661,6 +120661,7 @@ GameObject:
   - component: {fileID: 1928333404422268265}
   - component: {fileID: 6912399001841287337}
   - component: {fileID: 2959352653154626224}
+  - component: {fileID: 8777095727802903242}
   m_Layer: 0
   m_Name: Left Controller
   m_TagString: LeftHand
@@ -121736,6 +121737,8 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 5135217115806792465}
+  - {fileID: 8777095727802903242}
+  - {fileID: 9026135551255353327}
   sceneViewId: 3
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -127110,8 +127113,8 @@ MonoBehaviour:
   headOffset: {x: 0, y: 0, z: 0}
   headWeight: 1
   bodyWeight: 0
-  eyesWeight: 0.3
-  clampWeight: 0.7
+  eyesWeight: 1
+  clampWeight: 1
 --- !u!1 &5885810297674254231
 GameObject:
   m_ObjectHideFlags: 0
@@ -127876,7 +127879,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1171050281947547841}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d667d9ce869a780478b1215f76155628, type: 3}
   m_Name: 
@@ -130752,6 +130755,7 @@ GameObject:
   - component: {fileID: 3252377128560402096}
   - component: {fileID: 4723345941131083831}
   - component: {fileID: 8662087981361292369}
+  - component: {fileID: 9026135551255353327}
   m_Layer: 0
   m_Name: Right Controller
   m_TagString: RightHand
@@ -131322,6 +131326,22 @@ Transform:
   - {fileID: 2048376907}
   m_Father: {fileID: 6416594596511000746}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8777095727802903242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 847381839753132477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!4 &8806946839837358235
 Transform:
   m_ObjectHideFlags: 0
@@ -131918,6 +131938,22 @@ Transform:
   - {fileID: 1949487730}
   m_Father: {fileID: 6416594596511000746}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &9026135551255353327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8129308470763273877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!114 &9049151892665000276
 MonoBehaviour:
   m_ObjectHideFlags: 0
