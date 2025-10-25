@@ -16,18 +16,21 @@ public class VRHeadIK : MonoBehaviourPun, IPunObservable
     private void Start()
     {
         // Скрываем голову локального игрока, чтобы не мешала XR-камере
-        if (!PhotonNetwork.IsMasterClient && headVisualRoot != null)
+        if (photonView.IsMine && headVisualRoot != null)
         {
-            Debug.Log("Скрыли у игрока");
             SetHeadVisible(false);
-            Debug.Log("Скрыли у игрока");
         }
-
-        if (PhotonNetwork.IsMasterClient) { SetHeadVisible(true); }
     }
     private void Update()
     {
-        
+        if (photonView.IsMine && headVisualRoot != null)
+        {
+            SetHeadVisible(false);
+        }
+        else
+        {
+            SetHeadVisible(true);
+        }
     }
     private void OnAnimatorIK(int layerIndex)
     {
