@@ -16,7 +16,7 @@ public class VRHeadFollowAndHide : MonoBehaviourPun, IPunObservable
 
     private void Start()
     {
-        if (photonView.IsMine && headVisualRoot != null)
+        if (!PhotonNetwork.IsMasterClient && headVisualRoot != null)
             SetHeadVisible(false); // скрываем голову у локального игрока
     }
 
@@ -24,7 +24,10 @@ public class VRHeadFollowAndHide : MonoBehaviourPun, IPunObservable
     {
         if (headBone == null)
             return;
-
+        if (PhotonNetwork.IsMasterClient)
+        {
+            SetHeadVisible(true);
+        }
         if (photonView.IsMine)
         {
             // Локальный игрок — двигаем по XR-камере
