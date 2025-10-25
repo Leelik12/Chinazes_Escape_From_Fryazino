@@ -18671,7 +18671,7 @@ PrefabInstance:
       objectReference: {fileID: 7088767091029467697}
     - target: {fileID: 8329448430310332779, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8519239169969734127, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_ConstrainProportionsScale
@@ -18702,7 +18702,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 367606677}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 118498522}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b324cb66d707b044fbce43400c1e2246, type: 3}
   m_Name: 
@@ -120869,7 +120869,7 @@ GameObject:
   - component: {fileID: 1081793364}
   - component: {fileID: 5866666019858825850}
   - component: {fileID: 5866666019858825849}
-  - component: {fileID: 5866666019858825851}
+  - component: {fileID: 5866666019858825848}
   m_Layer: 0
   m_Name: BodyGunner
   m_TagString: Untagged
@@ -127071,6 +127071,22 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5866666019858825848
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132147984876215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!114 &5866666019858825849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127092,7 +127108,7 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 1081793364}
   - {fileID: 5866666019858825850}
-  - {fileID: 5866666019858825851}
+  - {fileID: 5866666019858825848}
   sceneViewId: 2
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -127116,39 +127132,6 @@ MonoBehaviour:
   bodyWeight: 0
   eyesWeight: 1
   clampWeight: 1
---- !u!114 &5866666019858825851
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919132147984876215}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8efc6b1d64977384eb3405357896c656, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_PositionModel:
-    SynchronizeEnabled: 1
-    TeleportEnabled: 0
-    TeleportIfDistanceGreaterThan: 3
-    InterpolateOption: 4
-    InterpolateMoveTowardsSpeed: 1
-    InterpolateLerpSpeed: 1
-    ExtrapolateOption: 0
-    ExtrapolateSpeed: 1
-    ExtrapolateIncludingRoundTripTime: 1
-    ExtrapolateNumberOfStoredPositions: 1
-  m_RotationModel:
-    SynchronizeEnabled: 1
-    InterpolateOption: 2
-    InterpolateRotateTowardsSpeed: 180
-    InterpolateLerpSpeed: 5
-  m_ScaleModel:
-    SynchronizeEnabled: 0
-    InterpolateOption: 0
-    InterpolateMoveTowardsSpeed: 1
-    InterpolateLerpSpeed: 0
 --- !u!1 &5885810297674254231
 GameObject:
   m_ObjectHideFlags: 0
@@ -131369,30 +131352,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 847381839753132477}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8efc6b1d64977384eb3405357896c656, type: 3}
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_PositionModel:
-    SynchronizeEnabled: 1
-    TeleportEnabled: 0
-    TeleportIfDistanceGreaterThan: 3
-    InterpolateOption: 4
-    InterpolateMoveTowardsSpeed: 1
-    InterpolateLerpSpeed: 1
-    ExtrapolateOption: 0
-    ExtrapolateSpeed: 1
-    ExtrapolateIncludingRoundTripTime: 1
-    ExtrapolateNumberOfStoredPositions: 1
-  m_RotationModel:
-    SynchronizeEnabled: 1
-    InterpolateOption: 2
-    InterpolateRotateTowardsSpeed: 180
-    InterpolateLerpSpeed: 5
-  m_ScaleModel:
-    SynchronizeEnabled: 0
-    InterpolateOption: 0
-    InterpolateMoveTowardsSpeed: 1
-    InterpolateLerpSpeed: 0
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!4 &8806946839837358235
 Transform:
   m_ObjectHideFlags: 0
