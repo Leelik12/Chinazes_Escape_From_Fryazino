@@ -39678,8 +39678,8 @@ SkinnedMeshRenderer:
   m_BlendShapeWeights: []
   m_RootBone: {fileID: 2069991495}
   m_AABB:
-    m_Center: {x: -0.7838103, y: 0.47842926, z: -0.037452377}
-    m_Extent: {x: 0.111926615, y: 0.06621559, z: 0.0760437}
+    m_Center: {x: -0.15225387, y: -0.0007967949, z: -0.36501554}
+    m_Extent: {x: 0.74348307, y: 1.086915, z: 1.3075761}
   m_DirtyAABB: 0
 --- !u!1 &792158263
 GameObject:
@@ -107679,8 +107679,8 @@ SkinnedMeshRenderer:
   m_BlendShapeWeights: []
   m_RootBone: {fileID: 2069991495}
   m_AABB:
-    m_Center: {x: 0.78360367, y: 0.4787467, z: -0.03860795}
-    m_Extent: {x: 0.11199084, y: 0.06631738, z: 0.07623385}
+    m_Center: {x: -0.07773489, y: 0.039797723, z: 0.47692883}
+    m_Extent: {x: 0.97332937, y: 1.0772436, z: 0.5917705}
   m_DirtyAABB: 0
 --- !u!134 &1882658378
 PhysicsMaterial:
@@ -129046,6 +129046,7 @@ GameObject:
   - component: {fileID: 7462393914568144148}
   - component: {fileID: 1187473680495036842}
   - component: {fileID: 7184404894256804532}
+  - component: {fileID: 7462393914568144149}
   m_Layer: 0
   m_Name: TurretPrefab
   m_TagString: Untagged
@@ -130215,6 +130216,25 @@ Transform:
   - {fileID: 723297148}
   m_Father: {fileID: 1895829198424978172}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7462393914568144149
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7088767091029467697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d35cb4e09e781e4d98dd0ac4e29328b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  headTarget: {fileID: 2487900304703866622}
+  leftHandTarget: {fileID: 8777095727802903241}
+  rightHandTarget: {fileID: 9026135551255353326}
+  headBone: {fileID: 7208261742157494829}
+  leftHandBone: {fileID: 6734931531072232031}
+  rightHandBone: {fileID: 2412161367683445710}
+  headOffset: {x: 0, y: 0, z: -0.06}
 --- !u!1 &7471045205605366145
 GameObject:
   m_ObjectHideFlags: 0
