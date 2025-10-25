@@ -53213,22 +53213,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1345783162}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &992175586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1631981841832413964}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5bc500fe00f69da49ae22b81f254c5b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  headTarget: {fileID: 2487900304703866622}
-  headBone: {fileID: 7208261742157494829}
-  headVisualRoot: {fileID: 1217210860}
-  headOffset: {x: 0, y: 0, z: -0.08}
 --- !u!1 &995513351
 GameObject:
   m_ObjectHideFlags: 0
@@ -121133,6 +121117,7 @@ GameObject:
   - component: {fileID: 543450651656951821}
   - component: {fileID: 5866666019858825847}
   - component: {fileID: 1081793364}
+  - component: {fileID: 5866666019858825850}
   - component: {fileID: 5866666019858825849}
   - component: {fileID: 5866666019858825848}
   m_Layer: 0
@@ -122018,7 +122003,6 @@ MonoBehaviour:
   OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 992175586}
   - {fileID: 5135217115806792465}
   sceneViewId: 3
   InstantiationId: 0
@@ -122221,7 +122205,6 @@ GameObject:
   - component: {fileID: 3654193372883371302}
   - component: {fileID: 9015924237351741234}
   - component: {fileID: 1497144713102308877}
-  - component: {fileID: 992175586}
   - component: {fileID: 5135217115806792465}
   m_Layer: 0
   m_Name: XR Origin (XR Rig) (1)
@@ -127373,10 +127356,27 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 1081793364}
+  - {fileID: 5866666019858825850}
   - {fileID: 5866666019858825848}
   sceneViewId: 2
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &5866666019858825850
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 919132147984876215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bc500fe00f69da49ae22b81f254c5b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  headTarget: {fileID: 2487900304703866622}
+  headBone: {fileID: 7208261742157494829}
+  headVisualRoot: {fileID: 1217210860}
+  headOffset: {x: 0, y: 0, z: -0.08}
 --- !u!1 &5885810297674254231
 GameObject:
   m_ObjectHideFlags: 0
@@ -129046,7 +129046,6 @@ GameObject:
   - component: {fileID: 7462393914568144148}
   - component: {fileID: 1187473680495036842}
   - component: {fileID: 7184404894256804532}
-  - component: {fileID: 7462393914568144149}
   m_Layer: 0
   m_Name: TurretPrefab
   m_TagString: Untagged
@@ -130216,25 +130215,6 @@ Transform:
   - {fileID: 723297148}
   m_Father: {fileID: 1895829198424978172}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7462393914568144149
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7088767091029467697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d35cb4e09e781e4d98dd0ac4e29328b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  headTarget: {fileID: 2487900304703866622}
-  leftHandTarget: {fileID: 8777095727802903241}
-  rightHandTarget: {fileID: 9026135551255353326}
-  headBone: {fileID: 7208261742157494829}
-  leftHandBone: {fileID: 6734931531072232031}
-  rightHandBone: {fileID: 2412161367683445710}
-  headOffset: {x: 0, y: 0, z: -0.06}
 --- !u!1 &7471045205605366145
 GameObject:
   m_ObjectHideFlags: 0
