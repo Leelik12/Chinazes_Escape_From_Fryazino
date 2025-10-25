@@ -13,6 +13,9 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
     private Quaternion networkLeftRot;
     private Vector3 networkRightPos;
     private Quaternion networkRightRot;
+    [Header("—глаживание сетевых данных")]
+    public float lerpSpeed = 15f;
+
     private void Awake()
     {
         photonView.Synchronization = ViewSynchronization.UnreliableOnChange;
@@ -38,13 +41,14 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
         {
             animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
             animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
-            animator.SetIKPosition(AvatarIKGoal.LeftHand, networkLeftPos);
-            animator.SetIKRotation(AvatarIKGoal.LeftHand, networkLeftRot);
+            animator.SetIKPosition(AvatarIKGoal.LeftHand, Vector3.Lerp(animator.GetIKPosition(AvatarIKGoal.LeftHand), networkLeftPos, Time.deltaTime * lerpSpeed));
+            animator.SetIKRotation(AvatarIKGoal.LeftHand, Quaternion.Slerp(animator.GetIKRotation(AvatarIKGoal.LeftHand), networkLeftRot, Time.deltaTime * lerpSpeed));
 
             animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
             animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
-            animator.SetIKPosition(AvatarIKGoal.RightHand, networkRightPos);
-            animator.SetIKRotation(AvatarIKGoal.RightHand, networkRightRot);
+            animator.SetIKPosition(AvatarIKGoal.RightHand, Vector3.Lerp(animator.GetIKPosition(AvatarIKGoal.RightHand), networkRightPos, Time.deltaTime * lerpSpeed));
+            animator.SetIKRotation(AvatarIKGoal.RightHand, Quaternion.Slerp(animator.GetIKRotation(AvatarIKGoal.RightHand), networkRightRot, Time.deltaTime * lerpSpeed));
+
         }
     }
 

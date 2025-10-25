@@ -57586,6 +57586,7 @@ MonoBehaviour:
   animator: {fileID: 5866666019858825847}
   leftTarget: {fileID: 2048376907}
   rightTarget: {fileID: 1949487730}
+  lerpSpeed: 15
 --- !u!1 &1081847408
 GameObject:
   m_ObjectHideFlags: 0
@@ -66314,6 +66315,7 @@ MonoBehaviour:
   animator: {fileID: 1235966580}
   leftTarget: {fileID: 1368208098}
   rightTarget: {fileID: 225278706}
+  lerpSpeed: 15
 --- !u!114 &1235966582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127086,7 +127088,7 @@ MonoBehaviour:
   ObservedComponentsFoldoutOpen: 1
   Group: 0
   prefixField: -1
-  Synchronization: 3
+  Synchronization: 2
   OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
