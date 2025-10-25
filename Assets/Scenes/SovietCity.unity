@@ -66447,6 +66447,7 @@ GameObject:
   - component: {fileID: 1235966578}
   - component: {fileID: 1235966580}
   - component: {fileID: 1235966581}
+  - component: {fileID: 1235966584}
   - component: {fileID: 1235966583}
   - component: {fileID: 1235966582}
   m_Layer: 0
@@ -66549,10 +66550,27 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 1235966581}
+  - {fileID: 1235966584}
   - {fileID: 1235966582}
   sceneViewId: 1
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &1235966584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1235966577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bc500fe00f69da49ae22b81f254c5b7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 1235966580}
+  headTarget: {fileID: 395089813}
+  headBone: {fileID: 1385893169}
+  headVisualRoot: {fileID: 1429554717}
 --- !u!43 &1236117273
 Mesh:
   m_ObjectHideFlags: 0
@@ -81688,22 +81706,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1717954561962503726, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
   m_PrefabInstance: {fileID: 7000293844027810589}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1446678291
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1446678284}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5bc500fe00f69da49ae22b81f254c5b7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  headTarget: {fileID: 395089813}
-  headBone: {fileID: 1385893169}
-  headVisualRoot: {fileID: 1429554717}
-  headOffset: {x: 0, y: 0, z: -0.08}
 --- !u!114 &1446678292
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126787,7 +126789,6 @@ MonoBehaviour:
   OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 1446678291}
   - {fileID: 1446678292}
   sceneViewId: 13
   InstantiationId: 0
@@ -127373,10 +127374,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5bc500fe00f69da49ae22b81f254c5b7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 5866666019858825847}
   headTarget: {fileID: 2487900304703866622}
   headBone: {fileID: 7208261742157494829}
   headVisualRoot: {fileID: 1217210860}
-  headOffset: {x: 0, y: 0, z: -0.08}
 --- !u!1 &5885810297674254231
 GameObject:
   m_ObjectHideFlags: 0
@@ -128952,9 +128953,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5278114481400542488}
-    - targetCorrespondingSourceObject: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1446678291}
     - targetCorrespondingSourceObject: {fileID: 1717954561962503725, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1446678292}
