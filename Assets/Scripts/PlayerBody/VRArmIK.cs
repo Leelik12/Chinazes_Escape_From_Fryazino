@@ -14,34 +14,37 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
     private Vector3 networkRightPos;
     private Quaternion networkRightRot;
 
+    // ƒл€ плавного движени€ чужих рук
+    private Vector3 smoothLeftPos;
+    private Quaternion smoothLeftRot;
+    private Vector3 smoothRightPos;
+    private Quaternion smoothRightRot;
+
+    private float lerpSpeed = 15f;
     void OnAnimatorIK(int layerIndex)
     {
         if (animator == null) return;
 
-        // ≈сли это локальный игрок Ч используем реальные контроллеры
         if (photonView.IsMine)
         {
-            animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
-            animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
+            // локально Ч напр€мую
             animator.SetIKPosition(AvatarIKGoal.LeftHand, leftTarget.position);
             animator.SetIKRotation(AvatarIKGoal.LeftHand, leftTarget.rotation);
-
-            animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
-            animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
             animator.SetIKPosition(AvatarIKGoal.RightHand, rightTarget.position);
             animator.SetIKRotation(AvatarIKGoal.RightHand, rightTarget.rotation);
         }
-        else // если это чужой игрок Ч используем сетевые данные
+        else
         {
-            animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
-            animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
-            animator.SetIKPosition(AvatarIKGoal.LeftHand, networkLeftPos);
-            animator.SetIKRotation(AvatarIKGoal.LeftHand, networkLeftRot);
+            // плавна€ интерпол€ци€ между полученными значени€ми
+            smoothLeftPos = Vector3.Lerp(smoothLeftPos, networkLeftPos, Time.deltaTime * lerpSpeed);
+            smoothLeftRot = Quaternion.Slerp(smoothLeftRot, networkLeftRot, Time.deltaTime * lerpSpeed);
+            smoothRightPos = Vector3.Lerp(smoothRightPos, networkRightPos, Time.deltaTime * lerpSpeed);
+            smoothRightRot = Quaternion.Slerp(smoothRightRot, networkRightRot, Time.deltaTime * lerpSpeed);
 
-            animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
-            animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
-            animator.SetIKPosition(AvatarIKGoal.RightHand, networkRightPos);
-            animator.SetIKRotation(AvatarIKGoal.RightHand, networkRightRot);
+            animator.SetIKPosition(AvatarIKGoal.LeftHand, smoothLeftPos);
+            animator.SetIKRotation(AvatarIKGoal.LeftHand, smoothLeftRot);
+            animator.SetIKPosition(AvatarIKGoal.RightHand, smoothRightPos);
+            animator.SetIKRotation(AvatarIKGoal.RightHand, smoothRightRot);
         }
     }
 
