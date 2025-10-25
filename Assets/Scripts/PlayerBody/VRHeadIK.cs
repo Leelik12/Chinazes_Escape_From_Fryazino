@@ -6,11 +6,22 @@ public class VRHeadIK : MonoBehaviourPun, IPunObservable
     [Header("Ссылки")]
     public Animator animator;
     public Transform headTarget;     // XR-камера
-    public AvatarIKGoal headIKGoal;  // Не существует, но мы эмулируем работу через LookAt
     public GameObject headVisualRoot; // Меш головы
     [Header("Смещение головы")]
     public Vector3 headOffset = Vector3.zero;
 
+    [Header("Настройки")]
+    [Tooltip("Насколько сильно поворачивается только голова (0.7–1 оптимально)")]
+    [Range(0f, 1f)] public float headWeight = 1f;
+
+    [Tooltip("Насколько сильно вовлекается тело (0 = только голова)")]
+    [Range(0f, 1f)] public float bodyWeight = 0f;
+
+    [Tooltip("Насколько сильно вовлекается глаза/шея")]
+    [Range(0f, 1f)] public float eyesWeight = 0.3f;
+
+    [Tooltip("Насколько плавно удерживать поворот")]
+    [Range(0f, 1f)] public float clampWeight = 0.7f;
     // Сетевые данные
     private Vector3 networkHeadPos;
     private Quaternion networkHeadRot;
@@ -37,20 +48,27 @@ public class VRHeadIK : MonoBehaviourPun, IPunObservable
     {
         if (animator == null) return;
 
+        Vector3 lookPos;
+
         if (photonView.IsMine)
         {
-            // Локальный игрок — направляем голову за XR-камерой
-            Vector3 lookPos = headTarget.position + headTarget.forward * 10f;
-            animator.SetLookAtWeight(1.0f, 0.5f, 1.0f);
-            animator.SetLookAtPosition(lookPos);
+            lookPos = headTarget.position + headTarget.forward * 10f;
         }
         else
         {
-            // Сетевые данные — поворот и позиция головы
-            Vector3 lookPos = networkHeadPos + networkHeadRot * Vector3.forward * 10f;
-            animator.SetLookAtWeight(1.0f, 0.5f, 1.0f);
-            animator.SetLookAtPosition(lookPos);
+            lookPos = networkHeadPos + networkHeadRot * Vector3.forward * 10f;
         }
+
+        // Настраиваем IK головы без вращения туловища
+        animator.SetLookAtWeight(
+            headWeight, // общее влияние
+            bodyWeight, // тело (0 — не двигается)
+            eyesWeight, // глаза/шея
+            clampWeight, // ограничение угла
+            0.5f // плавность
+        );
+
+        animator.SetLookAtPosition(lookPos);
     }
     private void SetHeadVisible(bool visible)
     {
@@ -63,13 +81,11 @@ public class VRHeadIK : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting)
         {
-            // Отправляем позицию и поворот головы
             stream.SendNext(headTarget.position);
             stream.SendNext(headTarget.rotation);
         }
         else
         {
-            // Получаем сетевые данные
             networkHeadPos = (Vector3)stream.ReceiveNext();
             networkHeadRot = (Quaternion)stream.ReceiveNext();
         }
