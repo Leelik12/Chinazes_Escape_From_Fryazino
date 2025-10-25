@@ -13,7 +13,10 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
     private Quaternion networkLeftRot;
     private Vector3 networkRightPos;
     private Quaternion networkRightRot;
-
+    private void Awake()
+    {
+        photonView.Synchronization = ViewSynchronization.UnreliableOnChange;
+    }
     void OnAnimatorIK(int layerIndex)
     {
         if (animator == null) return;
