@@ -620,7 +620,7 @@ ModelImporter:
     - name: mixamorig:LeftHandIndex1
       parentName: mixamorig:LeftHand
       position: {x: 0.036374, y: 0.10569754, z: 0.00096941984}
-      rotation: {x: -0.009046212, y: 0.00050863926, z: -0.05206973, w: 0.99860233}
+      rotation: {x: -0.009046213, y: 0.00050863926, z: -0.052069735, w: 0.99860233}
       scale: {x: 1.0000001, y: 1.0000004, z: 0.99999976}
     - name: mixamorig:LeftHandIndex2
       parentName: mixamorig:LeftHandIndex1
