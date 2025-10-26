@@ -50,6 +50,7 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine)
         {
             Debug.Log($"IK Update time: {Time.time:F4}, Left: {leftTarget.position}");
+            Debug.DrawLine(leftTarget.position, leftTarget.position + Vector3.up * 0.1f, Color.red);
         }
     }
 

@@ -16,6 +16,7 @@ public class Test : MonoBehaviour
     void LateUpdate()
     {
         Debug.Log($"Controller LateUpdate time: {Time.time:F4}, Left: {transform.position}");
+        Debug.DrawLine(gameObject.transform.position, gameObject.transform.position + Vector3.up * 0.1f, Color.green);
     }
 
 }
