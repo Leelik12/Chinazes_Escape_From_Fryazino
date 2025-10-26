@@ -57586,7 +57586,6 @@ MonoBehaviour:
   animator: {fileID: 5866666019858825847}
   leftTarget: {fileID: 2048376907}
   rightTarget: {fileID: 1949487730}
-  lerpSpeed: 15
 --- !u!1 &1081847408
 GameObject:
   m_ObjectHideFlags: 0
@@ -66315,7 +66314,6 @@ MonoBehaviour:
   animator: {fileID: 1235966580}
   leftTarget: {fileID: 1368208098}
   rightTarget: {fileID: 225278706}
-  lerpSpeed: 15
 --- !u!114 &1235966582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120667,6 +120665,7 @@ GameObject:
   - component: {fileID: 1928333404422268265}
   - component: {fileID: 6912399001841287337}
   - component: {fileID: 2959352653154626224}
+  - component: {fileID: 8777095727802903242}
   m_Layer: 0
   m_Name: Left Controller
   m_TagString: LeftHand
@@ -131328,6 +131327,18 @@ Transform:
   - {fileID: 2048376907}
   m_Father: {fileID: 6416594596511000746}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8777095727802903242
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 847381839753132477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 291400caf419f554784448f4c732fd80, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &8806946839837358235
 Transform:
   m_ObjectHideFlags: 0

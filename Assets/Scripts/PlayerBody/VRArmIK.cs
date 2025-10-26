@@ -46,6 +46,11 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
             animator.SetIKPosition(AvatarIKGoal.RightHand, networkRightPos);
             animator.SetIKRotation(AvatarIKGoal.RightHand, networkRightRot);
         }
+
+        if (photonView.IsMine)
+        {
+            Debug.Log($"IK Update time: {Time.time:F4}, Left: {leftTarget.position}");
+        }
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
