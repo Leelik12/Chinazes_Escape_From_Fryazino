@@ -11,7 +11,7 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
 
     [Header("Сетевая интерполяция")]
     [Range(1f, 60f)] public float lerpSpeed = 20f;
-    [Range(0f, 1f)] public float predictionFactor = 1f; // 1 = использовать пинг полностью
+    [Range(0f, 10f)] public float predictionFactor = 1f; // 1 = использовать пинг полностью
 
     private Vector3 networkPosition;
     private Quaternion networkRotation;

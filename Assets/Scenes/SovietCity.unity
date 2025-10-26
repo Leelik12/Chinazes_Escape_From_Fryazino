@@ -3035,10 +3035,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 9026135551255353326}
+  seatAnchor: {fileID: 1895829198424978172}
   followPosition: 1
   followRotation: 1
-  seatAnchor: {fileID: 7462393914568144148}
-  lerpSpeed: 30
+  lerpSpeed: 60
+  predictionFactor: 1
 --- !u!1001 &41435359
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29472,10 +29473,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 8777095727802903241}
+  seatAnchor: {fileID: 1895829198424978172}
   followPosition: 1
   followRotation: 1
-  seatAnchor: {fileID: 7462393914568144148}
   lerpSpeed: 30
+  predictionFactor: 10
 --- !u!1 &610430133
 GameObject:
   m_ObjectHideFlags: 0
