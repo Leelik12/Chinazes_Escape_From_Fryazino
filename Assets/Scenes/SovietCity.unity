@@ -110834,6 +110834,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1949487730}
+  - component: {fileID: 1949487731}
   m_Layer: 0
   m_Name: ConnectPointRight
   m_TagString: Untagged
@@ -110856,6 +110857,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 9026135551255353326}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1949487731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1949487729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1001 &1950076831
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -114658,6 +114675,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2048376907}
+  - component: {fileID: 2048376908}
   m_Layer: 0
   m_Name: ConnectPointLeft
   m_TagString: Untagged
@@ -114680,6 +114698,22 @@ Transform:
   m_Children: []
   m_Father: {fileID: 8777095727802903241}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2048376908
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2048376906}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!1001 &2049153354
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -120665,7 +120699,6 @@ GameObject:
   - component: {fileID: 1928333404422268265}
   - component: {fileID: 6912399001841287337}
   - component: {fileID: 2959352653154626224}
-  - component: {fileID: 8777095727802903242}
   m_Layer: 0
   m_Name: Left Controller
   m_TagString: LeftHand
@@ -127046,11 +127079,11 @@ Animator:
   m_Avatar: {fileID: 9000000, guid: acb4575a307df034982b54d95697d80f, type: 3}
   m_Controller: {fileID: 9100000, guid: 1d35fad346d8389488f3788fbd382f09, type: 2}
   m_CullingMode: 1
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_UpdateMode: 2
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_AnimatePhysics: 0
+  m_AnimatePhysics: 1
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
@@ -131327,18 +131360,6 @@ Transform:
   - {fileID: 2048376907}
   m_Father: {fileID: 6416594596511000746}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8777095727802903242
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 847381839753132477}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 291400caf419f554784448f4c732fd80, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &8806946839837358235
 Transform:
   m_ObjectHideFlags: 0
