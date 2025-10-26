@@ -27,7 +27,7 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
         }
     }
 
-    void LateUpdate()
+    void FixedUpdate()
     {
         if (photonView.IsMine)
         {
