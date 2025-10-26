@@ -58,16 +58,11 @@ public class CarController : MonoBehaviourPun
     private Quaternion flRotOffset, frRotOffset, rlRotOffset, rrRotOffset;
     private bool fl;
     private bool lastfl;
+
+    private Vector3 visualPosition;
+    private Quaternion visualRotation;
     void Start()
     {
-        //TurretRotation turret = FindObjectOfType<TurretRotation>();
-        //if (turret != null)
-        //{
-        //    turret.transform.SetParent(transform);
-        //    turret.transform.localPosition = new Vector3(0, 2.4f, -0.5f);
-        //    turret.transform.localRotation = Quaternion.identity;
-        //    Debug.Log("Машина сама прицепила турель");
-        //}
         var cam = GetComponentInChildren<Camera>(true);
         if (cam != null) cam.gameObject.SetActive(photonView.IsMine);
 
@@ -78,6 +73,9 @@ public class CarController : MonoBehaviourPun
         frRotOffset = frontRightTransform.localRotation;
         rlRotOffset = rearLeftTransform.localRotation;
         rrRotOffset = rearRightTransform.localRotation;
+
+        visualPosition = transform.position;
+        visualRotation = transform.rotation;
     }
 
     void Update()
@@ -194,8 +192,19 @@ public class CarController : MonoBehaviourPun
         UpdateWheelPose(frontRightWheel, frontRightTransform, frRotOffset);
         UpdateWheelPose(rearLeftWheel, rearLeftTransform, rlRotOffset);
         UpdateWheelPose(rearRightWheel, rearRightTransform, rrRotOffset);
-    }
 
+        visualPosition = rb.position;
+        visualRotation = rb.rotation;
+    }
+    void LateUpdate()
+    {
+        if (!photonView.IsMine) return;
+
+        // Сглаживаем визуальное положение под текущую физику
+        // Можно 1f, чтобы мгновенно, или чуть меньше — для плавности
+        transform.position = Vector3.Lerp(transform.position, visualPosition, 1f);
+        transform.rotation = Quaternion.Slerp(transform.rotation, visualRotation, 1f);
+    }
     void UpdateEngine()
     {
         int gearIndex = Mathf.Clamp(currentGear + 1, 0, gearRatios.Length - 1);
