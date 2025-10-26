@@ -8,6 +8,8 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
     public bool followPosition = true;
     public bool followRotation = true;
 
+    public Transform seatAnchor; // Точка в машине, к которой привязана прокси
+
     private Vector3 positionOffset;
     private Quaternion rotationOffset;
 
@@ -63,15 +65,17 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting)
         {
-            // Отправляем свои координаты
-            stream.SendNext(transform.position);
-            stream.SendNext(transform.rotation);
+            Vector3 localPos = seatAnchor.InverseTransformPoint(transform.position);
+            Quaternion localRot = Quaternion.Inverse(seatAnchor.rotation) * transform.rotation;
+            stream.SendNext(localPos);
+            stream.SendNext(localRot);
         }
         else
         {
-            // Получаем чужие координаты
-            networkPosition = (Vector3)stream.ReceiveNext();
-            networkRotation = (Quaternion)stream.ReceiveNext();
+            Vector3 localPos = (Vector3)stream.ReceiveNext();
+            Quaternion localRot = (Quaternion)stream.ReceiveNext();
+            networkPosition = seatAnchor.TransformPoint(localPos);
+            networkRotation = seatAnchor.rotation * localRot;
         }
     }
 }
