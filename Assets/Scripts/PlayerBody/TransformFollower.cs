@@ -4,67 +4,48 @@ using Photon.Pun;
 public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
 {
     [Header("Локальное следование")]
-    public Transform target;          // Контроллер (только для локального игрока)
+    public Transform target;          // Контроллер (только локальный)
+    public Transform seatAnchor;      // Точка в машине, относительно которой считаем локальные координаты
     public bool followPosition = true;
     public bool followRotation = true;
 
-    public Transform seatAnchor; // Точка в машине, к которой привязана прокси
+    [Header("Сетевая интерполяция")]
+    [Range(1f, 60f)] public float lerpSpeed = 20f;
+    [Range(0f, 1f)] public float predictionFactor = 1f; // 1 = использовать пинг полностью
 
-    private Vector3 positionOffset;
-    private Quaternion rotationOffset;
-
-    // Для сетевой синхронизации
     private Vector3 networkPosition;
     private Quaternion networkRotation;
 
-    [Header("Сетевая интерполяция")]
-    [Range(1f, 60f)] public float lerpSpeed = 30f;
-
-    void Start()
-    {
-        if (target != null)
-        {
-            positionOffset = transform.position - target.position;
-            rotationOffset = Quaternion.Inverse(target.rotation) * transform.rotation;
-        }
-    }
+    private Vector3 lastNetworkPosition;
+    private Vector3 velocity;
 
     void FixedUpdate()
     {
         if (photonView.IsMine)
         {
-            // Локальный игрок — движем по target
             if (!target) return;
 
-            if (followPosition)
-                transform.position = target.position + target.rotation * positionOffset;
-
-            if (followRotation)
-                transform.rotation = target.rotation * rotationOffset;
+            transform.position = target.position;
+            transform.rotation = target.rotation;
         }
         else
         {
-            // Остальные игроки — интерполяция полученных сетевых данных
-            transform.position = Vector3.Lerp(transform.position, networkPosition, Time.deltaTime * lerpSpeed);
+            // === Prediction ===
+            float pingSeconds = (float)PhotonNetwork.GetPing() / 1000f;
+            velocity = (networkPosition - lastNetworkPosition) / Time.fixedDeltaTime;
+            Vector3 predictedPosition = networkPosition + velocity * pingSeconds * predictionFactor;
+
+            // === Interpolation ===
+            transform.position = Vector3.Lerp(transform.position, predictedPosition, Time.deltaTime * lerpSpeed);
             transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.deltaTime * lerpSpeed);
         }
-    }
-
-    void OnBeforeRender()
-    {
-        if (!photonView.IsMine || target == null) return;
-
-        if (followPosition)
-            transform.position = target.position + target.rotation * positionOffset;
-
-        if (followRotation)
-            transform.rotation = target.rotation * rotationOffset;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
+            // Передаём локальные координаты
             Vector3 localPos = seatAnchor.InverseTransformPoint(transform.position);
             Quaternion localRot = Quaternion.Inverse(seatAnchor.rotation) * transform.rotation;
             stream.SendNext(localPos);
@@ -72,8 +53,11 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
         }
         else
         {
+            lastNetworkPosition = networkPosition;
+
             Vector3 localPos = (Vector3)stream.ReceiveNext();
             Quaternion localRot = (Quaternion)stream.ReceiveNext();
+
             networkPosition = seatAnchor.TransformPoint(localPos);
             networkRotation = seatAnchor.rotation * localRot;
         }
