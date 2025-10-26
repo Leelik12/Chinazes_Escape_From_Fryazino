@@ -121839,10 +121839,6 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 5135217115806792465}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   sceneViewId: 3
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -127983,7 +127979,7 @@ MonoBehaviour:
   frontRightTransform: {fileID: 8843034629337994621}
   rearLeftTransform: {fileID: 3943245684431640404}
   rearRightTransform: {fileID: 6905861607731115759}
-  maxMotorTorque: 225
+  maxMotorTorque: 200
   minStartTorque: 0
   maxSteeringAngle: 15
   brakeForce: 15000
@@ -129317,7 +129313,7 @@ MonoBehaviour:
     rightWheel: {fileID: 382305401509160676}
     motor: 1
     steering: 0
-  maxMotorTorque: 600
+  maxMotorTorque: 550
   maxSteeringAngle: 15
   maxBrakeTorque: 3000
   gearRatios:
@@ -129331,12 +129327,12 @@ MonoBehaviour:
   - -3.6
   gearSpeedLimits:
   - 0
-  - 25
-  - 50
-  - 75
-  - 100
-  - 150
-  - 210
+  - 20
+  - 40
+  - 70
+  - 90
+  - 120
+  - 160
   - 20
   Engine: {fileID: 7131508894998118267}
   Racing: {fileID: 8300000, guid: 22cd46996da3b624bb08935264560d8c, type: 3}
@@ -131147,7 +131143,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03b456769bba5d848ae871f24998a8a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  predictionMultiplier: 0.5
+  predictionMultiplier: 0.6
   velocitySmoothing: 0.3
 --- !u!4 &8428538889073764768
 Transform:
