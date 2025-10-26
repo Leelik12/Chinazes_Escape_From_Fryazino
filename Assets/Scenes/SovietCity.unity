@@ -3035,10 +3035,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 9026135551255353326}
-  seatAnchor: {fileID: 1895829198424978172}
   followPosition: 1
   followRotation: 1
-  lerpSpeed: 60
+  lerpSpeed: 30
+  jitterSmoothing: 0.15
 --- !u!1001 &41435359
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29472,10 +29472,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 8777095727802903241}
-  seatAnchor: {fileID: 1895829198424978172}
   followPosition: 1
   followRotation: 1
   lerpSpeed: 30
+  jitterSmoothing: 0.15
 --- !u!1 &610430133
 GameObject:
   m_ObjectHideFlags: 0
@@ -57684,6 +57684,7 @@ MonoBehaviour:
   animator: {fileID: 5866666019858825847}
   leftTarget: {fileID: 610285001}
   rightTarget: {fileID: 41089014}
+  lerpSpeed: 20
 --- !u!1 &1081847408
 GameObject:
   m_ObjectHideFlags: 0
@@ -66412,6 +66413,7 @@ MonoBehaviour:
   animator: {fileID: 1235966580}
   leftTarget: {fileID: 1368208098}
   rightTarget: {fileID: 225278706}
+  lerpSpeed: 20
 --- !u!114 &1235966582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127128,11 +127130,11 @@ Animator:
   m_Avatar: {fileID: 9000000, guid: acb4575a307df034982b54d95697d80f, type: 3}
   m_Controller: {fileID: 9100000, guid: 1d35fad346d8389488f3788fbd382f09, type: 2}
   m_CullingMode: 0
-  m_UpdateMode: 1
+  m_UpdateMode: 0
   m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
-  m_AnimatePhysics: 1
+  m_AnimatePhysics: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
