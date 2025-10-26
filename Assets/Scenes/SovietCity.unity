@@ -3039,7 +3039,6 @@ MonoBehaviour:
   followPosition: 1
   followRotation: 1
   lerpSpeed: 60
-  predictionFactor: 1
 --- !u!1001 &41435359
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -29477,7 +29476,6 @@ MonoBehaviour:
   followPosition: 1
   followRotation: 1
   lerpSpeed: 30
-  predictionFactor: 10
 --- !u!1 &610430133
 GameObject:
   m_ObjectHideFlags: 0
@@ -131251,7 +131249,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03b456769bba5d848ae871f24998a8a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  predictionMultiplier: 1
+  predictionMultiplier: 0.8
 --- !u!4 &8428538889073764768
 Transform:
   m_ObjectHideFlags: 0

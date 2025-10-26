@@ -10,14 +10,10 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
     public bool followRotation = true;
 
     [Header("Сетевая интерполяция")]
-    [Range(1f, 60f)] public float lerpSpeed = 20f;
-    [Range(0f, 10f)] public float predictionFactor = 1f; // 1 = использовать пинг полностью
+    [Range(1f, 60f)] public float lerpSpeed = 30f;
 
     private Vector3 networkPosition;
     private Quaternion networkRotation;
-
-    private Vector3 lastNetworkPosition;
-    private Vector3 velocity;
 
     void FixedUpdate()
     {
@@ -30,13 +26,8 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
         }
         else
         {
-            // === Prediction ===
-            float pingSeconds = (float)PhotonNetwork.GetPing() / 1000f;
-            velocity = (networkPosition - lastNetworkPosition) / Time.fixedDeltaTime;
-            Vector3 predictedPosition = networkPosition + velocity * pingSeconds * predictionFactor;
-
-            // === Interpolation ===
-            transform.position = Vector3.Lerp(transform.position, predictedPosition, Time.deltaTime * lerpSpeed);
+            // Плавная интерполяция полученных данных
+            transform.position = Vector3.Lerp(transform.position, networkPosition, Time.deltaTime * lerpSpeed);
             transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.deltaTime * lerpSpeed);
         }
     }
@@ -45,16 +36,16 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting)
         {
-            // Передаём локальные координаты
+            // Передаём локальные координаты относительно машины
             Vector3 localPos = seatAnchor.InverseTransformPoint(transform.position);
             Quaternion localRot = Quaternion.Inverse(seatAnchor.rotation) * transform.rotation;
+
             stream.SendNext(localPos);
             stream.SendNext(localRot);
         }
         else
         {
-            lastNetworkPosition = networkPosition;
-
+            // Получаем и преобразуем локальные координаты обратно в мировые
             Vector3 localPos = (Vector3)stream.ReceiveNext();
             Quaternion localRot = (Quaternion)stream.ReceiveNext();
 

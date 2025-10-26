@@ -8,10 +8,12 @@ public class NetworkedVehiclePrediction : MonoBehaviourPun, IPunObservable
     private Vector3 networkPosition;
     private Quaternion networkRotation;
     private Vector3 networkVelocity;
+    private Vector3 smoothedVelocity;
     private float lastReceivedTime;
 
     [Header("Настройки предсказания")]
     [Range(0f, 2f)] public float predictionMultiplier = 1.0f;
+    [Range(0f, 1f)] public float velocitySmoothing = 0.3f; // коэффициент сглаживания скорости
 
     void Awake()
     {
@@ -23,11 +25,16 @@ public class NetworkedVehiclePrediction : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine)
             return;
 
+        // Интерполяция позиции и поворота
         transform.position = Vector3.Lerp(transform.position, networkPosition, Time.fixedDeltaTime * 10f);
         transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.fixedDeltaTime * 10f);
 
+        // Мягкое сглаживание сетевой скорости
+        smoothedVelocity = Vector3.Lerp(smoothedVelocity, networkVelocity, velocitySmoothing);
+
+        // Простое предсказание вперёд по сглаженной скорости
         float pingTime = PhotonNetwork.GetPing() / 1000f;
-        transform.position += networkVelocity * pingTime * predictionMultiplier;
+        transform.position += smoothedVelocity * pingTime * predictionMultiplier;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
