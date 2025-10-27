@@ -9,11 +9,11 @@ public class NetworkedVehiclePrediction : MonoBehaviourPun, IPunObservable
     private Quaternion networkRotation;
     private Vector3 networkVelocity;
     private Vector3 smoothedVelocity;
-    private float lastReceivedTime;
 
-    [Header("Настройки предсказания")]
-    [Range(0f, 2f)] public float predictionMultiplier = 1.0f;
-    [Range(0f, 1f)] public float velocitySmoothing = 0.3f; // коэффициент сглаживания скорости
+    [Header("Сглаживание движения")]
+    [Range(1f, 30f)] public float positionLerpSpeed = 10f;
+    [Range(1f, 30f)] public float rotationLerpSpeed = 10f;
+    [Range(0f, 1f)] public float velocitySmoothing = 0.25f;
 
     void Awake()
     {
@@ -25,16 +25,12 @@ public class NetworkedVehiclePrediction : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine)
             return;
 
-        // Интерполяция позиции и поворота
-        transform.position = Vector3.Lerp(transform.position, networkPosition, Time.fixedDeltaTime * 10f);
-        transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.fixedDeltaTime * 10f);
+        // Интерполяция позиции и поворота — без предсказаний
+        transform.position = Vector3.Lerp(transform.position, networkPosition, Time.fixedDeltaTime * positionLerpSpeed);
+        transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.fixedDeltaTime * rotationLerpSpeed);
 
-        // Мягкое сглаживание сетевой скорости
+        // Мягкое сглаживание сетевой скорости (если вдруг понадобится для звуков, колес и т.п.)
         smoothedVelocity = Vector3.Lerp(smoothedVelocity, networkVelocity, velocitySmoothing);
-
-        // Простое предсказание вперёд по сглаженной скорости
-        float pingTime = PhotonNetwork.GetPing() / 1000f;
-        transform.position += smoothedVelocity * pingTime * predictionMultiplier;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -50,7 +46,6 @@ public class NetworkedVehiclePrediction : MonoBehaviourPun, IPunObservable
             networkPosition = (Vector3)stream.ReceiveNext();
             networkRotation = (Quaternion)stream.ReceiveNext();
             networkVelocity = (Vector3)stream.ReceiveNext();
-            lastReceivedTime = (float)info.SentServerTime;
         }
     }
 }
