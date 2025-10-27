@@ -31,6 +31,7 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
         }
         else
         {
+            // ѕримен€ем сетевые позиции напр€мую, без Lerp
             animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
             animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
             animator.SetIKPosition(AvatarIKGoal.LeftHand, networkLeftPos);
