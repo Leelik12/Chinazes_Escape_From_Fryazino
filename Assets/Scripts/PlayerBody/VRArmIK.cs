@@ -1,7 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 
-[DefaultExecutionOrder(200)]
+[DefaultExecutionOrder(400)]
 public class VRArmIK : MonoBehaviourPun, IPunObservable
 {
     [Header("Ссылки")]
@@ -12,20 +12,10 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
     [Header("Сглаживание сетевых рук")]
     [Range(1f, 60f)] public float lerpSpeed = 20f;
 
-    private Vector3 networkLeftPos;
-    private Quaternion networkLeftRot;
-    private Vector3 networkRightPos;
-    private Quaternion networkRightRot;
-
-    private Vector3 smoothLeftPos;
-    private Quaternion smoothLeftRot;
-    private Vector3 smoothRightPos;
-    private Quaternion smoothRightRot;
-
-    private void Awake()
-    {
-        photonView.Synchronization = ViewSynchronization.UnreliableOnChange;
-    }
+    private Vector3 networkLeftPos, networkRightPos;
+    private Quaternion networkLeftRot, networkRightRot;
+    private Vector3 smoothLeftPos, smoothRightPos;
+    private Quaternion smoothLeftRot, smoothRightRot;
 
     void Start()
     {
@@ -39,17 +29,12 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
     {
         if (!photonView.IsMine)
         {
-            // Сглаживаем полученные сетевые данные
             smoothLeftPos = Vector3.Lerp(smoothLeftPos, networkLeftPos, Time.deltaTime * lerpSpeed);
             smoothLeftRot = Quaternion.Slerp(smoothLeftRot, networkLeftRot, Time.deltaTime * lerpSpeed);
 
             smoothRightPos = Vector3.Lerp(smoothRightPos, networkRightPos, Time.deltaTime * lerpSpeed);
             smoothRightRot = Quaternion.Slerp(smoothRightRot, networkRightRot, Time.deltaTime * lerpSpeed);
         }
-
-        // ВАЖНО: Принудительно обновляем аниматор, чтобы IK не отставал
-        // (делаем это после обновления позиций)
-        animator.Update(Time.deltaTime);
     }
 
     void OnAnimatorIK(int layerIndex)
@@ -86,17 +71,29 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(leftTarget.position);
-            stream.SendNext(leftTarget.rotation);
-            stream.SendNext(rightTarget.position);
-            stream.SendNext(rightTarget.rotation);
+            // Отправляем локальные координаты рук относительно тела стрелка
+            Vector3 localLeftPos = transform.InverseTransformPoint(leftTarget.position);
+            Quaternion localLeftRot = Quaternion.Inverse(transform.rotation) * leftTarget.rotation;
+            Vector3 localRightPos = transform.InverseTransformPoint(rightTarget.position);
+            Quaternion localRightRot = Quaternion.Inverse(transform.rotation) * rightTarget.rotation;
+
+            stream.SendNext(localLeftPos);
+            stream.SendNext(localLeftRot);
+            stream.SendNext(localRightPos);
+            stream.SendNext(localRightRot);
         }
         else
         {
-            networkLeftPos = (Vector3)stream.ReceiveNext();
-            networkLeftRot = (Quaternion)stream.ReceiveNext();
-            networkRightPos = (Vector3)stream.ReceiveNext();
-            networkRightRot = (Quaternion)stream.ReceiveNext();
+            // Получаем и восстанавливаем мировые координаты
+            Vector3 localLeftPos = (Vector3)stream.ReceiveNext();
+            Quaternion localLeftRot = (Quaternion)stream.ReceiveNext();
+            Vector3 localRightPos = (Vector3)stream.ReceiveNext();
+            Quaternion localRightRot = (Quaternion)stream.ReceiveNext();
+
+            networkLeftPos = transform.TransformPoint(localLeftPos);
+            networkLeftRot = transform.rotation * localLeftRot;
+            networkRightPos = transform.TransformPoint(localRightPos);
+            networkRightRot = transform.rotation * localRightRot;
         }
     }
 }
