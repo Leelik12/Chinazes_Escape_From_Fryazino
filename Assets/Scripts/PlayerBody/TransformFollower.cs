@@ -5,7 +5,7 @@ using Photon.Pun;
 public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
 {
     [Header("Локальное следование")]
-    public Transform target;
+    public Transform target;           // контроллер XR Rig
     public bool followPosition = true;
     public bool followRotation = true;
 
@@ -13,50 +13,30 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
     [Range(1f, 60f)] public float lerpSpeed = 20f;
 
     [Header("Настройки синхронизации")]
-    public bool useLocal = false; // аналог галочки Use Local
+    public bool useLocal = true; // мы будем работать в локальных координатах машины
 
     private Vector3 networkPosition;
     private Quaternion networkRotation;
 
     void LateUpdate()
     {
+        if (!target) return;
+
         if (photonView.IsMine)
         {
-            if (!target) return;
-
+            // Конвертируем локальные координаты контроллера в локальные координаты машины
             if (followPosition)
-            {
-                if (useLocal)
-                    transform.localPosition = target.localPosition;
-                else
-                    transform.position = target.position;
-            }
-
+                transform.localPosition = transform.parent.InverseTransformPoint(target.position);
             if (followRotation)
-            {
-                if (useLocal)
-                    transform.localRotation = target.localRotation;
-                else
-                    transform.rotation = target.rotation;
-            }
+                transform.localRotation = Quaternion.Inverse(transform.parent.rotation) * target.rotation;
         }
         else
         {
+            // Интерполяция сетевых данных
             if (followPosition)
-            {
-                if (useLocal)
-                    transform.localPosition = Vector3.Lerp(transform.localPosition, networkPosition, Time.deltaTime * lerpSpeed);
-                else
-                    transform.position = Vector3.Lerp(transform.position, networkPosition, Time.deltaTime * lerpSpeed);
-            }
-
+                transform.localPosition = Vector3.Lerp(transform.localPosition, networkPosition, Time.deltaTime * lerpSpeed);
             if (followRotation)
-            {
-                if (useLocal)
-                    transform.localRotation = Quaternion.Slerp(transform.localRotation, networkRotation, Time.deltaTime * lerpSpeed);
-                else
-                    transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.deltaTime * lerpSpeed);
-            }
+                transform.localRotation = Quaternion.Slerp(transform.localRotation, networkRotation, Time.deltaTime * lerpSpeed);
         }
     }
 
@@ -64,29 +44,14 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting)
         {
-            if (useLocal)
-            {
-                stream.SendNext(transform.localPosition);
-                stream.SendNext(transform.localRotation);
-            }
-            else
-            {
-                stream.SendNext(transform.position);
-                stream.SendNext(transform.rotation);
-            }
+            // Отправляем локальные координаты прокси (относительно машины)
+            stream.SendNext(transform.localPosition);
+            stream.SendNext(transform.localRotation);
         }
         else
         {
-            if (useLocal)
-            {
-                networkPosition = (Vector3)stream.ReceiveNext();
-                networkRotation = (Quaternion)stream.ReceiveNext();
-            }
-            else
-            {
-                networkPosition = (Vector3)stream.ReceiveNext();
-                networkRotation = (Quaternion)stream.ReceiveNext();
-            }
+            networkPosition = (Vector3)stream.ReceiveNext();
+            networkRotation = (Quaternion)stream.ReceiveNext();
         }
     }
 }
