@@ -57734,6 +57734,8 @@ MonoBehaviour:
   animator: {fileID: 5866666019858825847}
   proxyLeft: {fileID: 610285001}
   proxyRight: {fileID: 41089014}
+  leftOffset: {x: -0.04, y: 0, z: -0.11}
+  rightOffset: {x: 0.04, y: 0, z: -0.11}
 --- !u!1 &1081847408
 GameObject:
   m_ObjectHideFlags: 0
@@ -66462,6 +66464,8 @@ MonoBehaviour:
   animator: {fileID: 1235966580}
   proxyLeft: {fileID: 0}
   proxyRight: {fileID: 0}
+  leftOffset: {x: 0, y: 0, z: 0}
+  rightOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &1235966582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66497,7 +66501,6 @@ MonoBehaviour:
   OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 1235966581}
   - {fileID: 1235966584}
   - {fileID: 1235966582}
   sceneViewId: 1

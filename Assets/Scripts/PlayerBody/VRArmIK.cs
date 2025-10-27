@@ -7,38 +7,42 @@ public class VRArmIK : MonoBehaviourPun
     [Header("—сылки")]
     public Animator animator;
 
-    // Ёти точки должны быть те же, что синхронизируютс€ через NetworkedTransformFollower
+    [Header("ѕрокси точки")]
     public Transform proxyLeft;
     public Transform proxyRight;
+
+    [Header("Ќастройки смещени€ IK")]
+    public Vector3 leftOffset = Vector3.zero;   // смещение относительно прокси дл€ левой руки
+    public Vector3 rightOffset = Vector3.zero;  // смещение относительно прокси дл€ правой руки
 
     void OnAnimatorIK(int layerIndex)
     {
         if (animator == null) return;
 
-        // Ћокальный игрок Ч напр€мую контроллеры
+        // Ћокальный игрок
         if (photonView.IsMine)
         {
             animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
             animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
-            animator.SetIKPosition(AvatarIKGoal.LeftHand, proxyLeft.position);
+            animator.SetIKPosition(AvatarIKGoal.LeftHand, proxyLeft.TransformPoint(leftOffset));
             animator.SetIKRotation(AvatarIKGoal.LeftHand, proxyLeft.rotation);
 
             animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
             animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
-            animator.SetIKPosition(AvatarIKGoal.RightHand, proxyRight.position);
+            animator.SetIKPosition(AvatarIKGoal.RightHand, proxyRight.TransformPoint(rightOffset));
             animator.SetIKRotation(AvatarIKGoal.RightHand, proxyRight.rotation);
         }
         else
         {
-            // ƒругие игроки Ч используем прокси точки, которые уже сглажены
+            // ƒругие игроки Ч используем прокси точки без изменений
             animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
             animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
-            animator.SetIKPosition(AvatarIKGoal.LeftHand, proxyLeft.position);
+            animator.SetIKPosition(AvatarIKGoal.LeftHand, proxyLeft.TransformPoint(leftOffset));
             animator.SetIKRotation(AvatarIKGoal.LeftHand, proxyLeft.rotation);
 
             animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
             animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
-            animator.SetIKPosition(AvatarIKGoal.RightHand, proxyRight.position);
+            animator.SetIKPosition(AvatarIKGoal.RightHand, proxyRight.TransformPoint(rightOffset));
             animator.SetIKRotation(AvatarIKGoal.RightHand, proxyRight.rotation);
         }
     }
