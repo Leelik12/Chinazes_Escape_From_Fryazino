@@ -1,7 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 
-[DefaultExecutionOrder(200)] // после NetworkedTransformFollower
+[DefaultExecutionOrder(200)]
 public class VRArmIK : MonoBehaviourPun, IPunObservable
 {
     [Header("Ссылки")]
@@ -37,15 +37,19 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
 
     void Update()
     {
-        // Обновляем и сглаживаем данные до того, как Animator запросит IK
         if (!photonView.IsMine)
         {
+            // Сглаживаем полученные сетевые данные
             smoothLeftPos = Vector3.Lerp(smoothLeftPos, networkLeftPos, Time.deltaTime * lerpSpeed);
             smoothLeftRot = Quaternion.Slerp(smoothLeftRot, networkLeftRot, Time.deltaTime * lerpSpeed);
 
             smoothRightPos = Vector3.Lerp(smoothRightPos, networkRightPos, Time.deltaTime * lerpSpeed);
             smoothRightRot = Quaternion.Slerp(smoothRightRot, networkRightRot, Time.deltaTime * lerpSpeed);
         }
+
+        // ВАЖНО: Принудительно обновляем аниматор, чтобы IK не отставал
+        // (делаем это после обновления позиций)
+        animator.Update(Time.deltaTime);
     }
 
     void OnAnimatorIK(int layerIndex)
@@ -54,7 +58,6 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
 
         if (photonView.IsMine)
         {
-            // Локальные контроллеры
             animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
             animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
             animator.SetIKPosition(AvatarIKGoal.LeftHand, leftTarget.position);
@@ -67,7 +70,6 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
         }
         else
         {
-            // Сетевые контроллеры — используем уже сглаженные позиции
             animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
             animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
             animator.SetIKPosition(AvatarIKGoal.LeftHand, smoothLeftPos);
