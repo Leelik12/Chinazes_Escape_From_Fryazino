@@ -1,7 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 
-[DefaultExecutionOrder(400)]
+[DefaultExecutionOrder(400)] // чтобы LateUpdate отрабатывал после NetworkedTransformFollower
 public class VRArmIK : MonoBehaviourPun, IPunObservable
 {
     [Header("Ссылки")]
@@ -25,19 +25,22 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
         smoothRightRot = rightTarget.rotation;
     }
 
-    void Update()
+    void LateUpdate()
     {
         if (!photonView.IsMine)
         {
+            // Плавная интерполяция сетевых рук
             smoothLeftPos = Vector3.Lerp(smoothLeftPos, networkLeftPos, Time.deltaTime * lerpSpeed);
             smoothLeftRot = Quaternion.Slerp(smoothLeftRot, networkLeftRot, Time.deltaTime * lerpSpeed);
 
             smoothRightPos = Vector3.Lerp(smoothRightPos, networkRightPos, Time.deltaTime * lerpSpeed);
             smoothRightRot = Quaternion.Slerp(smoothRightRot, networkRightRot, Time.deltaTime * lerpSpeed);
         }
+
+        ApplyIK();
     }
 
-    void OnAnimatorIK(int layerIndex)
+    void ApplyIK()
     {
         if (animator == null) return;
 
@@ -71,7 +74,7 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting)
         {
-            // Отправляем локальные координаты рук относительно тела стрелка
+            // Отправляем локальные координаты относительно машины
             Vector3 localLeftPos = transform.InverseTransformPoint(leftTarget.position);
             Quaternion localLeftRot = Quaternion.Inverse(transform.rotation) * leftTarget.rotation;
             Vector3 localRightPos = transform.InverseTransformPoint(rightTarget.position);
@@ -84,7 +87,7 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
         }
         else
         {
-            // Получаем и восстанавливаем мировые координаты
+            // Восстанавливаем мировые позиции
             Vector3 localLeftPos = (Vector3)stream.ReceiveNext();
             Quaternion localLeftRot = (Quaternion)stream.ReceiveNext();
             Vector3 localRightPos = (Vector3)stream.ReceiveNext();
