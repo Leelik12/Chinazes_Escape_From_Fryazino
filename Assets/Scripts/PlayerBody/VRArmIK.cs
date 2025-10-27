@@ -1,7 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 
-[DefaultExecutionOrder(400)] // чтобы LateUpdate отрабатывал после NetworkedTransformFollower
+[DefaultExecutionOrder(400)]
 public class VRArmIK : MonoBehaviourPun, IPunObservable
 {
     [Header("—сылки")]
@@ -9,43 +9,16 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
     public Transform leftTarget;
     public Transform rightTarget;
 
-    [Header("—глаживание сетевых рук")]
-    [Range(1f, 60f)] public float lerpSpeed = 20f;
-
     private Vector3 networkLeftPos, networkRightPos;
     private Quaternion networkLeftRot, networkRightRot;
-    private Vector3 smoothLeftPos, smoothRightPos;
-    private Quaternion smoothLeftRot, smoothRightRot;
 
-    void Start()
-    {
-        smoothLeftPos = leftTarget.position;
-        smoothLeftRot = leftTarget.rotation;
-        smoothRightPos = rightTarget.position;
-        smoothRightRot = rightTarget.rotation;
-    }
-
-    void LateUpdate()
-    {
-        if (!photonView.IsMine)
-        {
-            // ѕлавна€ интерпол€ци€ сетевых рук
-            smoothLeftPos = Vector3.Lerp(smoothLeftPos, networkLeftPos, Time.deltaTime * lerpSpeed);
-            smoothLeftRot = Quaternion.Slerp(smoothLeftRot, networkLeftRot, Time.deltaTime * lerpSpeed);
-
-            smoothRightPos = Vector3.Lerp(smoothRightPos, networkRightPos, Time.deltaTime * lerpSpeed);
-            smoothRightRot = Quaternion.Slerp(smoothRightRot, networkRightRot, Time.deltaTime * lerpSpeed);
-        }
-
-        ApplyIK();
-    }
-
-    void ApplyIK()
+    void OnAnimatorIK(int layerIndex)
     {
         if (animator == null) return;
 
         if (photonView.IsMine)
         {
+            // Ћокальные контроллеры
             animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
             animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
             animator.SetIKPosition(AvatarIKGoal.LeftHand, leftTarget.position);
@@ -60,13 +33,13 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
         {
             animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
             animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
-            animator.SetIKPosition(AvatarIKGoal.LeftHand, smoothLeftPos);
-            animator.SetIKRotation(AvatarIKGoal.LeftHand, smoothLeftRot);
+            animator.SetIKPosition(AvatarIKGoal.LeftHand, networkLeftPos);
+            animator.SetIKRotation(AvatarIKGoal.LeftHand, networkLeftRot);
 
             animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
             animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
-            animator.SetIKPosition(AvatarIKGoal.RightHand, smoothRightPos);
-            animator.SetIKRotation(AvatarIKGoal.RightHand, smoothRightRot);
+            animator.SetIKPosition(AvatarIKGoal.RightHand, networkRightPos);
+            animator.SetIKRotation(AvatarIKGoal.RightHand, networkRightRot);
         }
     }
 
@@ -74,7 +47,7 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting)
         {
-            // ќтправл€ем локальные координаты относительно машины
+            // ѕередаем локальные координаты относительно машины
             Vector3 localLeftPos = transform.InverseTransformPoint(leftTarget.position);
             Quaternion localLeftRot = Quaternion.Inverse(transform.rotation) * leftTarget.rotation;
             Vector3 localRightPos = transform.InverseTransformPoint(rightTarget.position);
