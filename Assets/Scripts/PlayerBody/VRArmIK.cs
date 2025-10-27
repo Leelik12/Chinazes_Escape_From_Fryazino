@@ -1,7 +1,7 @@
 using UnityEngine;
 using Photon.Pun;
 
-[DefaultExecutionOrder(200)] // выполняется после NetworkedTransformFollower
+[DefaultExecutionOrder(200)] // после NetworkedTransformFollower
 public class VRArmIK : MonoBehaviourPun, IPunObservable
 {
     [Header("Ссылки")]
@@ -29,45 +29,55 @@ public class VRArmIK : MonoBehaviourPun, IPunObservable
 
     void Start()
     {
-        // Чтобы избежать рывка при первом получении сетевых данных
         smoothLeftPos = leftTarget.position;
         smoothLeftRot = leftTarget.rotation;
         smoothRightPos = rightTarget.position;
         smoothRightRot = rightTarget.rotation;
     }
 
-    void LateUpdate()
+    void Update()
     {
-        if (animator == null) return;
-
-        if (photonView.IsMine)
+        // Обновляем и сглаживаем данные до того, как Animator запросит IK
+        if (!photonView.IsMine)
         {
-            ApplyIK(leftTarget.position, leftTarget.rotation, rightTarget.position, rightTarget.rotation);
-        }
-        else
-        {
-            // Плавное сглаживание сетевых рук
             smoothLeftPos = Vector3.Lerp(smoothLeftPos, networkLeftPos, Time.deltaTime * lerpSpeed);
             smoothLeftRot = Quaternion.Slerp(smoothLeftRot, networkLeftRot, Time.deltaTime * lerpSpeed);
 
             smoothRightPos = Vector3.Lerp(smoothRightPos, networkRightPos, Time.deltaTime * lerpSpeed);
             smoothRightRot = Quaternion.Slerp(smoothRightRot, networkRightRot, Time.deltaTime * lerpSpeed);
-
-            ApplyIK(smoothLeftPos, smoothLeftRot, smoothRightPos, smoothRightRot);
         }
     }
 
-    private void ApplyIK(Vector3 leftPos, Quaternion leftRot, Vector3 rightPos, Quaternion rightRot)
+    void OnAnimatorIK(int layerIndex)
     {
-        animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
-        animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
-        animator.SetIKPosition(AvatarIKGoal.LeftHand, leftPos);
-        animator.SetIKRotation(AvatarIKGoal.LeftHand, leftRot);
+        if (animator == null) return;
 
-        animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
-        animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
-        animator.SetIKPosition(AvatarIKGoal.RightHand, rightPos);
-        animator.SetIKRotation(AvatarIKGoal.RightHand, rightRot);
+        if (photonView.IsMine)
+        {
+            // Локальные контроллеры
+            animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
+            animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
+            animator.SetIKPosition(AvatarIKGoal.LeftHand, leftTarget.position);
+            animator.SetIKRotation(AvatarIKGoal.LeftHand, leftTarget.rotation);
+
+            animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
+            animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
+            animator.SetIKPosition(AvatarIKGoal.RightHand, rightTarget.position);
+            animator.SetIKRotation(AvatarIKGoal.RightHand, rightTarget.rotation);
+        }
+        else
+        {
+            // Сетевые контроллеры — используем уже сглаженные позиции
+            animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
+            animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
+            animator.SetIKPosition(AvatarIKGoal.LeftHand, smoothLeftPos);
+            animator.SetIKRotation(AvatarIKGoal.LeftHand, smoothLeftRot);
+
+            animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
+            animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
+            animator.SetIKPosition(AvatarIKGoal.RightHand, smoothRightPos);
+            animator.SetIKRotation(AvatarIKGoal.RightHand, smoothRightRot);
+        }
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
