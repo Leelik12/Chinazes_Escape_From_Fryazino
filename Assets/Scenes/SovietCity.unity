@@ -57732,9 +57732,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 5866666019858825847}
-  leftTarget: {fileID: 610285001}
-  rightTarget: {fileID: 41089014}
-  lerpSpeed: 20
+  proxyLeft: {fileID: 610285001}
+  proxyRight: {fileID: 41089014}
 --- !u!1 &1081847408
 GameObject:
   m_ObjectHideFlags: 0
@@ -66461,9 +66460,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 1235966580}
-  leftTarget: {fileID: 1368208098}
-  rightTarget: {fileID: 225278706}
-  lerpSpeed: 20
+  proxyLeft: {fileID: 0}
+  proxyRight: {fileID: 0}
 --- !u!114 &1235966582
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127223,7 +127221,6 @@ MonoBehaviour:
   OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 1081793364}
   - {fileID: 5866666019858825850}
   - {fileID: 5866666019858825848}
   sceneViewId: 2
