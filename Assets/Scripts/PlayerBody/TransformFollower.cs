@@ -5,7 +5,7 @@ using Photon.Pun;
 public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
 {
     [Header("Локальное следование")]
-    public Transform target;           // контроллер XR Rig
+    public Transform target;           // То позицию чего надо повторить
     public bool followPosition = true;
     public bool followRotation = true;
 
@@ -13,7 +13,10 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
     [Range(1f, 60f)] public float lerpSpeed = 20f;
 
     [Header("Настройки синхронизации")]
-    public bool useLocal = true; // мы будем работать в локальных координатах машины
+    public bool useLocal = true; // Локальные координаты относительно родителя или мировые
+    [Header("Специальные настройки")]
+    public bool isHandProxy = false;           // руки это или нет
+    public Vector3 handRotationOffsetEuler = Vector3.zero; // Оффсет для рук (Euler)
 
     private Vector3 networkPosition;
     private Quaternion networkRotation;
@@ -24,19 +27,40 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
 
         if (photonView.IsMine)
         {
-            // Конвертируем локальные координаты контроллера в локальные координаты машины
+            // Локальное следование
             if (followPosition)
-                transform.localPosition = transform.parent.InverseTransformPoint(target.position);
+            {
+                if (useLocal)
+                    transform.localPosition = transform.parent.InverseTransformPoint(target.position);
+                else
+                    transform.position = target.position;
+            }
             if (followRotation)
-                transform.localRotation = Quaternion.Inverse(transform.parent.rotation) * target.rotation;
+            {
+                Quaternion targetRot = useLocal
+                    ? Quaternion.Inverse(transform.parent.rotation) * target.rotation
+                    : target.rotation;
+
+                if (isHandProxy)
+                    targetRot *= Quaternion.Euler(handRotationOffsetEuler);
+
+                transform.localRotation = targetRot;
+            }
         }
         else
         {
-            // Интерполяция сетевых данных
+            // Сетевая интерполяция
             if (followPosition)
                 transform.localPosition = Vector3.Lerp(transform.localPosition, networkPosition, Time.deltaTime * lerpSpeed);
+
             if (followRotation)
-                transform.localRotation = Quaternion.Slerp(transform.localRotation, networkRotation, Time.deltaTime * lerpSpeed);
+            {
+                Quaternion targetRot = networkRotation;
+                if (isHandProxy)
+                    targetRot *= Quaternion.Euler(handRotationOffsetEuler);
+
+                transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRot, Time.deltaTime * lerpSpeed);
+            }
         }
     }
 
@@ -44,7 +68,6 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting)
         {
-            // Отправляем локальные координаты прокси (относительно машины)
             stream.SendNext(transform.localPosition);
             stream.SendNext(transform.localRotation);
         }

@@ -3040,6 +3040,8 @@ MonoBehaviour:
   followRotation: 1
   lerpSpeed: 30
   useLocal: 1
+  isHandProxy: 1
+  handRotationOffsetEuler: {x: 0, y: 0, z: -90}
 --- !u!114 &41089016
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29503,6 +29505,8 @@ MonoBehaviour:
   followRotation: 1
   lerpSpeed: 30
   useLocal: 1
+  isHandProxy: 1
+  handRotationOffsetEuler: {x: 0, y: 0, z: 90}
 --- !u!114 &610285003
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -50141,6 +50145,8 @@ MonoBehaviour:
   followRotation: 1
   lerpSpeed: 30
   useLocal: 1
+  isHandProxy: 0
+  handRotationOffsetEuler: {x: 0, y: 0, z: 0}
 --- !u!134 &936950912
 PhysicsMaterial:
   m_ObjectHideFlags: 0
@@ -57783,8 +57789,8 @@ MonoBehaviour:
   animator: {fileID: 5866666019858825847}
   proxyLeft: {fileID: 610285001}
   proxyRight: {fileID: 41089014}
-  leftOffset: {x: -0.04, y: 0, z: -0.11}
-  rightOffset: {x: 0.04, y: 0, z: -0.11}
+  leftOffset: {x: -0.04, y: 0.04, z: -0.14}
+  rightOffset: {x: 0.04, y: 0.04, z: -0.14}
 --- !u!1 &1081847408
 GameObject:
   m_ObjectHideFlags: 0
