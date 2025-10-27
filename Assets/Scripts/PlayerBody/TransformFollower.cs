@@ -12,6 +12,9 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
     [Header("Сетевая интерполяция")]
     [Range(1f, 60f)] public float lerpSpeed = 20f;
 
+    [Header("Настройки синхронизации")]
+    public bool useLocal = false; // аналог галочки Use Local
+
     private Vector3 networkPosition;
     private Quaternion networkRotation;
 
@@ -22,16 +25,38 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
             if (!target) return;
 
             if (followPosition)
-                transform.position = target.position;
+            {
+                if (useLocal)
+                    transform.localPosition = target.localPosition;
+                else
+                    transform.position = target.position;
+            }
+
             if (followRotation)
-                transform.rotation = target.rotation;
+            {
+                if (useLocal)
+                    transform.localRotation = target.localRotation;
+                else
+                    transform.rotation = target.rotation;
+            }
         }
         else
         {
             if (followPosition)
-                transform.position = Vector3.Lerp(transform.position, networkPosition, Time.deltaTime * lerpSpeed);
+            {
+                if (useLocal)
+                    transform.localPosition = Vector3.Lerp(transform.localPosition, networkPosition, Time.deltaTime * lerpSpeed);
+                else
+                    transform.position = Vector3.Lerp(transform.position, networkPosition, Time.deltaTime * lerpSpeed);
+            }
+
             if (followRotation)
-                transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.deltaTime * lerpSpeed);
+            {
+                if (useLocal)
+                    transform.localRotation = Quaternion.Slerp(transform.localRotation, networkRotation, Time.deltaTime * lerpSpeed);
+                else
+                    transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.deltaTime * lerpSpeed);
+            }
         }
     }
 
@@ -39,13 +64,29 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting)
         {
-            stream.SendNext(transform.position);
-            stream.SendNext(transform.rotation);
+            if (useLocal)
+            {
+                stream.SendNext(transform.localPosition);
+                stream.SendNext(transform.localRotation);
+            }
+            else
+            {
+                stream.SendNext(transform.position);
+                stream.SendNext(transform.rotation);
+            }
         }
         else
         {
-            networkPosition = (Vector3)stream.ReceiveNext();
-            networkRotation = (Quaternion)stream.ReceiveNext();
+            if (useLocal)
+            {
+                networkPosition = (Vector3)stream.ReceiveNext();
+                networkRotation = (Quaternion)stream.ReceiveNext();
+            }
+            else
+            {
+                networkPosition = (Vector3)stream.ReceiveNext();
+                networkRotation = (Quaternion)stream.ReceiveNext();
+            }
         }
     }
 }

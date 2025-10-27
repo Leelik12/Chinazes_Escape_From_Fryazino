@@ -15,6 +15,8 @@ public class RoomController : MonoBehaviourPunCallbacks
     public GameObject Menu;
     public GameObject DriverBody;
     public GameObject GunnerBody;
+    public GameObject LeftProxyHand;
+    public GameObject RightProxyHand;
 
     [Header("UI Готовности")]
     public Image firstPlayerReadyCircle;
@@ -107,6 +109,8 @@ public class RoomController : MonoBehaviourPunCallbacks
             PhotonView TurretView = Turret.GetComponent<PhotonView>();
             PhotonView MachineGunView = MachineGun.GetComponent<PhotonView>();
             PhotonView GunnerView = GunnerBody.GetComponent<PhotonView>();
+            PhotonView LeftHand = LeftProxyHand.GetComponent<PhotonView>();
+            PhotonView RightHand = RightProxyHand.GetComponent<PhotonView>();
             // Второй игрок — пулемётчик
             if (driverRig != null)
             {
@@ -119,6 +123,8 @@ public class RoomController : MonoBehaviourPunCallbacks
                 TurretView.TransferOwnership(PhotonNetwork.LocalPlayer);
                 MachineGunView.TransferOwnership(PhotonNetwork.LocalPlayer);
                 GunnerView.TransferOwnership(PhotonNetwork.LocalPlayer);
+                LeftHand.TransferOwnership(PhotonNetwork.LocalPlayer);
+                RightHand.TransferOwnership(PhotonNetwork.LocalPlayer);
                 Debug.Log("Права на туррель и пулемет выданы");
             }
         }
