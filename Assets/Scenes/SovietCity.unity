@@ -63188,8 +63188,8 @@ Terrain:
   m_TreeMaximumFullLODCount: 50
   m_DetailObjectDistance: 70
   m_DetailObjectDensity: 0.5
-  m_HeightmapPixelError: 80
-  m_SplatMapDistance: 200
+  m_HeightmapPixelError: 100
+  m_SplatMapDistance: 150
   m_HeightmapMinimumLODSimplification: 0
   m_HeightmapMaximumLOD: 1
   m_ShadowCastingMode: 2
@@ -130112,10 +130112,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a8b1a3b0e6fdd646af42196bcec4e8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 10000
-  currentHealth: 10000
-  healthSlider: {fileID: 0}
-  healthSlider2: {fileID: 2129449395}
+  maxHealth: 1000
+  currentHealth: 1000
+  healthSlider: {fileID: 2129449395}
   HPBAR: {fileID: 378333455}
 --- !u!4 &7462393914568144148
 Transform:
