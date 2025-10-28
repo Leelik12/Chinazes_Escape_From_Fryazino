@@ -130112,8 +130112,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a8b1a3b0e6fdd646af42196bcec4e8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 1000
-  currentHealth: 1000
+  maxHealth: 10000
+  currentHealth: 10000
   healthSlider: {fileID: 0}
   healthSlider2: {fileID: 2129449395}
   HPBAR: {fileID: 378333455}
