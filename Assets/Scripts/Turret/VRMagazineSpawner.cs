@@ -1,90 +1,110 @@
 using UnityEngine;
 using Photon.Pun;
+using System.Collections;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 public class VRMagazineSpawner : MonoBehaviourPun
 {
-    [Header("Настройки спавна")]
-    [Tooltip("Префаб магазина, который будет появляться после вставки старого.")]
+    [Header("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ")]
+    [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ Resources).")]
     [SerializeField] private GameObject magazinePrefab;
 
-    [Tooltip("Точка, где будет появляться новый магазин.")]
+    [Tooltip("пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.")]
     [SerializeField] private Transform spawnPoint;
 
-    [Tooltip("Задержка перед спавном нового магазина после вставки (секунды).")]
-    [SerializeField] private float respawnDelay = 1.5f;
+    [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅ).")]
+    [SerializeField] private float respawnDelay = 2f;
 
-    private bool canSpawn = true;
+    [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ.")]
+    [SerializeField] private float checkRadius = 1f;
 
-    /// <summary>
-    /// Вызывается, когда магазин вставлен в оружие.
-    /// </summary>
-    public void OnMagazineInserted()
+    private GameObject currentMagazine;
+    private bool isSpawning = false;
+
+    void Update()
     {
-        if (!canSpawn) return;
-        canSpawn = false;
+        // пїЅпїЅпїЅпїЅпїЅпїЅ MasterClient пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
+        if (!PhotonNetwork.IsMasterClient) return;
 
-        // Вызываем спавн магазина через Photon
-        photonView.RPC(nameof(SpawnNewMagazineRPC), RpcTarget.AllBuffered);
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        if (currentMagazine == null)
+        {
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ-пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ)
+            Collider[] hits = Physics.OverlapSphere(spawnPoint.position, checkRadius);
+            foreach (var hit in hits)
+            {
+                if (hit.CompareTag("Ammo"))
+                {
+                    currentMagazine = hit.gameObject;
+                    break;
+                }
+            }
+
+            // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+            if (currentMagazine == null && !isSpawning)
+            {
+                StartCoroutine(SpawnMagazineAfterDelay());
+            }
+        }
     }
 
-    [PunRPC]
-    private void SpawnNewMagazineRPC()
+    private IEnumerator SpawnMagazineAfterDelay()
     {
-        StartCoroutine(SpawnAfterDelay());
-    }
-
-    private System.Collections.IEnumerator SpawnAfterDelay()
-    {
+        isSpawning = true;
         yield return new WaitForSeconds(respawnDelay);
 
         if (magazinePrefab == null || spawnPoint == null)
         {
-            Debug.LogWarning("MagazineSpawner: не назначен префаб или точка спавна!");
+            Debug.LogWarning("VRMagazineSpawner: пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ prefab пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ!");
+            isSpawning = false;
             yield break;
         }
 
-        // Создаём новый магазин через Photon
-        // Создаём магазин
+        // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
         GameObject newMag = PhotonNetwork.Instantiate(
             magazinePrefab.name,
             spawnPoint.position,
             spawnPoint.rotation
         );
 
-        // Убеждаемся, что он активен
-        newMag.SetActive(true);
-
-        // Сбрасываем Rigidbody
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Rigidbody
         Rigidbody rb = newMag.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.isKinematic = true;
+            rb.isKinematic = false;
             rb.useGravity = true;
-            rb.velocity = Vector3.zero;
+            rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
         }
 
-        // Переинициализируем XRGrabInteractable
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ XRGrabInteractable
         var grab = newMag.GetComponent<XRGrabInteractable>();
         if (grab != null)
         {
-            grab.interactionManager = null;
-            grab.selectEntered.RemoveAllListeners();
-            grab.selectExited.RemoveAllListeners();
+            XRInteractionManager manager = FindObjectOfType<XRInteractionManager>();
+            if (manager != null)
+                grab.interactionManager = manager;
 
-            // Перезапускаем компонент (важно для второго и следующих магазинов)
             grab.enabled = false;
+            yield return null; // пїЅпїЅпїЅ 1 пїЅпїЅпїЅпїЅ
             grab.enabled = true;
         }
 
-        // Назначаем родителя
-        newMag.transform.SetParent(this.transform, true);
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        newMag.transform.SetParent(transform, true);
 
-        Debug.Log("Магазин появился и готов к взаимодействию!");
-        canSpawn = true;
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+        if (!newMag.CompareTag("Magazine"))
+        {
+            Debug.LogWarning("VRMagazineSpawner: пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ 'Magazine'. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.");
+            newMag.tag = "Magazine";
+        }
 
+        currentMagazine = newMag;
+        isSpawning = false;
+
+        Debug.Log($"[VRMagazineSpawner] пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: {newMag.name}");
     }
-
 }
+

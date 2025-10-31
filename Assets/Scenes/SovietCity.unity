@@ -36250,6 +36250,7 @@ MonoBehaviour:
   magazinePrefab: {fileID: 5961424690434214311, guid: c6641839ed92f7644a7812223007763f, type: 3}
   spawnPoint: {fileID: 723297148}
   respawnDelay: 1.5
+  checkRadius: 1
 --- !u!4 &723723177 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4244444072601190, guid: 486897b2b94b3664da99ce6f48ac62cb, type: 3}
@@ -37381,6 +37382,57 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1415404445}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
+--- !u!1 &740636808
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 740636809}
+  - component: {fileID: 740636810}
+  m_Layer: 0
+  m_Name: headProxy
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &740636809
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 740636808}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1895829198424978172}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &740636810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 740636808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aea1414281fa921468d5dc1117677562, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 395089813}
+  followPosition: 1
+  followRotation: 1
+  lerpSpeed: 30
+  useLocal: 1
+  isHandProxy: 0
+  handRotationOffsetEuler: {x: 0, y: 0, z: 0}
 --- !u!1001 &740923208
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -66541,9 +66593,9 @@ Animator:
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: acb4575a307df034982b54d95697d80f, type: 3}
   m_Controller: {fileID: 9100000, guid: 1d35fad346d8389488f3788fbd382f09, type: 2}
-  m_CullingMode: 1
+  m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
@@ -66565,8 +66617,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 1235966580}
-  proxyLeft: {fileID: 0}
-  proxyRight: {fileID: 0}
+  proxyLeft: {fileID: 1368208098}
+  proxyRight: {fileID: 225278706}
   leftOffset: {x: 0, y: 0, z: 0}
   rightOffset: {x: 0, y: 0, z: 0}
 --- !u!114 &1235966582
@@ -66604,7 +66656,6 @@ MonoBehaviour:
   OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 1235966584}
   - {fileID: 1235966582}
   sceneViewId: 1
   InstantiationId: 0
@@ -66622,13 +66673,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animator: {fileID: 1235966580}
-  headProxy: {fileID: 0}
+  headProxy: {fileID: 740636809}
   headVisualRoot: {fileID: 1429554717}
   headOffset: {x: 0, y: 0, z: 0}
   headWeight: 1
   bodyWeight: 0
-  eyesWeight: 0.3
-  clampWeight: 0.7
+  eyesWeight: 1
+  clampWeight: 1
 --- !u!43 &1236117273
 Mesh:
   m_ObjectHideFlags: 0
@@ -99796,7 +99847,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -122476,6 +122527,7 @@ Transform:
   - {fileID: 6438533620318716751}
   - {fileID: 384348705863722627}
   - {fileID: 1235966578}
+  - {fileID: 740636809}
   - {fileID: 1446678285}
   - {fileID: 4082562145782662338}
   - {fileID: 2248960169218511538}
@@ -125690,7 +125742,8 @@ MonoBehaviour:
   impactDamping: 25
   smoothSpeed: 10
   maxPitch: 15
-  maxRoll: 18
+  maxRoll: 15
+  angleThreshold: 0.5
 --- !u!146 &4375469430294705532
 WheelCollider:
   m_ObjectHideFlags: 0
@@ -131293,6 +131346,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 8422064855269990655}
+  - {fileID: 740636810}
   - {fileID: 5235463168296403943}
   sceneViewId: 12
   InstantiationId: 0

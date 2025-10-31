@@ -4,14 +4,14 @@ using Bhaptics.SDK2;
 [RequireComponent(typeof(Rigidbody))]
 public class CarHapticsController : MonoBehaviour
 {
-    [Header("Ссылки")]
+    [Header("пїЅпїЅпїЅпїЅпїЅпїЅ")]
     [SerializeField] private Rigidbody carRigidbody;
-    [SerializeField] private PlayerHealth carHealth; // или другой скрипт здоровья
+    [SerializeField] private PlayerHealth carHealth; // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
-    [Header("Настройки чувствительности")]
-    [SerializeField] private float accelThreshold = 4f;     // Порог ускорения
-    [SerializeField] private float brakeThreshold = -4f;    // Порог торможения
-    [SerializeField] private float sideAccelThreshold = 3f; // Порог бокового ускорения
+    [Header("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")]
+    [SerializeField] private float accelThreshold = 4f;     // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    [SerializeField] private float brakeThreshold = -4f;    // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+    [SerializeField] private float sideAccelThreshold = 3f; // пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
     private Vector3 lastVelocity;
     private bool lowHealthTriggered = false;
@@ -47,38 +47,38 @@ public class CarHapticsController : MonoBehaviour
 
     private void CheckMovementHaptics()
     {
-        Vector3 localVel = transform.InverseTransformDirection(carRigidbody.velocity);
-        Vector3 accel = (carRigidbody.velocity - lastVelocity) / Time.deltaTime;
+        Vector3 localVel = transform.InverseTransformDirection(carRigidbody.linearVelocity);
+        Vector3 accel = (carRigidbody.linearVelocity - lastVelocity) / Time.deltaTime;
         Vector3 localAccel = transform.InverseTransformDirection(accel);
 
-        // Продольное ускорение — вперёд/назад
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ/пїЅпїЅпїЅпїЅпїЅ
         if (localAccel.z > accelThreshold)
         {
             BhapticsLibrary.Play(eventId:"razgon",startMillis:0, intensity: 0.5f, duration:1,angleX:0,offsetY:0);
-            Debug.Log("Разгон .Тактилка отработала");
+            Debug.Log("пїЅпїЅпїЅпїЅпїЅпїЅ .пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
         }
         else if (localAccel.z < brakeThreshold)
         {
             BhapticsLibrary.Play(eventId:"remen_bezopasnosty", startMillis: 0, intensity: 0.5f, duration: 1, angleX: 0, offsetY: 0);
-            Debug.Log("Торможение .Тактилка отработала");
+            Debug.Log("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ .пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
         }
 
-        // Боковое ускорение — влево/вправо
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ/пїЅпїЅпїЅпїЅпїЅпїЅ
         if (Mathf.Abs(localAccel.x) > sideAccelThreshold)
         {
             if (localAccel.x > 0)
             {
                 BhapticsLibrary.Play(eventId: "povorot_pravo", startMillis: 0, intensity: 0.5f, duration: 1, angleX: 0, offsetY: 0);
-                Debug.Log("Поворот вправо. Тактилка отработала");
+                Debug.Log("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
             }
             else
             {
                 BhapticsLibrary.Play(eventId: "povorot_levo", startMillis: 0, intensity: 0.5f, duration: 1, angleX: 0, offsetY: 0);
-                Debug.Log("Поворот влево. Тактилка отработала");
+                Debug.Log("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
             }
         }
 
-        lastVelocity = carRigidbody.velocity;
+        lastVelocity = carRigidbody.linearVelocity;
     }
 
     private void CheckHealth()
@@ -92,7 +92,7 @@ public class CarHapticsController : MonoBehaviour
             lowHealthTriggered = true;
             BhapticsLibrary.Play(eventId:"suit_low_hp", startMillis: 0, intensity: 1, duration: 1, angleX: 0, offsetY: 0);
             BhapticsLibrary.Play(eventId:"hand_low_hp", startMillis: 0, intensity: 1, duration: 1, angleX: 0, offsetY: 0);
-            Debug.Log("Низкое здоровье .Тактилка отработала");
+            Debug.Log("пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ .пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
         }
         else if (healthPercent > 0.3f && lowHealthTriggered)
         {
@@ -103,13 +103,13 @@ public class CarHapticsController : MonoBehaviour
     private void OnCarDamage(int damage)
     {
         BhapticsLibrary.Play(eventId:"damage_hands", startMillis: 0, intensity: 0.5f, duration: 1, angleX: 0, offsetY: 0);
-        Debug.Log("Получен урон .Тактилка отработала");
+        Debug.Log("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ .пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
     }
 
     private void OnCarDeath()
     {
         BhapticsLibrary.Play(eventId: "suit_low_hp", startMillis: 0, intensity: 1, duration: 1, angleX: 0, offsetY: 0);
         BhapticsLibrary.Play(eventId: "hand_low_hp", startMillis: 0, intensity: 1, duration: 1, angleX: 0, offsetY: 0);
-        Debug.Log("Смерть .Тактилка отработала");
+        Debug.Log("пїЅпїЅпїЅпїЅпїЅпїЅ .пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
     }
 }

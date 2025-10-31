@@ -181,10 +181,6 @@ public class VRGun : MonoBehaviourPun
         //Debug.Log("Отключаем встроенный магазин: " + internalMagazineModel.name);
         currentAmmo = 0;
         // Вызов спавна нового магазина через спавнер
-        if (magazineSpawner != null)
-        {
-            magazineSpawner.OnMagazineInserted();
-        }
         Debug.Log("Магазин выброшен.");
     }
     IEnumerator MuzzleLightFlash()
