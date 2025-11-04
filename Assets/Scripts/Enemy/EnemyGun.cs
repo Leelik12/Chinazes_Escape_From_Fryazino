@@ -2,16 +2,18 @@ using UnityEngine;
 using Photon.Pun;
 using System.Collections;
 
-public class EnemyGun : MonoBehaviourPun
+public class EnemyGun : MonoBehaviourPun, IPunObservable
 {
     [Header("Target")]
     public Transform target;
+
     [Header("Gun Settings")]
     public float fireRate = 0.3f;
     public float damage = 10f;
     public float range = 50f;
     [Tooltip("Максимальный угол разброса в градусах")]
     public float spreadAngle = 5f;
+
     [Header("Rotation")]
     public float rotationSpeed = 5f;
 
@@ -27,18 +29,38 @@ public class EnemyGun : MonoBehaviourPun
     public LayerMask hitLayerMask = ~0;
 
     private float nextFireTime = 0f;
+
+    // Для сетевой интерполяции
+    private Quaternion networkRotation;
+    private float syncLerpSpeed = 10f;
+
     private void Start()
     {
         if (target == null)
         {
             GameObject playerCar = GameObject.FindWithTag("Car");
-            if (playerCar != null) target = playerCar.transform;
+            if (playerCar != null)
+                target = playerCar.transform;
+        }
+
+        networkRotation = transform.rotation;
+    }
+
+    private void Update()
+    {
+        if (photonView.IsMine)
+        {
+            HandleTurretLogic();
+        }
+        else
+        {
+            // плавная интерполяция поворота
+            transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.deltaTime * syncLerpSpeed);
         }
     }
-    void Update()
-    {
-        if (!photonView.IsMine) return; // только мастер управляет поведением
 
+    private void HandleTurretLogic()
+    {
         if (target == null) return;
 
         // Плавное наведение пулемета на игрока
@@ -73,7 +95,7 @@ public class EnemyGun : MonoBehaviourPun
         // Raycast для попаданий
         if (Physics.Raycast(transform.position, direction, out RaycastHit hit, range, hitLayerMask, QueryTriggerInteraction.Ignore))
         {
-            // Декали попадания
+            // Эффекты попадания
             if (hitEffectPrefabDust != null)
             {
                 GameObject fx1 = Instantiate(hitEffectPrefabDust, hit.point + hit.normal * 0.01f, Quaternion.LookRotation(hit.normal));
@@ -99,5 +121,20 @@ public class EnemyGun : MonoBehaviourPun
         muzzleLight.enabled = true;
         yield return new WaitForSeconds(lightDuration);
         muzzleLight.enabled = false;
+    }
+
+    // --- Сетевая передача вращения ---
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            // только мастер (владелец) передаёт своё направление
+            stream.SendNext(transform.rotation);
+        }
+        else
+        {
+            // клиенты принимают и плавно интерполируют
+            networkRotation = (Quaternion)stream.ReceiveNext();
+        }
     }
 }

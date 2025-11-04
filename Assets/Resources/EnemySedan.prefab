@@ -952,7 +952,6 @@ GameObject:
   - component: {fileID: 8289045746923086140}
   - component: {fileID: 583441400760956488}
   - component: {fileID: 7528373230309646946}
-  - component: {fileID: 3430314337314304442}
   - component: {fileID: 3383208808950930546}
   m_Layer: 0
   m_Name: EnemySedan
@@ -1119,7 +1118,6 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  debugGizmos: 0
 --- !u!114 &7528373230309646946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1139,43 +1137,10 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 3430314337314304442}
+  - {fileID: 583441400760956488}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &3430314337314304442
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2604432941193830326}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8efc6b1d64977384eb3405357896c656, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_PositionModel:
-    SynchronizeEnabled: 1
-    TeleportEnabled: 1
-    TeleportIfDistanceGreaterThan: 50
-    InterpolateOption: 4
-    InterpolateMoveTowardsSpeed: 1
-    InterpolateLerpSpeed: 1
-    ExtrapolateOption: 0
-    ExtrapolateSpeed: 1
-    ExtrapolateIncludingRoundTripTime: 1
-    ExtrapolateNumberOfStoredPositions: 1
-  m_RotationModel:
-    SynchronizeEnabled: 1
-    InterpolateOption: 2
-    InterpolateRotateTowardsSpeed: 180
-    InterpolateLerpSpeed: 5
-  m_ScaleModel:
-    SynchronizeEnabled: 0
-    InterpolateOption: 0
-    InterpolateMoveTowardsSpeed: 1
-    InterpolateLerpSpeed: 0
 --- !u!114 &3383208808950930546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2179,7 +2144,6 @@ GameObject:
   - component: {fileID: 6698780977220354134}
   - component: {fileID: 8368550766230856326}
   - component: {fileID: 3481837358506643789}
-  - component: {fileID: 6147183834530295741}
   - component: {fileID: 4996794356863934323}
   - component: {fileID: 5223058258298431165}
   m_Layer: 0
@@ -2353,22 +2317,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.06762695, y: 0.16483307, z: 0.22735238}
   m_Center: {x: -0.0025634766, y: 0.17315727, z: -0.33889103}
---- !u!114 &6147183834530295741
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4084788870004627767}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
-  m_UseLocal: 1
 --- !u!114 &4996794356863934323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2388,7 +2336,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 6147183834530295741}
+  - {fileID: 5223058258298431165}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0

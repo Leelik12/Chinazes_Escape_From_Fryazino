@@ -3,13 +3,13 @@ using UnityEngine.AI;
 using Photon.Pun;
 
 [RequireComponent(typeof(Rigidbody))]
-public class EnemyCarController : MonoBehaviourPun
+public class EnemyCarController : MonoBehaviourPun, IPunObservable
 {
     [Header("Target (Player Car)")]
     public Transform target;
 
     [Header("Navigator (NavMeshAgent holder)")]
-    public NavMeshAgent navigatorAgent; // �������� ������ � NavMeshAgent
+    public NavMeshAgent navigatorAgent;
 
     [Header("Car Settings")]
     public float motorForce = 1500f;
@@ -29,25 +29,26 @@ public class EnemyCarController : MonoBehaviourPun
     public Transform rearLeftMesh;
     public Transform rearRightMesh;
 
-    [Header("Stuck / Reverse")]
+    [Header("Reverse Logic")]
     public float reverseDuration = 1.6f;
-    public float stuckSpeedThreshold = 0.4f;   // ��������, ���� ������� ������� "����� �� ����"
-    public float stuckTimeThreshold = 0.9f;    // ����� � �������� �� ��������� "�����������"
+    public float stuckSpeedThreshold = 0.4f;
+    public float stuckTimeThreshold = 0.9f;
 
-    [Header("Front obstacle check")]
-    public float frontCheckDistance = 1.2f;    // �������� ����������� ������ ��� ������������ �������
+    [Header("Obstacle Check")]
+    public float frontCheckDistance = 1.2f;
     public LayerMask obstacleMask = ~0;
 
-    [Header("Debug")]
-    public bool debugGizmos = false;
-
     private Rigidbody rb;
+    private bool reversing;
+    private float reverseTimer;
+    private float stuckTimer;
+    private float chosenReverseSteer;
 
-    // ��������� �������
-    private bool reversing = false;
-    private float reverseTimer = 0f;
-    private float stuckTimer = 0f;
-    private float chosenReverseSteer = 0f;
+    // Сетевые переменные для сглаживания
+    private Vector3 networkPosition;
+    private Quaternion networkRotation;
+    private Vector3 lastReceivedPosition;
+    private float syncLerpSpeed = 10f;
 
     void Start()
     {
@@ -60,10 +61,10 @@ public class EnemyCarController : MonoBehaviourPun
             navigatorAgent.updateRotation = false;
         }
 
+        // Только не-владельцы должны работать без физики
         if (!photonView.IsMine && PhotonNetwork.IsConnected)
         {
             rb.isKinematic = true;
-            return;
         }
         else
         {
@@ -75,44 +76,54 @@ public class EnemyCarController : MonoBehaviourPun
             GameObject playerCar = GameObject.FindWithTag("Car");
             if (playerCar != null) target = playerCar.transform;
         }
+
+        networkPosition = transform.position;
+        networkRotation = transform.rotation;
     }
 
     void FixedUpdate()
     {
-        if (!photonView.IsMine) return;
-        if (target == null || navigatorAgent == null) return;
+        // Только владелец (мастер) управляет движением
+        if (photonView.IsMine)
+        {
+            HandleMovement();
+        }
+        else
+        {
+            // У остальных клиентов — плавная интерполяция
+            transform.position = Vector3.Lerp(transform.position, networkPosition, Time.fixedDeltaTime * syncLerpSpeed);
+            transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.fixedDeltaTime * syncLerpSpeed);
+        }
+    }
 
-        // ��������� ������ ����
+    private void HandleMovement()
+    {
+        if (target == null || navigatorAgent == null)
+            return;
+
         navigatorAgent.SetDestination(target.position);
 
-        // ���� �������� � steeringTarget ������
         Vector3 worldTarget = navigatorAgent.steeringTarget;
         Vector3 localTarget = transform.InverseTransformPoint(worldTarget);
         float distanceToPlayer = Vector3.Distance(transform.position, target.position);
 
-        // ��������� ������ "�����������" �� ��������
         float forwardSpeed = Vector3.Dot(rb.linearVelocity, transform.forward);
         if (Mathf.Abs(forwardSpeed) < stuckSpeedThreshold)
             stuckTimer += Time.fixedDeltaTime;
         else
             stuckTimer = 0f;
 
-        // �������� ����������� ��� � ���� ����� ������� ������
         bool frontVeryClose = Physics.Raycast(transform.position + Vector3.up * 0.5f, transform.forward, frontCheckDistance, obstacleMask);
 
         if (reversing)
         {
             reverseTimer -= Time.fixedDeltaTime;
-
-            // ��� ������� ���� ������ � ��������� �������, ����� ��������
             frontLeftWheel.steerAngle = chosenReverseSteer;
             frontRightWheel.steerAngle = chosenReverseSteer;
-
             frontLeftWheel.motorTorque = -reverseForce;
             frontRightWheel.motorTorque = -reverseForce;
             ApplyBrake(0f);
 
-            // ��������� ������, ���� ����� ������� � ����� ������� ��� �������� �����������
             if (reverseTimer <= 0f && !frontVeryClose)
             {
                 reversing = false;
@@ -121,13 +132,9 @@ public class EnemyCarController : MonoBehaviourPun
         }
         else
         {
-            // ��������� ���� �� ����� �� ������
             float steerAngle = CalculateSteerToLocalTarget(localTarget);
-
-            // �� ������� ������������ ��������� ����� � �������
             bool inStoppingRange = distanceToPlayer <= stoppingDistance + 0.5f;
 
-            // ������� �������: ���� ����� ��������, ���� ����� ����� (� �� ������ ��� ����� � �������)
             if ((frontVeryClose || stuckTimer >= stuckTimeThreshold) && !inStoppingRange)
             {
                 StartReverseMode();
@@ -145,7 +152,6 @@ public class EnemyCarController : MonoBehaviourPun
                 }
                 else
                 {
-                    // ����� �����, �� ������� ����
                     frontLeftWheel.steerAngle = 0f;
                     frontRightWheel.steerAngle = 0f;
                     frontLeftWheel.motorTorque = 0f;
@@ -156,8 +162,6 @@ public class EnemyCarController : MonoBehaviourPun
         }
 
         UpdateWheelPoses();
-
-        // ����������� ��������� � ������� ������, ����� ����� �� "��������"
         navigatorAgent.nextPosition = transform.position;
     }
 
@@ -165,7 +169,8 @@ public class EnemyCarController : MonoBehaviourPun
     {
         float steer = 0f;
         float localMag = localTarget.magnitude;
-        if (localMag > 0.001f) steer = Mathf.Clamp(localTarget.x / localMag, -1f, 1f);
+        if (localMag > 0.001f)
+            steer = Mathf.Clamp(localTarget.x / localMag, -1f, 1f);
         float steerAngle = steer * maxSteerAngle;
         return Mathf.Clamp(steerAngle, -maxSteerAngle, maxSteerAngle);
     }
@@ -175,18 +180,17 @@ public class EnemyCarController : MonoBehaviourPun
         reversing = true;
         reverseTimer = reverseDuration;
 
-        // ��� ������� �������� ������� ������� � ����������� �� ���������� ������������ �����
         Vector3 origin = transform.position + Vector3.up * 0.5f;
-        Vector3 leftBackPos = origin - transform.right * 1.0f;  // �������� �����-���
-        Vector3 rightBackPos = origin + transform.right * 1.0f; // �������� ������-���
+        Vector3 leftBackPos = origin - transform.right * 1.0f;
+        Vector3 rightBackPos = origin + transform.right * 1.0f;
 
         bool leftBlocked = Physics.Raycast(leftBackPos, -transform.forward, frontCheckDistance, obstacleMask);
         bool rightBlocked = Physics.Raycast(rightBackPos, -transform.forward, frontCheckDistance, obstacleMask);
 
         if (!leftBlocked && rightBlocked)
-            chosenReverseSteer = -maxSteerAngle; // ���� ����� � ���� �����
+            chosenReverseSteer = -maxSteerAngle;
         else if (!rightBlocked && leftBlocked)
-            chosenReverseSteer = maxSteerAngle;  // ���� ������ � ���� ������
+            chosenReverseSteer = maxSteerAngle;
         else
             chosenReverseSteer = (Random.value > 0.5f ? maxSteerAngle : -maxSteerAngle);
     }
@@ -214,29 +218,20 @@ public class EnemyCarController : MonoBehaviourPun
         mesh.rotation = rot;
     }
 
-    private void OnDrawGizmos()
+    // --- Синхронизация через сеть ---
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        if (!debugGizmos) return;
-
-        Vector3 origin = transform.position + Vector3.up * 0.5f;
-
-        // �������� ����������� ���
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(origin, origin + transform.forward * frontCheckDistance);
-
-        // steeringTarget (�� ������) � ���� �� �������� �����
-        if (navigatorAgent != null)
+        if (stream.IsWriting)
         {
-            Gizmos.color = Color.cyan;
-            Gizmos.DrawSphere(navigatorAgent.steeringTarget, 0.2f);
-            Gizmos.DrawLine(transform.position, navigatorAgent.steeringTarget);
+            // Только владелец (мастер) отправляет
+            stream.SendNext(transform.position);
+            stream.SendNext(transform.rotation);
         }
-
-        // ���������� ����������� �������� �� �������� ���
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawLine(transform.position, transform.position + transform.forward * 2f);
+        else
+        {
+            // Все остальные принимают
+            networkPosition = (Vector3)stream.ReceiveNext();
+            networkRotation = (Quaternion)stream.ReceiveNext();
+        }
     }
 }
-
-
-

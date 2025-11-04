@@ -16,10 +16,10 @@ public class EnemyManager : MonoBehaviourPun
     [SerializeField] private GameObject enemyPrefab;
 
     [Header("UI")]
-    [SerializeField] private TMP_Text killedTextUI; // локальный UI для игрока
+    [SerializeField] private TMP_Text killedTextUI;
 
     [Header("Настройки")]
-    [SerializeField] private int enemiesPerWave = 2; // количество врагов в последующих волнах
+    [SerializeField] private int enemiesPerWave = 2;
 
     private List<GameObject> activeEnemies = new List<GameObject>();
     private int killedEnemies = 0;
@@ -35,14 +35,19 @@ public class EnemyManager : MonoBehaviourPun
     {
         if (gameStarted) return;
         gameStarted = true;
-        SpawnInitialEnemies();
+
+        // Только мастер-клиент отвечает за спавн врагов
+        if (PhotonNetwork.IsMasterClient)
+        {
+            SpawnInitialEnemies();
+        }
     }
 
     private void SpawnInitialEnemies()
     {
         foreach (var spawn in initialSpawnPoints)
         {
-            Debug.Log("Заспавнило");
+            Debug.Log($"[EnemyManager] Мастер спавнит врага в {spawn.name}");
             SpawnEnemyAt(spawn.position, spawn.rotation);
         }
     }
@@ -55,7 +60,7 @@ public class EnemyManager : MonoBehaviourPun
         EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
         if (enemyHealth != null)
         {
-            enemyHealth.OnDeath += OnEnemyKilled; // подписка на событие смерти
+            enemyHealth.OnDeath += OnEnemyKilled;
         }
     }
 
@@ -66,8 +71,8 @@ public class EnemyManager : MonoBehaviourPun
 
         activeEnemies.Remove(enemy);
 
-        // Если все текущие враги уничтожены, спавним новую волну
-        if (activeEnemies.Count == 0)
+        // Только мастер решает, когда начинать новую волну
+        if (PhotonNetwork.IsMasterClient && activeEnemies.Count == 0)
         {
             SpawnRandomWave();
         }
@@ -75,7 +80,6 @@ public class EnemyManager : MonoBehaviourPun
 
     private void SpawnRandomWave()
     {
-        // Выбираем случайные spawnPoints, исключая начальные
         List<Transform> availablePoints = new List<Transform>(spawnPoints);
         foreach (var p in initialSpawnPoints) availablePoints.Remove(p);
 
