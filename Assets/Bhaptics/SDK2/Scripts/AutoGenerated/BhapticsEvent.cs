@@ -18,5 +18,17 @@ namespace Bhaptics.SDK2
     {
         
         public const string REMEN_BEZOPASNOSTY = "remen_bezopasnosty";
+        
+        public const string RAZGON = "razgon";
+        
+        public const string POVOROT_PRAVO = "povorot_pravo";
+        
+        public const string POVOROT_LEVO = "povorot_levo";
+        
+        public const string SUIT_LOW_HP = "suit_low_hp";
+        
+        public const string HAND_LOW_HP = "hand_low_hp";
+        
+        public const string DAMAGE_HANDS = "damage_hands";
     }
 }

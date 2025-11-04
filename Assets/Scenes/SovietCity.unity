@@ -19362,10 +19362,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa47bfc4a9cd8d445bc96dd96d7bc5df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthSlider: {fileID: 0}
-  healthSlider2: {fileID: 2129449395}
-  fillImage: {fileID: 0}
-  fillImage2: {fileID: 140694482}
+  healthSlider: {fileID: 2129449395}
+  fillImage: {fileID: 140694482}
   healthGradient:
     serializedVersion: 2
     key0: {r: 1, g: 0, b: 0, a: 1}
@@ -121620,7 +121618,6 @@ GameObject:
   - component: {fileID: 8422064855269990654}
   - component: {fileID: 7459236575644943732}
   - component: {fileID: 1783440624438593725}
-  - component: {fileID: 8422064855269990655}
   - component: {fileID: 8422064855269990656}
   m_Layer: 0
   m_Name: VolgaCar
@@ -131317,18 +131314,6 @@ MonoBehaviour:
   sceneViewId: 12
   InstantiationId: 0
   isRuntimeInstantiated: 0
---- !u!114 &8422064855269990655
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1171050281947547841}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 03b456769bba5d848ae871f24998a8a1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &8422064855269990656
 MonoBehaviour:
   m_ObjectHideFlags: 0

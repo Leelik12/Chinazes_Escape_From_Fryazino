@@ -55,12 +55,12 @@ public class CarHapticsController : MonoBehaviour
         if (localAccel.z > accelThreshold)
         {
             BhapticsLibrary.Play(eventId:"razgon",startMillis:0, intensity: 0.5f, duration:1,angleX:0,offsetY:0);
-            Debug.Log("������ .�������� ����������");
+            Debug.Log("razgon sigran");
         }
         else if (localAccel.z < brakeThreshold)
         {
             BhapticsLibrary.Play(eventId:"remen_bezopasnosty", startMillis: 0, intensity: 0.5f, duration: 1, angleX: 0, offsetY: 0);
-            Debug.Log("���������� .�������� ����������");
+            Debug.Log("remen_bezopasnosty");
         }
 
         // ������� ��������� � �����/������
@@ -69,12 +69,12 @@ public class CarHapticsController : MonoBehaviour
             if (localAccel.x > 0)
             {
                 BhapticsLibrary.Play(eventId: "povorot_pravo", startMillis: 0, intensity: 0.5f, duration: 1, angleX: 0, offsetY: 0);
-                Debug.Log("������� ������. �������� ����������");
+                Debug.Log("povorot_pravo");
             }
             else
             {
                 BhapticsLibrary.Play(eventId: "povorot_levo", startMillis: 0, intensity: 0.5f, duration: 1, angleX: 0, offsetY: 0);
-                Debug.Log("������� �����. �������� ����������");
+                Debug.Log("povorot_levo");
             }
         }
 
@@ -92,7 +92,7 @@ public class CarHapticsController : MonoBehaviour
             lowHealthTriggered = true;
             BhapticsLibrary.Play(eventId:"suit_low_hp", startMillis: 0, intensity: 1, duration: 1, angleX: 0, offsetY: 0);
             BhapticsLibrary.Play(eventId:"hand_low_hp", startMillis: 0, intensity: 1, duration: 1, angleX: 0, offsetY: 0);
-            Debug.Log("������ �������� .�������� ����������");
+            Debug.Log("hand_low_hp           suit_low_hp");
         }
         else if (healthPercent > 0.3f && lowHealthTriggered)
         {
@@ -103,13 +103,13 @@ public class CarHapticsController : MonoBehaviour
     private void OnCarDamage(int damage)
     {
         BhapticsLibrary.Play(eventId:"damage_hands", startMillis: 0, intensity: 0.5f, duration: 1, angleX: 0, offsetY: 0);
-        Debug.Log("������� ���� .�������� ����������");
+        Debug.Log("damage_hands");
     }
 
     private void OnCarDeath()
     {
         BhapticsLibrary.Play(eventId: "suit_low_hp", startMillis: 0, intensity: 1, duration: 1, angleX: 0, offsetY: 0);
         BhapticsLibrary.Play(eventId: "hand_low_hp", startMillis: 0, intensity: 1, duration: 1, angleX: 0, offsetY: 0);
-        Debug.Log("������ .�������� ����������");
+        Debug.Log("hand_low_hp          suit_low_hp");
     }
 }

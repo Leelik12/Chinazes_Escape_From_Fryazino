@@ -6,8 +6,8 @@ using UnityEngine.SceneManagement;
 public class PlayerHealth : MonoBehaviourPun
 {
     [Header("Health Settings")]
-    [SerializeField] private int maxHealth = 100;
-    [SerializeField] private int currentHealth = 100;
+    [SerializeField] private int maxHealth = 1000;
+    [SerializeField] private int currentHealth = 1000;
 
     [Header("UI")]
     [SerializeField] private Slider healthSlider;
