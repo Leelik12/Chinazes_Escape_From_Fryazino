@@ -29544,40 +29544,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca3e7fbcbe01e9146ba4edbae2352d5b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gripInput:
-    m_InputSourceMode: 2
-    m_InputAction:
-      m_Name: 
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 53a5cacb-b89f-4d6d-a934-ccb7be2fef12
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_InputActionReference: {fileID: 6558622148059887818, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-    m_ObjectReferenceObject: {fileID: 0}
-    m_ManualValue: 0
-  triggerInput:
-    m_InputSourceMode: 2
-    m_InputAction:
-      m_Name: 
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 14ce82ba-4c74-421d-80d5-958bc03aba54
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings: []
-      m_Flags: 0
-    m_InputActionReference: {fileID: -4289430672226363583, guid: c348712bda248c246b8c49b3db54643f, type: 3}
-    m_ObjectReferenceObject: {fileID: 0}
-    m_ManualValue: 0
-  avatarAnimator: {fileID: 5866666019858825847}
-  isLeftHand: 1
-  maxFingerBend: 70
-  maxThumbBend: 50
-  gripStrength: 0
-  triggerStrength: 0
 --- !u!1 &610430133
 GameObject:
   m_ObjectHideFlags: 0
@@ -99847,7 +99813,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -121655,6 +121621,7 @@ GameObject:
   - component: {fileID: 7459236575644943732}
   - component: {fileID: 1783440624438593725}
   - component: {fileID: 8422064855269990655}
+  - component: {fileID: 8422064855269990656}
   m_Layer: 0
   m_Name: VolgaCar
   m_TagString: Car
@@ -131344,7 +131311,7 @@ MonoBehaviour:
   OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 8422064855269990655}
+  - {fileID: 8422064855269990656}
   - {fileID: 740636810}
   - {fileID: 5235463168296403943}
   sceneViewId: 12
@@ -131362,9 +131329,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03b456769bba5d848ae871f24998a8a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  positionLerpSpeed: 10
-  rotationLerpSpeed: 10
-  velocitySmoothing: 0.3
+--- !u!114 &8422064855269990656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171050281947547841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
 --- !u!4 &8428538889073764768
 Transform:
   m_ObjectHideFlags: 0
