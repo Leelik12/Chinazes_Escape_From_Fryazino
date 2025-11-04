@@ -11,9 +11,11 @@ public class PlayerHealth : MonoBehaviourPun
 
     [Header("UI")]
     [SerializeField] private Slider healthSlider;
+    public HealthBarGradient HPBAR;
+
     public event System.Action<int> OnDamageTaken;
     public event System.Action OnDeath;
-    public HealthBarGradient HPBAR;
+
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
 
@@ -28,29 +30,37 @@ public class PlayerHealth : MonoBehaviourPun
         }
     }
 
-    // Любой игрок вызывает этот метод, чтобы нанести урон
+    // Урон запрашивается кем угодно, но считается только у владельца
     public void RequestDamage(int damage)
     {
+        if (photonView.Owner == null) return;
+
         if (photonView.IsMine)
         {
-            photonView.RPC(nameof(TakeDamage), RpcTarget.All, damage);
+            ApplyDamage(damage);
         }
         else
         {
-            photonView.RPC(nameof(TakeDamage), photonView.Owner, damage);
+            // просим владельца обработать урон
+            photonView.RPC(nameof(RPC_RequestDamageFromOther), photonView.Owner, damage);
         }
     }
 
+    // Получено с другого клиента
     [PunRPC]
-    private void TakeDamage(int damage, PhotonMessageInfo info)
+    private void RPC_RequestDamageFromOther(int damage)
+    {
+        if (!photonView.IsMine) return;
+        ApplyDamage(damage);
+    }
+
+    // Применяем урон только на своём клиенте, потом синхронизируем
+    private void ApplyDamage(int damage)
     {
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        if (healthSlider != null)
-        {
-            HPBAR.SetHealth(currentHealth, maxHealth);
-        }
+        photonView.RPC(nameof(RPC_SyncHealth), RpcTarget.All, currentHealth);
 
         Debug.Log($"{gameObject.name} получил {damage} урона. Текущее здоровье: {currentHealth}");
 
@@ -62,15 +72,26 @@ public class PlayerHealth : MonoBehaviourPun
         }
     }
 
+    //Рассылаем обновлённое здоровье
+    [PunRPC]
+    private void RPC_SyncHealth(int newHealth)
+    {
+        currentHealth = newHealth;
+
+        if (healthSlider != null)
+        {
+            HPBAR.SetHealth(currentHealth, maxHealth);
+        }
+    }
+
     private void Die()
     {
         Debug.Log($"{gameObject.name} умер!");
         OnDeath?.Invoke();
 
-        // Перезагрузка сцены для всех игроков
+        // перезагрузка сцены для всех — только мастер
         if (PhotonNetwork.IsMasterClient)
         {
-            // Загружаем текущую сцену заново
             PhotonNetwork.LoadLevel(SceneManager.GetActiveScene().name);
         }
     }

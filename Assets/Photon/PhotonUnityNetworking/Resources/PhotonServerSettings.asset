@@ -48,6 +48,8 @@ MonoBehaviour:
   - PlayRecoilRPC
   - RPC_UpdateSteeringAngle
   - RequestSpawnOnMaster
+  - RPC_RequestDamageFromOther
+  - RPC_SyncHealth
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
