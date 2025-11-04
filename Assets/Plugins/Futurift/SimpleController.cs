@@ -31,6 +31,10 @@ namespace Futurift
         [SerializeField] private float maxPitch = 10f;
         [SerializeField] private float maxRoll = 10f;
 
+        [Header("Noise filter")]
+        [Tooltip("Минимальное изменение угла (в градусах), при котором обновление отправляется.")]
+        [SerializeField] private float angleThreshold = 0.1f;
+
         private FutuRiftController _controller;
 
         private Vector3 lastVelocity;
@@ -38,6 +42,10 @@ namespace Futurift
         private float currentRoll;
         private float impactPitch;
         private float impactRoll;
+
+        // Для фильтрации изменений
+        private float lastSentPitch;
+        private float lastSentRoll;
 
         private void Awake()
         {
@@ -55,6 +63,9 @@ namespace Futurift
             _controller?.Start();
             if (vehicleRigidbody != null)
                 lastVelocity = vehicleRigidbody.velocity;
+
+            lastSentPitch = 0f;
+            lastSentRoll = 0f;
         }
 
         private void OnDisable()
@@ -75,11 +86,10 @@ namespace Futurift
             float lateralAccel = Vector3.Dot(acceleration, vehicleTransform.right);
 
             // --- Эффекты ускорения ---
-            float targetPitchEffect = -forwardAccel * accelPitchFactor; // вперёд при торможении
+            float targetPitchEffect = -forwardAccel * accelPitchFactor;
             float targetRollEffect = -lateralAccel * cornerRollFactor;
 
             // --- Эффект удара ---
-            // Убираем плавное затухание — теперь реакция мгновенная
             impactPitch *= 0.95f;
             impactRoll *= 0.95f;
 
@@ -93,31 +103,31 @@ namespace Futurift
             float realRoll = vehicleTransform.localEulerAngles.z;
             if (realRoll > 180f) realRoll -= 360f;
 
-            float targetPitch = realPitch + targetPitchEffect;
-            float targetRoll = realRoll + targetRollEffect;
+            float targetPitch = Mathf.Clamp(realPitch + targetPitchEffect, -maxPitch, maxPitch);
+            float targetRoll = Mathf.Clamp(realRoll + targetRollEffect, -maxRoll, maxRoll);
 
-            targetPitch = Mathf.Clamp(targetPitch, -maxPitch, maxPitch);
-            targetRoll = Mathf.Clamp(targetRoll, -maxRoll, maxRoll);
-
-            // --- УБРАНО СГЛАЖИВАНИЕ ---
+            // --- Без сглаживания ---
             currentPitch = targetPitch;
             currentRoll = targetRoll;
 
-            // --- Отправка в капсулу ---
-            _controller.Pitch = currentPitch;
-            _controller.Roll = currentRoll;
+            // --- Фильтр изменений ---
+            if (Mathf.Abs(currentPitch - lastSentPitch) > angleThreshold ||
+                Mathf.Abs(currentRoll - lastSentRoll) > angleThreshold)
+            {
+                _controller.Pitch = currentPitch;
+                _controller.Roll = currentRoll;
 
-            //Debug.Log($"FUTURIFT Pitch: {_controller.Pitch:F2}°  Roll: {_controller.Roll:F2}°");
+                lastSentPitch = currentPitch;
+                lastSentRoll = currentRoll;
+            }
 
             lastVelocity = velocity;
         }
-
 
         private void OnCollisionEnter(Collision collision)
         {
             float impactForce = collision.relativeVelocity.magnitude;
             Debug.Log("АВАРИЯ");
-            // Импульс удара
             impactPitch = -impactForce * impactFactor;
             impactRoll = Random.Range(-impactForce, impactForce) * impactFactor * 0.5f;
         }

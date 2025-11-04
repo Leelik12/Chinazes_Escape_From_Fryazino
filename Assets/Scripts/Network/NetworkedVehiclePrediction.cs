@@ -10,7 +10,7 @@ public class NetworkedVehiclePrediction : MonoBehaviourPun, IPunObservable
     private Vector3 networkVelocity;
     private Vector3 smoothedVelocity;
 
-    [Header("Сглаживание движения")]
+    [Header("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ")]
     [Range(1f, 30f)] public float positionLerpSpeed = 10f;
     [Range(1f, 30f)] public float rotationLerpSpeed = 10f;
     [Range(0f, 1f)] public float velocitySmoothing = 0.25f;
@@ -25,11 +25,11 @@ public class NetworkedVehiclePrediction : MonoBehaviourPun, IPunObservable
         if (photonView.IsMine)
             return;
 
-        // Интерполяция позиции и поворота — без предсказаний
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         transform.position = Vector3.Lerp(transform.position, networkPosition, Time.fixedDeltaTime * positionLerpSpeed);
         transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.fixedDeltaTime * rotationLerpSpeed);
 
-        // Мягкое сглаживание сетевой скорости (если вдруг понадобится для звуков, колес и т.п.)
+        // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅ.пїЅ.)
         smoothedVelocity = Vector3.Lerp(smoothedVelocity, networkVelocity, velocitySmoothing);
     }
 
@@ -39,7 +39,7 @@ public class NetworkedVehiclePrediction : MonoBehaviourPun, IPunObservable
         {
             stream.SendNext(transform.position);
             stream.SendNext(transform.rotation);
-            stream.SendNext(rb.velocity);
+            stream.SendNext(rb.linearVelocity);
         }
         else
         {

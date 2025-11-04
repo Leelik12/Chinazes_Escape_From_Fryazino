@@ -12,29 +12,29 @@ public class CarTelemetryHandler : MonoBehaviour
     [SerializeField] private Rigidbody rigidbody;
 
     [Header("Effect Factors")]
-    [Tooltip("Насколько сильно платформа реагирует на продольное ускорение (вперёд/назад).")]
+    [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅ/пїЅпїЅпїЅпїЅпїЅ).")]
     [SerializeField] private float accelPitchFactor = 0.02f;
 
-    [Tooltip("Насколько сильно платформа реагирует на боковое ускорение (в повороте).")]
+    [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ).")]
     [SerializeField] private float cornerRollFactor = 0.02f;
 
     [Header("Impact settings")]
-    [Tooltip("Множитель силы наклона при ударе.")]
+    [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ.")]
     [SerializeField] private float impactFactor = 0.015f;
 
-    [Tooltip("Скорость затухания эффекта удара.")]
+    [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ.")]
     [SerializeField] private float impactDamping = 2.5f;
 
     [Header("Blending and Limits")]
-    [Tooltip("Максимальный угол платформы по тангажу (Pitch).")]
+    [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (Pitch).")]
     [SerializeField] private float maxPitch = 10f;
-    [Tooltip("Максимальный угол платформы по крену (Roll).")]
+    [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (Roll).")]
     [SerializeField] private float maxRoll = 10f;
 
-    [Tooltip("Сколько процентов движения платформы берётся из реального наклона авто (0.5 = 50%).")]
+    [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ (0.5 = 50%).")]
     [Range(0f, 1f)][SerializeField] private float realRotationWeight = 0.5f;
 
-    [Tooltip("Скорость сглаживания итогового движения.")]
+    [Tooltip("пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.")]
     [SerializeField] private float smoothSpeed = 5f;
 
     private ObjectTelemetryData _telemetryData;
@@ -57,7 +57,7 @@ public class CarTelemetryHandler : MonoBehaviour
         StartCoroutine(TelemetryHandler());
         _sendingData.SendingStart();
 
-        lastVelocity = rigidbody.velocity;
+        lastVelocity = rigidbody.linearVelocity;
     }
 
     private void OnDisable()
@@ -83,28 +83,28 @@ public class CarTelemetryHandler : MonoBehaviour
 
     private void UpdatePlatformMotion()
     {
-        Vector3 velocity = rigidbody.velocity;
+        Vector3 velocity = rigidbody.linearVelocity;
         Vector3 acceleration = (velocity - lastVelocity) / Time.fixedDeltaTime;
 
-        // --- Эффектная часть: ускорения ---
+        // --- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ---
         float forwardAccel = Vector3.Dot(acceleration, vehicleTransform.forward);
         float lateralAccel = Vector3.Dot(acceleration, vehicleTransform.right);
 
-        float targetEffectPitch = -forwardAccel * accelPitchFactor; // торможение = наклон вперёд
+        float targetEffectPitch = -forwardAccel * accelPitchFactor; // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ = пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
         float targetEffectRoll = -lateralAccel * cornerRollFactor;
 
-        // --- Реальная часть: наклон автомобиля ---
+        // --- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ---
         Vector3 localEuler = vehicleTransform.localRotation.eulerAngles;
 
-        // Конвертируем углы в диапазон -180..180
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ -180..180
         float realPitch = NormalizeAngle(localEuler.x);
         float realRoll = NormalizeAngle(localEuler.z);
 
-        // --- Эффект столкновения ---
+        // --- пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ---
         impactPitch = Mathf.Lerp(impactPitch, 0f, Time.deltaTime * impactDamping);
         impactRoll = Mathf.Lerp(impactRoll, 0f, Time.deltaTime * impactDamping);
 
-        // --- Комбинируем ---
+        // --- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ---
         float finalPitch =
             (realPitch * realRotationWeight) +
             ((targetEffectPitch + impactPitch) * (1f - realRotationWeight));
@@ -113,15 +113,15 @@ public class CarTelemetryHandler : MonoBehaviour
             (realRoll * realRotationWeight) +
             ((targetEffectRoll + impactRoll) * (1f - realRotationWeight));
 
-        // --- Ограничения ---
+        // --- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ---
         finalPitch = Mathf.Clamp(finalPitch, -maxPitch, maxPitch);
         finalRoll = Mathf.Clamp(finalRoll, -maxRoll, maxRoll);
 
-        // --- Сглаживание ---
+        // --- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ---
         currentPitch = Mathf.Lerp(currentPitch, finalPitch, Time.deltaTime * smoothSpeed);
         currentRoll = Mathf.Lerp(currentRoll, finalRoll, Time.deltaTime * smoothSpeed);
 
-        // --- Отправка на платформу ---
+        // --- пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ---
         _telemetryData.Angles = new Vector3(currentPitch, 0f, currentRoll);
         _telemetryData.Velocity = velocity;
 
