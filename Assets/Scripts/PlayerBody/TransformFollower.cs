@@ -14,6 +14,7 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
 
     [Header("Настройки синхронизации")]
     public bool useLocal = true; // Локальные координаты относительно родителя или мировые
+
     [Header("Специальные настройки")]
     public bool isHandProxy = false;           // руки это или нет
     public Vector3 handRotationOffsetEuler = Vector3.zero; // Оффсет для рук (Euler)
@@ -27,7 +28,7 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
 
         if (photonView.IsMine)
         {
-            // Локальное следование
+            // === Локальное следование ===
             if (followPosition)
             {
                 if (useLocal)
@@ -35,12 +36,14 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
                 else
                     transform.position = target.position;
             }
+
             if (followRotation)
             {
                 Quaternion targetRot = useLocal
                     ? Quaternion.Inverse(transform.parent.rotation) * target.rotation
                     : target.rotation;
 
+                // Оффсет применяем ТОЛЬКО у локального владельца
                 if (isHandProxy)
                     targetRot *= Quaternion.Euler(handRotationOffsetEuler);
 
@@ -49,17 +52,14 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
         }
         else
         {
-            // Сетевая интерполяция
+            // === Сетевая интерполяция ===
             if (followPosition)
                 transform.localPosition = Vector3.Lerp(transform.localPosition, networkPosition, Time.deltaTime * lerpSpeed);
 
             if (followRotation)
             {
-                Quaternion targetRot = networkRotation;
-                if (isHandProxy)
-                    targetRot *= Quaternion.Euler(handRotationOffsetEuler);
-
-                transform.localRotation = Quaternion.Slerp(transform.localRotation, targetRot, Time.deltaTime * lerpSpeed);
+                // Оффсет НЕ применяем здесь!
+                transform.localRotation = Quaternion.Slerp(transform.localRotation, networkRotation, Time.deltaTime * lerpSpeed);
             }
         }
     }
