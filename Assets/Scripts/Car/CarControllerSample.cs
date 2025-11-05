@@ -172,7 +172,7 @@ public class CarControllerSample : MonoBehaviourPun
 
         float targetAngle = inputControllerReader.Steering * visualWheelRotationAngle;
         currentVisualAngle = Mathf.Lerp(currentVisualAngle, targetAngle, Time.deltaTime * steeringSmoothness);
-        steeringWheelVisual.localRotation = Quaternion.Euler(0f, 0f, -currentVisualAngle);
+        steeringWheelVisual.localRotation = Quaternion.Euler(25f, 0f, -currentVisualAngle);
     }
 }
 

@@ -98,7 +98,7 @@ public class CarController : MonoBehaviourPun
         {
             float targetRotation = -steeringInput * maxSteeringWheelAngle;
             currentWheelRotation = Mathf.Lerp(currentWheelRotation, targetRotation, Time.deltaTime * steeringWheelSmoothness);
-            steeringWheel.localRotation = Quaternion.Euler(0f, 0f, currentWheelRotation);
+            steeringWheel.localRotation = Quaternion.Euler(25f, 0f, currentWheelRotation);
         }
 
         // Обработка коробки передач
