@@ -9,6 +9,7 @@ public class CarController : MonoBehaviourPun
     public AudioSource Engine;
     public AudioClip Idle;
     public AudioClip Racing;
+
     [Header("Колёса (WheelColliders)")]
     public WheelCollider frontLeftWheel;
     public WheelCollider frontRightWheel;
@@ -20,6 +21,11 @@ public class CarController : MonoBehaviourPun
     public Transform frontRightTransform;
     public Transform rearLeftTransform;
     public Transform rearRightTransform;
+
+    [Header("Руль")]
+    public Transform steeringWheel;              // сам руль
+    public float maxSteeringWheelAngle = 450f;   // максимальный угол поворота руля
+    public float steeringWheelSmoothness = 10f;  // скорость поворота
 
     [Header("Параметры машины")]
     public float maxMotorTorque = 1500f;
@@ -52,15 +58,17 @@ public class CarController : MonoBehaviourPun
     private float steeringInput;
     private float brakeInput;
     private float handbrakeInput;
-
     private float engineRPM;
     private float rpmVelocity;
+
     private Quaternion flRotOffset, frRotOffset, rlRotOffset, rrRotOffset;
     private bool fl;
     private bool lastfl;
-
     private Vector3 visualPosition;
     private Quaternion visualRotation;
+
+    private float currentWheelRotation = 0f; // текущее вращение руля (в градусах)
+
     void Start()
     {
         var cam = GetComponentInChildren<Camera>(true);
@@ -81,38 +89,45 @@ public class CarController : MonoBehaviourPun
     void Update()
     {
         if (!photonView.IsMine) return;
+
         steeringInput = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical"); // W=1, S=-1
+
+        // Вращение руля
+        if (steeringWheel != null)
+        {
+            float targetRotation = -steeringInput * maxSteeringWheelAngle;
+            currentWheelRotation = Mathf.Lerp(currentWheelRotation, targetRotation, Time.deltaTime * steeringWheelSmoothness);
+            steeringWheel.localRotation = Quaternion.Euler(0f, 0f, currentWheelRotation);
+        }
 
         // Обработка коробки передач
         if (currentGear == -1)
         {
-            // Задняя передача: W → движение назад, S → тормоз
             motorInput = vertical > 0f ? vertical : 0f;
             brakeInput = vertical < 0f ? -vertical : 0f;
         }
         else if (currentGear == 0)
         {
-            // Нейтраль: газ не двигает, S → тормоз
             motorInput = 0f;
             brakeInput = vertical < 0f ? -vertical : 0f;
         }
         else
         {
-            // Передачи вперед: W → вперед, S → тормоз
             motorInput = vertical > 0f ? vertical : 0f;
             brakeInput = vertical < 0f ? -vertical : 0f;
         }
 
         handbrakeInput = Input.GetKey(KeyCode.Space) ? 1f : 0f;
+
         if (Input.GetKeyDown(KeyCode.O))
-        {
             SceneManager.LoadScene(0);
-        }
+
         // Переключение передач вручную
         if (Input.GetKeyDown(KeyCode.E)) ShiftUp();
         if (Input.GetKeyDown(KeyCode.Q)) ShiftDown();
 
+        // Аэродинамическая прижимная сила
         float downforce = rb.linearVelocity.magnitude * 300f;
         rb.AddForce(-transform.up * downforce);
 
@@ -124,7 +139,7 @@ public class CarController : MonoBehaviourPun
         if (!photonView.IsMine) return;
         float speed = rb.linearVelocity.magnitude * 3.6f;
 
-        // Руль
+        // Руль (управление колёсами)
         float speedFactor = Mathf.Clamp01(speed / 200f);
         float dynamicSteer = Mathf.Lerp(maxSteeringAngle, maxSteeringAngle * 0.2f, speedFactor);
         frontLeftWheel.steerAngle = dynamicSteer * steeringInput;
@@ -149,21 +164,15 @@ public class CarController : MonoBehaviourPun
         {
             Engine.clip = Racing;
             fl = false;
-            if (currentGear <= 1)
-            {
-                Engine.pitch = 1;
-            }
-            else
-            {
-                Engine.pitch = 1 + 0.1f * currentGear;
-            }
+            Engine.pitch = currentGear <= 1 ? 1f : 1f + 0.1f * currentGear;
         }
         if (fl != lastfl)
         {
             lastfl = fl;
             Engine.Play();
         }
-        // Применяем моторный момент
+
+        // Применяем момент
         if (currentGear == -1)
         {
             rearLeftWheel.motorTorque = -torque;
@@ -175,7 +184,7 @@ public class CarController : MonoBehaviourPun
             rearRightWheel.motorTorque = torque;
         }
 
-        // Тормоз
+        // Тормоза
         float brake = brakeForce * brakeInput;
         frontLeftWheel.brakeTorque = brake;
         frontRightWheel.brakeTorque = brake;
@@ -196,30 +205,26 @@ public class CarController : MonoBehaviourPun
         visualPosition = rb.position;
         visualRotation = rb.rotation;
     }
+
     void LateUpdate()
     {
         if (!photonView.IsMine) return;
-
-        // Сглаживаем визуальное положение под текущую физику
-        // Можно 1f, чтобы мгновенно, или чуть меньше — для плавности
         transform.position = Vector3.Lerp(transform.position, visualPosition, 1f);
         transform.rotation = Quaternion.Slerp(transform.rotation, visualRotation, 1f);
     }
+
     void UpdateEngine()
     {
         int gearIndex = Mathf.Clamp(currentGear + 1, 0, gearRatios.Length - 1);
         float wheelRPM = (rearLeftWheel.rpm + rearRightWheel.rpm) * 0.5f;
         float targetRPM = idleRPM + wheelRPM * Mathf.Abs(gearRatios[gearIndex]);
-
         engineRPM = Mathf.SmoothDamp(engineRPM, targetRPM, ref rpmVelocity, engineSmoothTime);
         engineRPM = Mathf.Clamp(engineRPM, idleRPM, maxRPM);
     }
 
     void UpdateWheelPose(WheelCollider collider, Transform wheelTransform, Quaternion rotOffset)
     {
-        Vector3 pos;
-        Quaternion quat;
-        collider.GetWorldPose(out pos, out quat);
+        collider.GetWorldPose(out Vector3 pos, out Quaternion quat);
         wheelTransform.position = pos;
         wheelTransform.rotation = quat * rotOffset;
     }
@@ -231,6 +236,7 @@ public class CarController : MonoBehaviourPun
         if (speedText) speedText.text = $"{Mathf.RoundToInt(speed)} km/h";
         if (rpmText) rpmText.text = $"{Mathf.RoundToInt(engineRPM)} rpm";
         if (GearText) GearText.text = $"{currentGear}";
+
         if (speedNeedle)
         {
             float speedNorm = Mathf.Clamp01(speed / maxSpeed);

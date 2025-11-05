@@ -14,6 +14,9 @@ public class HandAnimationSync : MonoBehaviourPun, IPunObservable
     [Header("Настройки интерполяции")]
     [Range(5f, 30f)] public float smoothSpeed = 12f;
 
+    [Header("Настройки водителя")]
+    [SerializeField] private float gripStatic = 1f;
+    [SerializeField] private bool IsDriver = false;
     private float triggerValue;
     private float gripValue;
     private float networkTrigger;
@@ -42,6 +45,11 @@ public class HandAnimationSync : MonoBehaviourPun, IPunObservable
             animator.SetFloat("Trigger", triggerValue);
             animator.SetFloat("Grip", gripValue);
         }
+        if (IsDriver)
+        {
+            animator.SetFloat("Trigger", 0f);
+            animator.SetFloat("Grip", gripStatic);
+        }
     }
 
     // Синхронизация по сети
@@ -49,9 +57,18 @@ public class HandAnimationSync : MonoBehaviourPun, IPunObservable
     {
         if (stream.IsWriting)
         {
-            // Отправляем локальные значения другим игрокам
-            stream.SendNext(triggerValue);
-            stream.SendNext(gripValue);
+            if (IsDriver)
+            {
+                // Отправляем локальные значения другим игрокам
+                stream.SendNext(0f);
+                stream.SendNext(gripStatic);
+            }
+            else
+            {
+                // Отправляем локальные значения другим игрокам
+                stream.SendNext(triggerValue);
+                stream.SendNext(gripValue);
+            }
         }
         else
         {
