@@ -18559,6 +18559,10 @@ PrefabInstance:
       value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 789595840771037160, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+      propertyPath: carRoot
+      value: 
+      objectReference: {fileID: 7462393914568144148}
+    - target: {fileID: 789595840771037160, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: maxAmmo
       value: 1e+13
       objectReference: {fileID: 0}
@@ -18799,9 +18803,6 @@ PrefabInstance:
       addedObject: {fileID: 367606688}
     - targetCorrespondingSourceObject: {fileID: 1974413213117247393, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 367606686}
-    - targetCorrespondingSourceObject: {fileID: 1974413213117247393, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 367606695}
   m_SourcePrefab: {fileID: 100100000, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
 --- !u!4 &367606678 stripped
@@ -18820,22 +18821,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b324cb66d707b044fbce43400c1e2246, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &367606686
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 118498522}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizePosition: 1
-  m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
-  m_UseLocal: 1
 --- !u!114 &367606688
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18870,10 +18855,21 @@ MonoBehaviour:
   OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
-  - {fileID: 367606686}
+  - {fileID: 367606696}
   sceneViewId: 9
   InstantiationId: 0
   isRuntimeInstantiated: 0
+--- !u!114 &367606696 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 789595840771037160, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+  m_PrefabInstance: {fileID: 367606677}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 118498522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 430356137a57d384988f81f20f66b55b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!134 &368243182
 PhysicsMaterial:
   m_ObjectHideFlags: 0
@@ -29591,7 +29587,6 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 610285002}
-  - {fileID: 610285004}
   sceneViewId: 4
   InstantiationId: 0
   isRuntimeInstantiated: 0

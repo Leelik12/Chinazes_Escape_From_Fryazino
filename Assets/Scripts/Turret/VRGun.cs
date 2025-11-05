@@ -5,9 +5,10 @@ using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.UI;
 
-public class VRGun : MonoBehaviourPun
+public class VRGun : MonoBehaviourPun, IPunObservable
 {
     [SerializeField] private XRGrabInteractable grabInteractable;
+    [SerializeField] private Transform carRoot; // родительский объект (машина, к которой прикрепляется пистолет)
 
     [Header("Настройки стрельбы")]
     public float fireRate = 0.1f;
@@ -15,11 +16,11 @@ public class VRGun : MonoBehaviourPun
     public float range = 100f;
 
     [Header("Перегрев")]
-    public float heatPerShot = 8f;             // Сколько тепла добавляется за выстрел
-    public float heatCooldownRate = 5f;        // Скорость охлаждения в секунду
-    public float maxHeat = 100f;               // Предел перегрева
-    public Slider heatSlider;                  // UI-слайдер перегрева
-    public BarGradient uiGradient;             // Ссылка на общий UI-градиент (для обновления цвета)
+    public float heatPerShot = 8f;
+    public float heatCooldownRate = 5f;
+    public float maxHeat = 100f;
+    public Slider heatSlider;
+    public BarGradient uiGradient;
     private float currentHeat = 0f;
     private bool isOverheated = false;
 
@@ -51,7 +52,11 @@ public class VRGun : MonoBehaviourPun
     private float nextFireTime = 0f;
     private string ap = null;
 
-    void Awake()
+    // --- Данные для синхронизации позиции ---
+    private Vector3 networkLocalPos;
+    private Quaternion networkLocalRot;
+
+    private void Awake()
     {
         LeftGrip.action.Enable();
         RightGrip.action.Enable();
@@ -68,11 +73,24 @@ public class VRGun : MonoBehaviourPun
             initialLocalPos = movablePart.localPosition;
     }
 
-    void Update()
+    private void Update()
     {
-        if (!photonView.IsMine) return;
+        if (photonView.IsMine)
+        {
+            HandleOverheat();
+            HandleFireInput();
+        }
+        else
+        {
+            // Интерполяция позиции/вращения у других игроков
+            transform.localPosition = Vector3.Lerp(transform.localPosition, networkLocalPos, Time.deltaTime * 10f);
+            transform.localRotation = Quaternion.Slerp(transform.localRotation, networkLocalRot, Time.deltaTime * 10f);
+        }
+    }
 
-        // охлаждение оружия
+    // --- Перегрев ---
+    private void HandleOverheat()
+    {
         if (currentHeat > 0f)
         {
             currentHeat -= heatCooldownRate * Time.deltaTime;
@@ -85,20 +103,18 @@ public class VRGun : MonoBehaviourPun
                 uiGradient.SetOverheat(currentHeat, maxHeat);
         }
 
-        // снимаем перегрев, если остыло
         if (isOverheated && currentHeat <= 5f)
-        {
             isOverheated = false;
-        }
+    }
 
-        // определяем, какая рука держит оружие
+    // --- Стрельба ---
+    private void HandleFireInput()
+    {
         if (grabInteractable.attachTransform != null)
-        {
             ap = grabInteractable.attachTransform.name;
-        }
-        else ap = null;
+        else
+            ap = null;
 
-        // проверка ввода
         bool isLeftHand = ap != null && ap.Contains("L");
         bool isRightHand = ap != null && ap.Contains("R");
 
@@ -106,18 +122,16 @@ public class VRGun : MonoBehaviourPun
             (isLeftHand && LeftGrip.action.ReadValue<float>() > 0.8f && LeftTrigger.action.ReadValue<float>() > 0.8f) ||
             (isRightHand && RightGrip.action.ReadValue<float>() > 0.8f && RightTrigger.action.ReadValue<float>() > 0.8f);
 
-        // стрельба, если не перегрелось
         if (firePressed && Time.time >= nextFireTime && grabInteractable.isSelected && !isOverheated)
         {
             nextFireTime = Time.time + fireRate;
 
-            // локально выполняем стрельбу
+            // локальный выстрел
             ShootLocal(firePoint.position, firePoint.forward);
 
-            // передаём другим клиентам
-            photonView.RPC("Shoot", RpcTarget.Others, firePoint.position, firePoint.forward);
+            // синхронизируем с другими
+            photonView.RPC(nameof(Shoot), RpcTarget.Others, firePoint.position, firePoint.forward);
 
-            // добавляем нагрев
             currentHeat += heatPerShot;
             if (currentHeat >= maxHeat)
             {
@@ -134,7 +148,6 @@ public class VRGun : MonoBehaviourPun
         }
     }
 
-    // Локальный выстрел (стрелку сразу — без задержки)
     private void ShootLocal(Vector3 origin, Vector3 direction)
     {
         if (muzzleFlash != null) muzzleFlash.Play();
@@ -142,8 +155,7 @@ public class VRGun : MonoBehaviourPun
         if (audioSource != null && shotSound != null) audioSource.PlayOneShot(shotSound);
         StartCoroutine(MoveRecoil());
 
-        // Raycast попадания
-        if (Physics.Raycast(origin, direction, out RaycastHit hit, range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
+        if (Physics.Raycast(origin, direction, out RaycastHit hit, range))
         {
             if (hitEffectPrefabDust != null)
             {
@@ -158,16 +170,13 @@ public class VRGun : MonoBehaviourPun
 
             EnemyHealth enemy = hit.collider.GetComponentInParent<EnemyHealth>();
             if (enemy != null)
-            {
                 enemy.RequestDamage((int)damage);
-            }
         }
     }
 
     [PunRPC]
     public void Shoot(Vector3 origin, Vector3 direction)
     {
-        // Эффекты и отдача только для других игроков
         if (muzzleFlash != null) muzzleFlash.Play();
         if (muzzleLight != null) StartCoroutine(MuzzleLightFlash());
         if (audioSource != null && shotSound != null) audioSource.PlayOneShot(shotSound);
@@ -184,7 +193,6 @@ public class VRGun : MonoBehaviourPun
     private IEnumerator MoveRecoil()
     {
         if (movablePart == null || isRecoiling) yield break;
-
         isRecoiling = true;
 
         Vector3 startPos = initialLocalPos;
@@ -192,7 +200,6 @@ public class VRGun : MonoBehaviourPun
         float half = recoilDuration * 0.5f;
         float t = 0f;
 
-        // движение назад
         while (t < half)
         {
             movablePart.localPosition = Vector3.Lerp(startPos, recoilPos, t / half);
@@ -200,7 +207,6 @@ public class VRGun : MonoBehaviourPun
             yield return null;
         }
 
-        // движение вперёд
         t = 0f;
         while (t < half)
         {
@@ -211,5 +217,32 @@ public class VRGun : MonoBehaviourPun
 
         movablePart.localPosition = startPos;
         isRecoiling = false;
+    }
+
+    // --- СЕТЕВАЯ СИНХРОНИЗАЦИЯ ПОЗИЦИИ ---
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            // У владельца: отправляем позицию/вращение относительно машины
+            if (carRoot != null)
+            {
+                Vector3 localPos = carRoot.InverseTransformPoint(transform.position);
+                Quaternion localRot = Quaternion.Inverse(carRoot.rotation) * transform.rotation;
+                stream.SendNext(localPos);
+                stream.SendNext(localRot);
+            }
+            else
+            {
+                stream.SendNext(transform.localPosition);
+                stream.SendNext(transform.localRotation);
+            }
+        }
+        else
+        {
+            // У других клиентов: получаем локальные координаты относительно машины
+            networkLocalPos = (Vector3)stream.ReceiveNext();
+            networkLocalRot = (Quaternion)stream.ReceiveNext();
+        }
     }
 }
