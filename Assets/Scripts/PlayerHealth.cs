@@ -11,7 +11,7 @@ public class PlayerHealth : MonoBehaviourPun
 
     [Header("UI")]
     [SerializeField] private Slider healthSlider;
-    public HealthBarGradient HPBAR;
+    public BarGradient HPBAR;
 
     public event System.Action<int> OnDamageTaken;
     public event System.Action OnDeath;
