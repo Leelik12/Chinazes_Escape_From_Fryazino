@@ -19,7 +19,7 @@ public class VRGun : MonoBehaviourPun
     public float heatCooldownRate = 5f;        // —корость охлаждени€ в секунду
     public float maxHeat = 100f;               // ѕредел перегрева
     public Slider heatSlider;                  // UI-слайдер перегрева
-    public BarGradient uiGradient;       // —сылка на общий UI-градиент (дл€ обновлени€ цвета)
+    public BarGradient uiGradient;             // —сылка на общий UI-градиент (дл€ обновлени€ цвета)
     private float currentHeat = 0f;
     private bool isOverheated = false;
 
@@ -27,6 +27,8 @@ public class VRGun : MonoBehaviourPun
     [SerializeField] private Transform movablePart;
     [SerializeField] private float recoilDistance = 0.2f;
     [SerializeField] private float recoilDuration = 0.1f;
+    private bool isRecoiling = false;
+    private Vector3 initialLocalPos;
 
     [Header("XR Input")]
     public InputActionProperty LeftTrigger;
@@ -61,6 +63,9 @@ public class VRGun : MonoBehaviourPun
             heatSlider.maxValue = maxHeat;
             heatSlider.value = 0f;
         }
+
+        if (movablePart != null)
+            initialLocalPos = movablePart.localPosition;
     }
 
     void Update()
@@ -105,7 +110,12 @@ public class VRGun : MonoBehaviourPun
         if (firePressed && Time.time >= nextFireTime && grabInteractable.isSelected && !isOverheated)
         {
             nextFireTime = Time.time + fireRate;
-            photonView.RPC("Shoot", RpcTarget.All, firePoint.position, firePoint.forward);
+
+            // локально выполн€ем стрельбу
+            ShootLocal(firePoint.position, firePoint.forward);
+
+            // передаЄм другим клиентам
+            photonView.RPC("Shoot", RpcTarget.Others, firePoint.position, firePoint.forward);
 
             // добавл€ем нагрев
             currentHeat += heatPerShot;
@@ -124,14 +134,13 @@ public class VRGun : MonoBehaviourPun
         }
     }
 
-    [PunRPC]
-    public void Shoot(Vector3 origin, Vector3 direction)
+    // Ћокальный выстрел (стрелку сразу Ч без задержки)
+    private void ShootLocal(Vector3 origin, Vector3 direction)
     {
-        // визуальные и звуковые эффекты
         if (muzzleFlash != null) muzzleFlash.Play();
         if (muzzleLight != null) StartCoroutine(MuzzleLightFlash());
         if (audioSource != null && shotSound != null) audioSource.PlayOneShot(shotSound);
-        photonView.RPC("PlayRecoilRPC", RpcTarget.All);
+        StartCoroutine(MoveRecoil());
 
         // Raycast попадани€
         if (Physics.Raycast(origin, direction, out RaycastHit hit, range, Physics.DefaultRaycastLayers, QueryTriggerInteraction.Ignore))
@@ -155,6 +164,16 @@ public class VRGun : MonoBehaviourPun
         }
     }
 
+    [PunRPC]
+    public void Shoot(Vector3 origin, Vector3 direction)
+    {
+        // Ёффекты и отдача только дл€ других игроков
+        if (muzzleFlash != null) muzzleFlash.Play();
+        if (muzzleLight != null) StartCoroutine(MuzzleLightFlash());
+        if (audioSource != null && shotSound != null) audioSource.PlayOneShot(shotSound);
+        StartCoroutine(MoveRecoil());
+    }
+
     private IEnumerator MuzzleLightFlash()
     {
         muzzleLight.enabled = true;
@@ -162,21 +181,18 @@ public class VRGun : MonoBehaviourPun
         muzzleLight.enabled = false;
     }
 
-    [PunRPC]
-    private void PlayRecoilRPC()
-    {
-        StartCoroutine(MoveRecoil());
-    }
-
     private IEnumerator MoveRecoil()
     {
-        if (movablePart == null) yield break;
+        if (movablePart == null || isRecoiling) yield break;
 
-        Vector3 startPos = movablePart.localPosition;
+        isRecoiling = true;
+
+        Vector3 startPos = initialLocalPos;
         Vector3 recoilPos = startPos + new Vector3(0, 0, -recoilDistance);
         float half = recoilDuration * 0.5f;
         float t = 0f;
 
+        // движение назад
         while (t < half)
         {
             movablePart.localPosition = Vector3.Lerp(startPos, recoilPos, t / half);
@@ -184,6 +200,7 @@ public class VRGun : MonoBehaviourPun
             yield return null;
         }
 
+        // движение вперЄд
         t = 0f;
         while (t < half)
         {
@@ -193,5 +210,6 @@ public class VRGun : MonoBehaviourPun
         }
 
         movablePart.localPosition = startPos;
+        isRecoiling = false;
     }
 }
