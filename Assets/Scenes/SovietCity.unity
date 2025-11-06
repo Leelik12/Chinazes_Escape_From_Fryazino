@@ -124141,6 +124141,7 @@ GameObject:
   - component: {fileID: 7459236575644943732}
   - component: {fileID: 1783440624438593725}
   - component: {fileID: 8422064855269990656}
+  - component: {fileID: 8422064855269990657}
   m_Layer: 0
   m_Name: VolgaCar
   m_TagString: Car
@@ -132050,6 +132051,8 @@ MonoBehaviour:
   steeringWheelVisual: {fileID: 175449374544540940}
   visualWheelRotationAngle: 80
   steeringSmoothness: 2
+  impulseForce: 4000
+  impulseCooldown: 5
 --- !u!224 &7179876012936023633
 RectTransform:
   m_ObjectHideFlags: 0
@@ -133862,6 +133865,20 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 0
+--- !u!114 &8422064855269990657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171050281947547841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bcc291d5c54d10428610cfb20c019a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  impulseForce: 4000
+  cooldownTime: 5
 --- !u!4 &8428538889073764768
 Transform:
   m_ObjectHideFlags: 0

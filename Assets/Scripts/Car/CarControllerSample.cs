@@ -44,6 +44,11 @@ public class CarControllerSample : MonoBehaviourPun
     private int currentGear;
     private float brakeInput;
 
+    [Header("Импульс для освобождения")]
+    public float impulseForce = 5000f;      // сила импульса
+    public float impulseCooldown = 5f;      // задержка между импульсами (в секундах)
+    private float impulseTimer = 0f;
+
     private void Start()
     {
         Engine.Play();
@@ -148,6 +153,29 @@ public class CarControllerSample : MonoBehaviourPun
                 axleInfo.leftWheel.brakeTorque = brakeInput * maxBrakeTorque;
                 axleInfo.rightWheel.brakeTorque = brakeInput * maxBrakeTorque;
             }
+        }
+        // обновляем кулдаун импульса
+        if (impulseTimer > 0f)
+            impulseTimer -= Time.fixedDeltaTime;
+
+        // проверяем крестовину (HatSwitch)
+        HandleHatSwitchImpulse();
+
+    }
+    private void HandleHatSwitchImpulse()
+    {
+        if (impulseTimer > 0f) return; // ждём перезарядку
+
+        Vector2 hat = inputControllerReader.HatSwitch; // (0,1) вперёд, (0,-1) назад
+        Vector3 direction = Vector3.zero;
+
+        if (hat.y > 0.5f) direction = transform.forward;   // толчок вперёд
+        if (hat.y < -0.5f) direction = -transform.forward; // толчок назад
+
+        if (direction != Vector3.zero)
+        {
+            rb.AddForce(direction * impulseForce, ForceMode.Impulse);
+            impulseTimer = impulseCooldown; // сброс кулдауна
         }
     }
 
