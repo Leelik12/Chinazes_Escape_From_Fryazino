@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using _2DOF;
 using UnityEngine;
@@ -8,56 +9,74 @@ public class CarTelemetryHandler : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private Transform vehicleTransform;
-    [SerializeField] private Rigidbody rb;
+    [SerializeField] private Rigidbody rigidbody;
 
-    [Header("Effect factors")]
-    [Tooltip("Влияние продольного ускорения на наклон вперёд/назад (положительное => наклон вперёд при торможении)")]
+    [Header("Effect Factors")]
+    [Tooltip("Множитель наклона платформы от продольного ускорения (вперед/назад).")]
     [SerializeField] private float accelPitchFactor = 0.02f;
 
-    [Tooltip("Влияние бокового ускорения на наклон в сторону")]
-    [SerializeField] private float cornerRollFactor = 0.03f;
+    [Tooltip("Множитель наклона платформы от бокового ускорения (в поворотах).")]
+    [SerializeField] private float cornerRollFactor = 0.02f;
 
-    [Tooltip("Влияние углового ускорения (yaw accel) на боковой наклон")]
-    [SerializeField] private float angularAccelFactor = 0.8f;
+    [Header("Acceleration Boost")]
+    [Tooltip("Дополнительный множитель для усиления влияния ускорений.")]
+    [SerializeField] private float accelerationBoost = 2.0f;
 
-    [Header("Sudden accel/brake detection")]
-    [Tooltip("Порог резкого изменения продольного ускорения (м/с²)")]
-    [SerializeField] private float suddenAccelThreshold = 3.0f;
-    [Tooltip("Мультипликатор эффекта при резком ускорении/торможении")]
-    [SerializeField] private float suddenAccelMultiplier = 0.5f;
+    [Tooltip("Минимальная скорость (км/ч) для применения усиления ускорений.")]
+    [SerializeField] private float minSpeedForBoost = 5.0f;
 
-    [Header("Impact (collision)")]
-    [Tooltip("Множитель силы удара для pitch")]
-    [SerializeField] private float impactFactor = 0.02f;
-    [Tooltip("Затухание сдвига от удара")]
-    [SerializeField] private float impactDamping = 3.0f;
+    [Header("Impact settings")]
+    [Tooltip("Множитель силы удара для отката.")]
+    [SerializeField] private float impactFactor = 0.015f;
 
-    [Header("Limits & smoothing")]
-    [SerializeField] private float maxPitch = 12f;
-    [SerializeField] private float maxRoll = 12f;
-    [Tooltip("Плавность выхода (чем выше — тем мягче), 0 = без сглаживания")]
-    [SerializeField] private float outputSmoothing = 6f;
+    [Tooltip("Скорость гашения удара отката.")]
+    [SerializeField] private float impactDamping = 2.5f;
 
-    private SendingData _sendingData;
+    [Header("Limits")]
+    [Tooltip("Максимальный угол наклона по тангажу (Pitch).")]
+    [SerializeField] private float maxPitch = 10f;
+    [Tooltip("Максимальный угол наклона по крену (Roll).")]
+    [SerializeField] private float maxRoll = 10f;
+
+    [Tooltip("Скорость сглаживания изменений.")]
+    [SerializeField] private float smoothSpeed = 8f;
+
+    [Header("Debug GUI")]
+    [SerializeField] private bool showGUI = true;
+    [SerializeField] private int fontSize = 20;
+
     private ObjectTelemetryData _telemetryData;
+    private SendingData _sendingData;
 
-    // состояния между сэмплами
-    private Vector3 lastLinearVelocity = Vector3.zero;
-    private Vector3 lastAngularVelocity = Vector3.zero;
-    private float lastSampleTime = 0f;
+    private Vector3 lastVelocity;
+    private Vector3 lastPosition;
+    private float currentPitch;
+    private float currentRoll;
+    private float impactPitch;
+    private float impactRoll;
 
-    // накопленные импульсы от ударов
-    private float impactPitch = 0f;
-    private float impactRoll = 0f;
+    // Сглаживающие фильтры для ускорения
+    private Vector3 smoothedAcceleration;
+    private float accelerationSmoothFactor = 0.2f;
 
-    // текущее (выходное) значение углов платформы
-    private float outPitch = 0f;
-    private float outRoll = 0f;
+    // FPS variables
+    private float fps;
+    private float fpsRefreshTime = 0.5f;
+    private int frameCount;
+    private float timer;
+
+    // GUI style
+    private GUIStyle guiStyle;
 
     private void Awake()
     {
         _sendingData = new SendingData();
         _telemetryData = _sendingData.ObjectTelemetryData;
+
+        // Initialize GUI style
+        guiStyle = new GUIStyle();
+        guiStyle.fontSize = fontSize;
+        guiStyle.normal.textColor = Color.white;
     }
 
     private void OnEnable()
@@ -65,12 +84,9 @@ public class CarTelemetryHandler : MonoBehaviour
         StartCoroutine(TelemetryHandler());
         _sendingData.SendingStart();
 
-        if (rb != null)
-        {
-            lastLinearVelocity = rb.linearVelocity;
-            lastAngularVelocity = rb.angularVelocity;
-        }
-        lastSampleTime = Time.time;
+        lastVelocity = rigidbody.linearVelocity;
+        lastPosition = vehicleTransform.position;
+        smoothedAcceleration = Vector3.zero;
     }
 
     private void OnDisable()
@@ -79,118 +95,169 @@ public class CarTelemetryHandler : MonoBehaviour
         _sendingData.SendingStop();
     }
 
+    private void Update()
+    {
+        // FPS calculation
+        frameCount++;
+        timer += Time.unscaledDeltaTime;
+
+        if (timer >= fpsRefreshTime)
+        {
+            fps = frameCount / timer;
+            frameCount = 0;
+            timer = 0f;
+        }
+    }
+
     private IEnumerator TelemetryHandler()
     {
         while (true)
         {
-            if (_telemetryData != null && vehicleTransform != null && rb != null)
-                UpdatePlatformMotion();
+            if (_telemetryData == null)
+            {
+                yield return new WaitForSeconds(WAIT_TIME * 2);
+                continue;
+            }
 
-            yield return new WaitForSeconds(Mathf.Max(WAIT_TIME, 0.001f));
+            UpdatePlatformMotion();
+            yield return new WaitForSeconds(WAIT_TIME);
         }
     }
 
     private void UpdatePlatformMotion()
     {
-        // время и dt
-        float now = Time.time;
-        float dt = Mathf.Max(now - lastSampleTime, 0.0001f);
-        lastSampleTime = now;
+        Vector3 velocity = rigidbody.linearVelocity;
+        float speedKmh = velocity.magnitude * 3.6f;
 
-        // скорости
-        Vector3 velocity = rb.linearVelocity;
-        Vector3 angularVel = rb.angularVelocity; // рад/с в мировых координатах
+        // Более плавный расчет ускорения
+        Vector3 worldAcceleration = (velocity - lastVelocity) / Time.fixedDeltaTime;
 
-        // линейное ускорение (м/с^2)
-        Vector3 linearAccel = (velocity - lastLinearVelocity) / dt;
+        // Сглаживаем ускорение для уменьшения резких изменений
+        smoothedAcceleration = Vector3.Lerp(smoothedAcceleration, worldAcceleration, accelerationSmoothFactor);
+        Vector3 localAcceleration = vehicleTransform.InverseTransformDirection(smoothedAcceleration);
 
-        // угловое ускорение (рад/с^2)
-        Vector3 angularAccelWorld = (angularVel - lastAngularVelocity) / dt;
+        // Учитываем наклон дороги
+        Vector3 localGravity = vehicleTransform.InverseTransformDirection(Physics.gravity);
 
-        // переводим угловую скорость и ускорение в локальные координаты машины
-        Vector3 localAngularVel = vehicleTransform.InverseTransformDirection(angularVel);
-        Vector3 localAngularAccel = vehicleTransform.InverseTransformDirection(angularAccelWorld);
+        // --- Эффекты от ускорений ---
+        float forwardAccel = localAcceleration.z;
+        float lateralAccel = localAcceleration.x;
 
-        // Угловое ускорение по локальной вертикали (yaw)
-        float yawAccel = localAngularAccel.y;
+        // Базовые эффекты от ускорений
+        float targetEffectPitch = -forwardAccel * accelPitchFactor;
+        float targetEffectRoll = lateralAccel * cornerRollFactor;
 
-
-        // продольное и боковое ускорение в локальных координатах автомобиля
-        float forwardAccel = Vector3.Dot(linearAccel, vehicleTransform.forward); // + при ускорении вперёд
-        float lateralAccel = Vector3.Dot(linearAccel, vehicleTransform.right);   // + при движении вправо
-
-        // Угловое ускорение вокруг вертикальной оси (yaw accel) — влияет на боковой наклон
-
-        // --- вычисление эффектов ---
-        // 1) эффект от продольного ускорения: при торможении (negative forwardAccel) — наклон вперёд
-        float pitchFromAccel = -forwardAccel * accelPitchFactor;
-
-        // 2) эффект от бокового ускорения
-        float rollFromLateral = -lateralAccel * cornerRollFactor;
-
-        // 3) эффект от углового ускорения (поворот руля дает наклон)
-        float rollFromAngularAccel = -yawAccel * angularAccelFactor;
-
-        // 4) резкие ускорения / торможения — детектируем по forwardAccel величине
-        float suddenEffect = 0f;
-        if (Mathf.Abs(forwardAccel) >= suddenAccelThreshold)
+        // --- УСИЛЕНИЕ ВЛИЯНИЯ УСКОРЕНИЙ ---
+        if (speedKmh > minSpeedForBoost)
         {
-            suddenEffect = -forwardAccel * suddenAccelMultiplier;
-            // можно добавить положительное смещение при резком ускорении и более сильный при резком торможении
+            // Применяем дополнительный множитель для усиления эффектов ускорения
+            targetEffectPitch *= accelerationBoost;
+            targetEffectRoll *= accelerationBoost;
         }
 
-        // 5) эффект от удара — затухает со временем
-        impactPitch = Mathf.Lerp(impactPitch, 0f, Time.deltaTime * impactDamping);
-        impactRoll = Mathf.Lerp(impactRoll, 0f, Time.deltaTime * impactDamping);
-
-        // 6) реальные углы машины (чтобы учитывать положение на рельефе)
+        // --- Реальные углы: наклон дороги ---
         Vector3 localEuler = vehicleTransform.localRotation.eulerAngles;
         float realPitch = NormalizeAngle(localEuler.x);
         float realRoll = NormalizeAngle(localEuler.z);
 
-        // --- финальное суммирование (без весов, просто суммируем вкладов) ---
-        float targetPitch = realPitch + pitchFromAccel + suddenEffect + impactPitch;
-        float targetRoll = realRoll + rollFromLateral + rollFromAngularAccel + impactRoll;
+        // Учитываем гравитацию в наклонах дороги
+        float gravityPitchInfluence = -localGravity.z * 0.1f;
+        float gravityRollInfluence = -localGravity.x * 0.1f;
 
-        // ограничиваем
-        targetPitch = Mathf.Clamp(targetPitch, -maxPitch, maxPitch);
-        targetRoll = Mathf.Clamp(targetRoll, -maxRoll, maxRoll);
+        realPitch += gravityPitchInfluence;
+        realRoll += gravityRollInfluence;
 
-        // сглаживание выхода (если нужно)
-        if (outputSmoothing > 0f)
-        {
-            float t = 1f - Mathf.Exp(-outputSmoothing * Time.deltaTime); // экспоненциальное сглаживание
-            outPitch = Mathf.Lerp(outPitch, targetPitch, t);
-            outRoll = Mathf.Lerp(outRoll, targetRoll, t);
-        }
-        else
-        {
-            outPitch = targetPitch;
-            outRoll = targetRoll;
-        }
+        // --- Гашение ударов ---
+        impactPitch = Mathf.Lerp(impactPitch, 0f, Time.deltaTime * impactDamping);
+        impactRoll = Mathf.Lerp(impactRoll, 0f, Time.deltaTime * impactDamping);
 
-        // записываем в телеметрию
-        _telemetryData.Angles = new Vector3(outPitch, 0f, outRoll);
+        // --- ПРОСТОЕ СУММИРОВАНИЕ ---
+        float finalPitch = realPitch + targetEffectPitch + impactPitch;
+        float finalRoll = realRoll + targetEffectRoll + impactRoll;
+
+        // --- Ограничения ---
+        finalPitch = Mathf.Clamp(finalPitch, -maxPitch, maxPitch);
+        finalRoll = Mathf.Clamp(finalRoll, -maxRoll, maxRoll);
+
+        // --- Улучшенное сглаживание ---
+        float smoothFactor = Mathf.Clamp(Time.deltaTime * smoothSpeed, 0.01f, 0.5f);
+        currentPitch = Mathf.Lerp(currentPitch, finalPitch, smoothFactor);
+        currentRoll = Mathf.Lerp(currentRoll, finalRoll, smoothFactor);
+
+        // --- Передача на платформу ---
+        _telemetryData.Angles = new Vector3(currentPitch, 0f, currentRoll);
         _telemetryData.Velocity = velocity;
-        Debug.Log($"2dof : {_telemetryData.Angles:F2}°");
-        // сохраняем для следующего шага
-        lastLinearVelocity = velocity;
-        lastAngularVelocity = angularVel;
+
+        lastVelocity = velocity;
+        lastPosition = vehicleTransform.position;
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        // сила удара: используем относительную скорость при столкновении
-        float impactForce = collision.relativeVelocity.magnitude;
+        // Сглаживаем силу удара
+        float impactForce = collision.impulse.magnitude / Time.fixedDeltaTime * 0.5f;
 
-        // при ударе делаем быстрое добавление небольшого импульса к pitch/roll
-        impactPitch += -impactForce * impactFactor;
-        impactRoll += Random.Range(-impactForce, impactForce) * impactFactor * 0.5f;
+        Vector3 localImpact = vehicleTransform.InverseTransformDirection(collision.impulse.normalized);
+
+        // Правильное направление для ударов
+        impactPitch = -localImpact.z * impactForce * impactFactor;
+        impactRoll = localImpact.x * impactForce * impactFactor * 0.3f;
     }
 
     private float NormalizeAngle(float angle)
     {
         angle = (angle + 180f) % 360f - 180f;
         return angle;
+    }
+
+    private void OnGUI()
+    {
+        if (!showGUI) return;
+
+        GUILayout.BeginArea(new Rect(10, 10, 400, 500));
+
+        GUILayout.Label($"2DOF", guiStyle);
+
+        GUILayout.Space(15);
+
+        // Применяем стиль с увеличенным шрифтом ко всем элементам GUI
+        GUILayout.Label($"FPS: {fps:0.0}", guiStyle);
+        GUILayout.Label($"Pitch: {currentPitch:F2}°", guiStyle);
+        GUILayout.Label($"Roll: {currentRoll:F2}°", guiStyle);
+
+        float speedKmh = rigidbody.linearVelocity.magnitude * 3.6f;
+        GUILayout.Label($"Speed: {speedKmh:0.0} km/h", guiStyle);
+
+        GUILayout.Space(15);
+
+        // Вектор ускорения в локальных координатах
+        Vector3 localAccel = vehicleTransform.InverseTransformDirection((rigidbody.linearVelocity - lastVelocity) / Time.fixedDeltaTime);
+        GUILayout.Label($"Forward Accel: {localAccel.z:F2} m/s²", guiStyle);
+        GUILayout.Label($"Lateral Accel: {localAccel.x:F2} m/s²", guiStyle);
+
+        // Добавим информацию о направлении поворота
+        string turnDirection = localAccel.x > 0 ? "RIGHT" : (localAccel.x < 0 ? "LEFT" : "STRAIGHT");
+        GUILayout.Label($"Turn Direction: {turnDirection}", guiStyle);
+
+        GUILayout.Space(15);
+
+        // Углы машины
+        Vector3 localEuler = vehicleTransform.localRotation.eulerAngles;
+        GUILayout.Label($"Car Pitch: {NormalizeAngle(localEuler.x):F2}°", guiStyle);
+        GUILayout.Label($"Car Roll: {NormalizeAngle(localEuler.z):F2}°", guiStyle);
+
+        GUILayout.Space(15);
+
+        // Состояние платформы
+        GUILayout.Label("Platform Status: ACTIVE", guiStyle);
+        GUILayout.Label($"Update Rate: {1f / WAIT_TIME:0} Hz", guiStyle);
+        GUILayout.Label($"Smoothing: {smoothSpeed:0.0}", guiStyle);
+
+        // Информация об усилении ускорений
+        bool isBoostActive = speedKmh > minSpeedForBoost;
+        string boostStatus = isBoostActive ? $"ACTIVE (x{accelerationBoost})" : "INACTIVE";
+        GUILayout.Label($"Accel Boost: {boostStatus}", guiStyle);
+
+        GUILayout.EndArea();
     }
 }

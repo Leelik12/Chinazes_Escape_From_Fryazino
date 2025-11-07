@@ -128227,13 +128227,18 @@ MonoBehaviour:
   port: 6065
   vehicleTransform: {fileID: 1895829198424978172}
   vehicleRigidbody: {fileID: 7685947541911150316}
-  accelPitchFactor: 18
-  cornerRollFactor: 36
-  impactFactor: 30
-  impactDamping: 1500
-  smoothSpeed: 5
-  maxPitch: 36
-  maxRoll: 36
+  accelPitchFactor: 0.32
+  cornerRollFactor: 0.72
+  accelerationBoost: 1.2
+  minSpeedForBoost: 5
+  impactFactor: 0.96
+  impactDamping: 2.5
+  maxPitch: 18
+  maxRoll: 18
+  smoothSpeed: 20
+  angleThreshold: 0.1
+  showGUI: 1
+  fontSize: 20
 --- !u!146 &4375469430294705532
 WheelCollider:
   m_ObjectHideFlags: 0
@@ -132026,7 +132031,7 @@ MonoBehaviour:
     rightWheel: {fileID: 382305401509160676}
     motor: 1
     steering: 0
-  maxMotorTorque: 550
+  maxMotorTorque: 650
   maxSteeringAngle: 15
   maxBrakeTorque: 3000
   gearRatios:
@@ -132040,12 +132045,12 @@ MonoBehaviour:
   - -3.6
   gearSpeedLimits:
   - 0
-  - 20
-  - 40
-  - 70
+  - 30
+  - 60
   - 90
   - 120
   - 160
+  - 220
   - 20
   Engine: {fileID: 7131508894998118267}
   Racing: {fileID: 8300000, guid: 22cd46996da3b624bb08935264560d8c, type: 3}
@@ -133065,17 +133070,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vehicleTransform: {fileID: 1895829198424978172}
-  rb: {fileID: 7685947541911150316}
-  accelPitchFactor: 1.2
-  cornerRollFactor: 1.8
-  angularAccelFactor: 4.8
-  suddenAccelThreshold: 3
-  suddenAccelMultiplier: 0.5
-  impactFactor: 1.8
-  impactDamping: 5
-  maxPitch: 12
-  maxRoll: 12
-  outputSmoothing: 6
+  rigidbody: {fileID: 7685947541911150316}
+  accelPitchFactor: 0.32
+  cornerRollFactor: 0.72
+  accelerationBoost: 1.2
+  minSpeedForBoost: 5
+  impactFactor: 0.96
+  impactDamping: 2.5
+  maxPitch: 15
+  maxRoll: 15
+  smoothSpeed: 20
+  showGUI: 1
+  fontSize: 20
 --- !u!1 &7653956748581885503
 GameObject:
   m_ObjectHideFlags: 0
