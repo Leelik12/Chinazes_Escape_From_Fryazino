@@ -128231,6 +128231,7 @@ MonoBehaviour:
   cornerRollFactor: 36
   impactFactor: 30
   impactDamping: 1500
+  smoothSpeed: 5
   maxPitch: 36
   maxRoll: 36
 --- !u!146 &4375469430294705532
@@ -133064,15 +133065,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vehicleTransform: {fileID: 1895829198424978172}
-  rigidbody: {fileID: 7685947541911150316}
-  accelPitchFactor: 2.4
-  cornerRollFactor: 2.4
+  rb: {fileID: 7685947541911150316}
+  accelPitchFactor: 1.2
+  cornerRollFactor: 1.8
+  angularAccelFactor: 4.8
+  suddenAccelThreshold: 3
+  suddenAccelMultiplier: 0.5
   impactFactor: 1.8
-  impactDamping: 150
-  maxPitch: 30
-  maxRoll: 30
-  realRotationWeight: 0.5
-  smoothSpeed: 5
+  impactDamping: 5
+  maxPitch: 12
+  maxRoll: 12
+  outputSmoothing: 6
 --- !u!1 &7653956748581885503
 GameObject:
   m_ObjectHideFlags: 0

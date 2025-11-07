@@ -27,6 +27,7 @@ namespace Futurift
         [SerializeField] private float impactDamping = 2.5f;
 
         [Header("Smoothing & Limits")]
+        [SerializeField] private float smoothSpeed = 5f;
         [SerializeField] private float maxPitch = 10f;
         [SerializeField] private float maxRoll = 10f;
 
@@ -38,10 +39,6 @@ namespace Futurift
         private float impactPitch;
         private float impactRoll;
 
-        // Для фильтрации изменений
-        private float lastSentPitch;
-        private float lastSentRoll;
-
         private void Awake()
         {
             var udpOptions = new UdpOptions
@@ -52,24 +49,12 @@ namespace Futurift
 
             _controller = new FutuRiftController(new UdpPortSender(udpOptions));
         }
-        private void Update()
-        {
-            // Тест по нажатию клавиши
-            if (Input.GetKeyDown(KeyCode.T))
-            {
-                _controller.Pitch = 15f;
-                _controller.Roll = 15f;
-                Debug.Log("Test data sent to Futurift");
-            }
-        }
+
         private void OnEnable()
         {
             _controller?.Start();
             if (vehicleRigidbody != null)
-                lastVelocity = vehicleRigidbody.linearVelocity;
-
-            lastSentPitch = 0f;
-            lastSentRoll = 0f;
+                lastVelocity = vehicleRigidbody.velocity;
         }
 
         private void OnDisable()
@@ -83,17 +68,18 @@ namespace Futurift
                 return;
 
             // --- Получаем ускорение ---
-            Vector3 velocity = vehicleRigidbody.linearVelocity;
+            Vector3 velocity = vehicleRigidbody.velocity;
             Vector3 acceleration = (velocity - lastVelocity) / Time.fixedDeltaTime;
 
             float forwardAccel = Vector3.Dot(acceleration, vehicleTransform.forward);
             float lateralAccel = Vector3.Dot(acceleration, vehicleTransform.right);
 
             // --- Эффекты ускорения ---
-            float targetPitchEffect = -forwardAccel * accelPitchFactor;
+            float targetPitchEffect = -forwardAccel * accelPitchFactor; // вперёд при торможении
             float targetRollEffect = -lateralAccel * cornerRollFactor;
 
             // --- Эффект удара ---
+            // Убираем плавное затухание — теперь реакция мгновенная
             impactPitch *= 0.95f;
             impactRoll *= 0.95f;
 
@@ -107,28 +93,31 @@ namespace Futurift
             float realRoll = vehicleTransform.localEulerAngles.z;
             if (realRoll > 180f) realRoll -= 360f;
 
-            float targetPitch = Mathf.Clamp(realPitch + targetPitchEffect, -maxPitch, maxPitch);
-            float targetRoll = Mathf.Clamp(realRoll + targetRollEffect, -maxRoll, maxRoll);
+            float targetPitch = realPitch + targetPitchEffect;
+            float targetRoll = realRoll + targetRollEffect;
 
-            // --- Без сглаживания ---
+            targetPitch = Mathf.Clamp(targetPitch, -maxPitch, maxPitch);
+            targetRoll = Mathf.Clamp(targetRoll, -maxRoll, maxRoll);
+
+            // --- УБРАНО СГЛАЖИВАНИЕ ---
             currentPitch = targetPitch;
             currentRoll = targetRoll;
 
+            // --- Отправка в капсулу ---
             _controller.Pitch = currentPitch;
             _controller.Roll = currentRoll;
 
-            Debug.Log(_controller.Pitch);
-            Debug.Log(_controller.Roll);
+            //Debug.Log($"FUTURIFT Pitch: {_controller.Pitch:F2}°  Roll: {_controller.Roll:F2}°");
 
-            lastSentPitch = currentPitch;
-            lastSentRoll = currentRoll;
             lastVelocity = velocity;
         }
+
 
         private void OnCollisionEnter(Collision collision)
         {
             float impactForce = collision.relativeVelocity.magnitude;
             Debug.Log("АВАРИЯ");
+            // Импульс удара
             impactPitch = -impactForce * impactFactor;
             impactRoll = Random.Range(-impactForce, impactForce) * impactFactor * 0.5f;
         }
