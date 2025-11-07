@@ -15,11 +15,12 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
 
         // Сколько раз в секунду PUN сериализует данные объектов (по умолчанию 10)
         PhotonNetwork.SerializationRate = 120;
+
+        // Автоматическая синхронизация сцен (по желанию)
+        PhotonNetwork.AutomaticallySyncScene = true;
     }
     void Start()
     {
-        // Автоматическая синхронизация сцен (по желанию)
-        PhotonNetwork.AutomaticallySyncScene = true;
 
         // Подключаемся к серверу Photon
         Debug.Log("Connecting to Photon...");
