@@ -11,24 +11,33 @@ public class CarTelemetryHandler : MonoBehaviour
     [SerializeField] private Transform vehicleTransform;
     [SerializeField] private Rigidbody rigidbody;
 
-    [Header("Pitch/Roll settings")]
-    [Tooltip("Насколько сильно платформа реагирует на продольное ускорение (наклон вперёд/назад).")]
+    [Header("Effect Factors")]
+    [Tooltip("��������� ������ ��������� ��������� �� ���������� ��������� (�����/�����).")]
     [SerializeField] private float accelPitchFactor = 0.02f;
-    [Tooltip("Насколько сильно платформа реагирует на боковое ускорение (наклон в повороте).")]
+
+    [Tooltip("��������� ������ ��������� ��������� �� ������� ��������� (� ��������).")]
     [SerializeField] private float cornerRollFactor = 0.02f;
 
     [Header("Impact settings")]
-    [Tooltip("Множитель силы наклона при ударе.")]
+    [Tooltip("��������� ���� ������� ��� �����.")]
     [SerializeField] private float impactFactor = 0.015f;
-    [Tooltip("Скорость затухания эффекта удара.")]
+
+    [Tooltip("�������� ��������� ������� �����.")]
     [SerializeField] private float impactDamping = 2.5f;
 
-    [Header("Smoothing & Limits")]
-    [SerializeField] private float smoothSpeed = 5f;
+    [Header("Blending and Limits")]
+    [Tooltip("������������ ���� ��������� �� ������� (Pitch).")]
     [SerializeField] private float maxPitch = 10f;
+    [Tooltip("������������ ���� ��������� �� ����� (Roll).")]
     [SerializeField] private float maxRoll = 10f;
 
-    private ObjectTelemetryData _telemetryDataData;
+    [Tooltip("������� ��������� �������� ��������� ������ �� ��������� ������� ���� (0.5 = 50%).")]
+    [Range(0f, 1f)][SerializeField] private float realRotationWeight = 0.5f;
+
+    [Tooltip("�������� ����������� ��������� ��������.")]
+    [SerializeField] private float smoothSpeed = 5f;
+
+    private ObjectTelemetryData _telemetryData;
     private SendingData _sendingData;
 
     private Vector3 lastVelocity;
@@ -40,20 +49,20 @@ public class CarTelemetryHandler : MonoBehaviour
     private void Awake()
     {
         _sendingData = new SendingData();
-        _telemetryDataData = _sendingData.ObjectTelemetryData;
+        _telemetryData = _sendingData.ObjectTelemetryData;
     }
 
-    public void OnEnable()
+    private void OnEnable()
     {
         StartCoroutine(TelemetryHandler());
         _sendingData.SendingStart();
 
-        lastVelocity = rigidbody.velocity;
+        lastVelocity = rigidbody.linearVelocity;
     }
 
-    public void OnDisable()
+    private void OnDisable()
     {
-        StopCoroutine(TelemetryHandler());
+        StopAllCoroutines();
         _sendingData.SendingStop();
     }
 
@@ -61,49 +70,60 @@ public class CarTelemetryHandler : MonoBehaviour
     {
         while (true)
         {
-            if (_telemetryDataData == null)
+            if (_telemetryData == null)
             {
-                yield return new WaitForSeconds(WAIT_TIME * 1000f);
+                yield return new WaitForSeconds(WAIT_TIME * 2);
                 continue;
             }
 
             UpdatePlatformMotion();
-
             yield return new WaitForSeconds(WAIT_TIME);
         }
     }
 
     private void UpdatePlatformMotion()
     {
-        // --- ускорение ---
-        Vector3 velocity = rigidbody.velocity;
+        Vector3 velocity = rigidbody.linearVelocity;
         Vector3 acceleration = (velocity - lastVelocity) / Time.fixedDeltaTime;
 
+        // --- ��������� �����: ��������� ---
         float forwardAccel = Vector3.Dot(acceleration, vehicleTransform.forward);
         float lateralAccel = Vector3.Dot(acceleration, vehicleTransform.right);
 
-        float targetPitch = -forwardAccel * accelPitchFactor; // отрицательный — при торможении наклон вперёд
-        float targetRoll = -lateralAccel * cornerRollFactor;
+        float targetEffectPitch = -forwardAccel * accelPitchFactor; // ���������� = ������ �����
+        float targetEffectRoll = -lateralAccel * cornerRollFactor;
 
-        // --- эффект столкновений затухает ---
+        // --- �������� �����: ������ ���������� ---
+        Vector3 localEuler = vehicleTransform.localRotation.eulerAngles;
+
+        // ������������ ���� � �������� -180..180
+        float realPitch = NormalizeAngle(localEuler.x);
+        float realRoll = NormalizeAngle(localEuler.z);
+
+        // --- ������ ������������ ---
         impactPitch = Mathf.Lerp(impactPitch, 0f, Time.deltaTime * impactDamping);
         impactRoll = Mathf.Lerp(impactRoll, 0f, Time.deltaTime * impactDamping);
 
-        targetPitch += impactPitch;
-        targetRoll += impactRoll;
+        // --- ����������� ---
+        float finalPitch =
+            (realPitch * realRotationWeight) +
+            ((targetEffectPitch + impactPitch) * (1f - realRotationWeight));
 
-        // --- ограничение ---
-        targetPitch = Mathf.Clamp(targetPitch, -maxPitch, maxPitch);
-        targetRoll = Mathf.Clamp(targetRoll, -maxRoll, maxRoll);
+        float finalRoll =
+            (realRoll * realRotationWeight) +
+            ((targetEffectRoll + impactRoll) * (1f - realRotationWeight));
 
-        // --- сглаживание ---
-        currentPitch = Mathf.Lerp(currentPitch, targetPitch, Time.deltaTime * smoothSpeed);
-        currentRoll = Mathf.Lerp(currentRoll, targetRoll, Time.deltaTime * smoothSpeed);
+        // --- ����������� ---
+        finalPitch = Mathf.Clamp(finalPitch, -maxPitch, maxPitch);
+        finalRoll = Mathf.Clamp(finalRoll, -maxRoll, maxRoll);
 
-        // --- отправка на платформу ---
-        var euler = new Vector3(currentPitch, 0f, currentRoll);
-        _telemetryDataData.Angles = euler;
-        _telemetryDataData.Velocity = velocity;
+        // --- ����������� ---
+        currentPitch = Mathf.Lerp(currentPitch, finalPitch, Time.deltaTime * smoothSpeed);
+        currentRoll = Mathf.Lerp(currentRoll, finalRoll, Time.deltaTime * smoothSpeed);
+
+        // --- �������� �� ��������� ---
+        _telemetryData.Angles = new Vector3(currentPitch, 0f, currentRoll);
+        _telemetryData.Velocity = velocity;
 
         lastVelocity = velocity;
     }
@@ -111,9 +131,13 @@ public class CarTelemetryHandler : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         float impactForce = collision.relativeVelocity.magnitude;
-
-        // короткий импульс в pitch/roll
         impactPitch = -impactForce * impactFactor;
         impactRoll = UnityEngine.Random.Range(-impactForce, impactForce) * impactFactor * 0.5f;
+    }
+
+    private float NormalizeAngle(float angle)
+    {
+        angle = (angle + 180f) % 360f - 180f;
+        return angle;
     }
 }
