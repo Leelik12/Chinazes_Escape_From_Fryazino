@@ -7161,11 +7161,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4978734994377454, guid: fd4517956020aa54989cd9a8a7e55b1b, type: 3}
   m_PrefabInstance: {fileID: 262886443}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &123101803 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6383249457395168651, guid: 35aa0e151bb800e42b2cc29ec79e27c0, type: 3}
-  m_PrefabInstance: {fileID: 1324367761}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &123101811 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 1962115326186403841, guid: 35aa0e151bb800e42b2cc29ec79e27c0, type: 3}
@@ -11199,7 +11194,7 @@ MonoBehaviour:
   car: {fileID: 1171050281947547841}
   Turret: {fileID: 7088767091029467697}
   MachineGun: {fileID: 118498522}
-  Menu: {fileID: 123101803}
+  Menu: {fileID: 844086816}
   DriverBody: {fileID: 1235966577}
   GunnerBody: {fileID: 919132147984876215}
   LeftProxyHand: {fileID: 610285000}
@@ -43578,6 +43573,11 @@ Mesh:
     offset: 0
     size: 0
     path: 
+--- !u!1 &844086816 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2707821329708670211, guid: 35aa0e151bb800e42b2cc29ec79e27c0, type: 3}
+  m_PrefabInstance: {fileID: 1324367761}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &846312550
 GameObject:
   m_ObjectHideFlags: 0
