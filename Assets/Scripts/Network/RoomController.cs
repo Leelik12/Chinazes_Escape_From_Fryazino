@@ -103,6 +103,7 @@ public class RoomController : MonoBehaviourPunCallbacks
             {
                 gunnerRig.SetActive(false);
             }
+            Menu.SetActive(false);
         }
         else
         {
@@ -127,6 +128,7 @@ public class RoomController : MonoBehaviourPunCallbacks
                 RightHand.TransferOwnership(PhotonNetwork.LocalPlayer);
                 Debug.Log("Права на туррель и пулемет выданы");
             }
+            Menu.SetActive(false);
         }
 
         EnemyManager enemyManager = FindObjectOfType<EnemyManager>();
