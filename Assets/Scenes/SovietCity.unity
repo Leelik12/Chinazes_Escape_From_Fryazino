@@ -128231,8 +128231,8 @@ MonoBehaviour:
   cornerRollFactor: 36
   impactFactor: 30
   impactDamping: 1500
-  maxPitch: 18
-  maxRoll: 18
+  maxPitch: 36
+  maxRoll: 36
 --- !u!146 &4375469430294705532
 WheelCollider:
   m_ObjectHideFlags: 0
@@ -133069,8 +133069,8 @@ MonoBehaviour:
   cornerRollFactor: 2.4
   impactFactor: 1.8
   impactDamping: 150
-  maxPitch: 15
-  maxRoll: 15
+  maxPitch: 30
+  maxRoll: 30
   realRotationWeight: 0.5
   smoothSpeed: 5
 --- !u!1 &7653956748581885503

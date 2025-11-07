@@ -52,7 +52,16 @@ namespace Futurift
 
             _controller = new FutuRiftController(new UdpPortSender(udpOptions));
         }
-
+        private void Update()
+        {
+            // Тест по нажатию клавиши
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                _controller.Pitch = 15f;
+                _controller.Roll = 15f;
+                Debug.Log("Test data sent to Futurift");
+            }
+        }
         private void OnEnable()
         {
             _controller?.Start();
@@ -108,8 +117,8 @@ namespace Futurift
             _controller.Pitch = currentPitch;
             _controller.Roll = currentRoll;
 
-            //Debug.Log(currentPitch);
-            //Debug.Log(currentRoll);
+            Debug.Log(_controller.Pitch);
+            Debug.Log(_controller.Roll);
 
             lastSentPitch = currentPitch;
             lastSentRoll = currentRoll;
