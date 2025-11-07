@@ -121,6 +121,9 @@ public class CarTelemetryHandler : MonoBehaviour
         currentPitch = Mathf.Lerp(currentPitch, finalPitch, Time.deltaTime * smoothSpeed);
         currentRoll = Mathf.Lerp(currentRoll, finalRoll, Time.deltaTime * smoothSpeed);
 
+        //Debug.Log(currentPitch);
+        //Debug.Log(currentRoll);
+
         // --- �������� �� ��������� ---
         _telemetryData.Angles = new Vector3(currentPitch, 0f, currentRoll);
         _telemetryData.Velocity = velocity;

@@ -11,6 +11,7 @@ TagManager:
   - Weapon
   - RightHand
   - LeftHand
+  - Magazine
   layers:
   - Default
   - TransparentFX

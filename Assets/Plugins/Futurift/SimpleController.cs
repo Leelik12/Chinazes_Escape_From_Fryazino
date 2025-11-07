@@ -27,13 +27,8 @@ namespace Futurift
         [SerializeField] private float impactDamping = 2.5f;
 
         [Header("Smoothing & Limits")]
-        [SerializeField] private float smoothSpeed = 5f;
         [SerializeField] private float maxPitch = 10f;
         [SerializeField] private float maxRoll = 10f;
-
-        [Header("Noise filter")]
-        [Tooltip("Минимальное изменение угла (в градусах), при котором обновление отправляется.")]
-        [SerializeField] private float angleThreshold = 0.1f;
 
         private FutuRiftController _controller;
 
@@ -62,7 +57,7 @@ namespace Futurift
         {
             _controller?.Start();
             if (vehicleRigidbody != null)
-                lastVelocity = vehicleRigidbody.velocity;
+                lastVelocity = vehicleRigidbody.linearVelocity;
 
             lastSentPitch = 0f;
             lastSentRoll = 0f;
@@ -79,7 +74,7 @@ namespace Futurift
                 return;
 
             // --- Получаем ускорение ---
-            Vector3 velocity = vehicleRigidbody.velocity;
+            Vector3 velocity = vehicleRigidbody.linearVelocity;
             Vector3 acceleration = (velocity - lastVelocity) / Time.fixedDeltaTime;
 
             float forwardAccel = Vector3.Dot(acceleration, vehicleTransform.forward);
@@ -110,17 +105,14 @@ namespace Futurift
             currentPitch = targetPitch;
             currentRoll = targetRoll;
 
-            // --- Фильтр изменений ---
-            if (Mathf.Abs(currentPitch - lastSentPitch) > angleThreshold ||
-                Mathf.Abs(currentRoll - lastSentRoll) > angleThreshold)
-            {
-                _controller.Pitch = currentPitch;
-                _controller.Roll = currentRoll;
+            _controller.Pitch = currentPitch;
+            _controller.Roll = currentRoll;
 
-                lastSentPitch = currentPitch;
-                lastSentRoll = currentRoll;
-            }
+            //Debug.Log(currentPitch);
+            //Debug.Log(currentRoll);
 
+            lastSentPitch = currentPitch;
+            lastSentRoll = currentRoll;
             lastVelocity = velocity;
         }
 
