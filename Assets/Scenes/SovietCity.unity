@@ -124960,9 +124960,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   carRigidbody: {fileID: 7685947541911150316}
   carHealth: {fileID: 7459236575644943732}
-  accelThreshold: 20
-  brakeThreshold: -20
-  sideAccelThreshold: 6
+  accelThreshold: 60
+  brakeThreshold: -70
+  sideAccelThreshold: 30
+  intensityAccel: 0.6
+  intensityBrake: 0.6
+  intensityTurn: 0.6
+  intensityDamage: 0.6
+  intensityLowHealth: 0.6
+  showHapticsGUI: 1
+  guiFontSize: 25
+  guiWidth: 320
+  guiHeight: 500
 --- !u!223 &1798423234245973948
 Canvas:
   m_ObjectHideFlags: 0
@@ -128228,8 +128237,8 @@ MonoBehaviour:
   vehicleTransform: {fileID: 1895829198424978172}
   vehicleRigidbody: {fileID: 7685947541911150316}
   accelPitchFactor: 0.32
-  cornerRollFactor: 0.72
-  accelerationBoost: 1.2
+  cornerRollFactor: 1.08
+  accelerationBoost: 2
   minSpeedForBoost: 5
   impactFactor: 0.96
   impactDamping: 2.5
@@ -132032,8 +132041,8 @@ MonoBehaviour:
     motor: 1
     steering: 0
   maxMotorTorque: 650
-  maxSteeringAngle: 15
-  maxBrakeTorque: 3000
+  maxSteeringAngle: 20
+  maxBrakeTorque: 10000
   gearRatios:
   - 0
   - 3.6
@@ -132059,7 +132068,7 @@ MonoBehaviour:
   steeringWheelVisual: {fileID: 175449374544540940}
   visualWheelRotationAngle: 80
   steeringSmoothness: 2
-  impulseForce: 4000
+  impulseForce: 5000
   impulseCooldown: 5
 --- !u!224 &7179876012936023633
 RectTransform:
@@ -133072,8 +133081,8 @@ MonoBehaviour:
   vehicleTransform: {fileID: 1895829198424978172}
   rigidbody: {fileID: 7685947541911150316}
   accelPitchFactor: 0.32
-  cornerRollFactor: 0.72
-  accelerationBoost: 1.2
+  cornerRollFactor: 0.6
+  accelerationBoost: 2
   minSpeedForBoost: 5
   impactFactor: 0.96
   impactDamping: 2.5

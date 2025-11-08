@@ -229,6 +229,10 @@ namespace Futurift
             // Сдвигаем GUI Futurift на 420 пикселей вправо, чтобы не перекрывался с GUI 2DoF
             GUILayout.BeginArea(new Rect(430, 10, 400, 500));
 
+            GUILayout.Label($"Futurift", guiStyle);
+
+            GUILayout.Space(15);
+
             // Применяем стиль с увеличенным шрифтом ко всем элементам GUI
             GUILayout.Label($"FPS: {fps:0.0}", guiStyle);
             GUILayout.Label($"Pitch: {currentPitch:F2}°", guiStyle);
