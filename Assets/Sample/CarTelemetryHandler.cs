@@ -214,7 +214,8 @@ public class CarTelemetryHandler : MonoBehaviour
     {
         if (!showGUI) return;
 
-        GUILayout.BeginArea(new Rect(10, 10, 400, 500));
+        // Увеличиваем высоту области GUI для новых элементов
+        GUILayout.BeginArea(new Rect(10, 10, 400, 550));
 
         GUILayout.Label($"2DOF", guiStyle);
 
@@ -227,6 +228,17 @@ public class CarTelemetryHandler : MonoBehaviour
 
         float speedKmh = rigidbody.linearVelocity.magnitude * 3.6f;
         GUILayout.Label($"Speed: {speedKmh:0.0} km/h", guiStyle);
+
+        GUILayout.Space(15);
+
+        // ВЫВОД VELOCITY - вектор скорости
+        Vector3 velocity = rigidbody.linearVelocity;
+        Vector3 localVelocity = vehicleTransform.InverseTransformDirection(velocity);
+
+        GUILayout.Label("VELOCITY VECTOR", guiStyle);
+        GUILayout.Label($"World X: {velocity.x:F2} m/s", guiStyle);
+        GUILayout.Label($"World Y: {velocity.y:F2} m/s", guiStyle);
+        GUILayout.Label($"World Z: {velocity.z:F2} m/s", guiStyle);
 
         GUILayout.Space(15);
 

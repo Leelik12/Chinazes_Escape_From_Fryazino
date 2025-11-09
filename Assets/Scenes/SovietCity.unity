@@ -40462,7 +40462,7 @@ MonoBehaviour:
   opt_bMultithreading: 1
   opt_bSaveMeshes: 0
   opt_bAllowRoadUpdates: 1
-  EditorPlayCamera: {fileID: 0}
+  EditorPlayCamera: {fileID: 844086817}
 --- !u!4 &786620447
 Transform:
   m_ObjectHideFlags: 0
@@ -43576,6 +43576,11 @@ Mesh:
 --- !u!1 &844086816 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2707821329708670211, guid: 35aa0e151bb800e42b2cc29ec79e27c0, type: 3}
+  m_PrefabInstance: {fileID: 1324367761}
+  m_PrefabAsset: {fileID: 0}
+--- !u!20 &844086817 stripped
+Camera:
+  m_CorrespondingSourceObject: {fileID: 2413055201269800706, guid: 35aa0e151bb800e42b2cc29ec79e27c0, type: 3}
   m_PrefabInstance: {fileID: 1324367761}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &846312550

@@ -64,8 +64,6 @@ public class CarController : MonoBehaviourPun
     private Quaternion flRotOffset, frRotOffset, rlRotOffset, rrRotOffset;
     private bool fl;
     private bool lastfl;
-    private Vector3 visualPosition;
-    private Quaternion visualRotation;
 
     private float currentWheelRotation = 0f; // текущее вращение руля (в градусах)
 
@@ -81,9 +79,6 @@ public class CarController : MonoBehaviourPun
         frRotOffset = frontRightTransform.localRotation;
         rlRotOffset = rearLeftTransform.localRotation;
         rrRotOffset = rearRightTransform.localRotation;
-
-        visualPosition = transform.position;
-        visualRotation = transform.rotation;
     }
 
     void Update()
@@ -201,16 +196,6 @@ public class CarController : MonoBehaviourPun
         UpdateWheelPose(frontRightWheel, frontRightTransform, frRotOffset);
         UpdateWheelPose(rearLeftWheel, rearLeftTransform, rlRotOffset);
         UpdateWheelPose(rearRightWheel, rearRightTransform, rrRotOffset);
-
-        visualPosition = rb.position;
-        visualRotation = rb.rotation;
-    }
-
-    void LateUpdate()
-    {
-        if (!photonView.IsMine) return;
-        transform.position = Vector3.Lerp(transform.position, visualPosition, 1f);
-        transform.rotation = Quaternion.Slerp(transform.rotation, visualRotation, 1f);
     }
 
     void UpdateEngine()
