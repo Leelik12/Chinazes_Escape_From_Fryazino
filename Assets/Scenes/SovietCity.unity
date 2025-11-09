@@ -124823,8 +124823,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   carRigidbody: {fileID: 7685947541911150316}
   carHealth: {fileID: 7459236575644943732}
-  accelThreshold: 60
-  brakeThreshold: -70
+  accelThreshold: 65
+  brakeThreshold: -75
   sideAccelThreshold: 30
   intensityAccel: 0.6
   intensityBrake: 0.6
