@@ -18,7 +18,7 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
     [Header("Effect Factors")]
     [Tooltip("Множитель наклона капсулы от продольного ускорения (вперед/назад).")]
-    [SerializeField] private float accelPitchFactor = 0.02f;
+    [SerializeField] private float accelPitchFactor = 0.05f; // УВЕЛИЧЕНО с 0.02 до 0.05
 
     [Tooltip("Множитель наклона капсулы от бокового ускорения (в поворотах).")]
     [SerializeField] private float cornerRollFactor = 0.02f;
@@ -39,7 +39,8 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
     [Header("Limits")]
     [Tooltip("Максимальный угол наклона по тангажу (Pitch).")]
-    [SerializeField] private float maxPitch = 10f;
+    [SerializeField] private float maxPitch = 15f; // УВЕЛИЧЕНО с 10 до 15
+
     [Tooltip("Максимальный угол наклона по крену (Roll).")]
     [SerializeField] private float maxRoll = 10f;
 
@@ -149,7 +150,10 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
         // Базовые эффекты от ускорений
         float targetEffectPitch = -forwardAccel * accelPitchFactor;
-        float targetEffectRoll = lateralAccel * cornerRollFactor;
+
+        // ИСПРАВЛЕНИЕ: изменен знак для правильного направления крена
+        // При повороте влево - крен влево (отрицательный roll), при повороте вправо - крен вправо (положительный roll)
+        float targetEffectRoll = -lateralAccel * cornerRollFactor;
 
         // --- УСИЛЕНИЕ ВЛИЯНИЯ УСКОРЕНИЙ ---
         if (speedKmh > minSpeedForBoost)
@@ -206,9 +210,9 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
         Vector3 localImpact = vehicleTransform.InverseTransformDirection(collision.impulse.normalized);
 
-        // Правильное направление для ударов
+        // ИСПРАВЛЕНИЕ: также изменен знак для ударов
         impactPitch = -localImpact.z * impactForce * impactFactor;
-        impactRoll = localImpact.x * impactForce * impactFactor * 0.3f;
+        impactRoll = -localImpact.x * impactForce * impactFactor * 0.3f;
     }
 
     private float NormalizeAngle(float angle)
@@ -262,7 +266,16 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
         // Добавим информацию о направлении поворота
         string turnDirection = localAccel.x > 0 ? "RIGHT" : (localAccel.x < 0 ? "LEFT" : "STRAIGHT");
+        string expectedTilt = localAccel.x > 0 ? "RIGHT" : (localAccel.x < 0 ? "LEFT" : "NONE");
+
+        // Добавим информацию о продольном ускорении
+        string pitchDirection = localAccel.z > 0 ? "ACCELERATING" : (localAccel.z < 0 ? "BRAKING" : "COASTING");
+        string expectedPitch = localAccel.z > 0 ? "BACKWARD" : (localAccel.z < 0 ? "FORWARD" : "LEVEL");
+
         GUILayout.Label($"Turn Direction: {turnDirection}", guiStyle);
+        GUILayout.Label($"Expected Tilt: {expectedTilt}", guiStyle);
+        GUILayout.Label($"Pitch Direction: {pitchDirection}", guiStyle);
+        GUILayout.Label($"Expected Pitch: {expectedPitch}", guiStyle);
 
         GUILayout.Space(15);
 

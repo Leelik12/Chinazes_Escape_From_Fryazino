@@ -128104,11 +128104,11 @@ MonoBehaviour:
   port: 6065
   vehicleTransform: {fileID: 1895829198424978172}
   rigidbody: {fileID: 7685947541911150316}
-  accelPitchFactor: 0.32
+  accelPitchFactor: 1.62
   cornerRollFactor: 1.08
   accelerationBoost: 2
   minSpeedForBoost: 5
-  impactFactor: 0.96
+  impactFactor: 1.62
   impactDamping: 2.5
   maxPitch: 18
   maxRoll: 18
@@ -131907,9 +131907,9 @@ MonoBehaviour:
     rightWheel: {fileID: 382305401509160676}
     motor: 1
     steering: 0
-  maxMotorTorque: 650
+  maxMotorTorque: 1000
   maxSteeringAngle: 20
-  maxBrakeTorque: 10000
+  maxBrakeTorque: 13000
   gearRatios:
   - 0
   - 3.6
