@@ -128103,7 +128103,7 @@ MonoBehaviour:
   ipAddress: 127.0.0.1
   port: 6065
   vehicleTransform: {fileID: 1895829198424978172}
-  vehicleRigidbody: {fileID: 7685947541911150316}
+  rigidbody: {fileID: 7685947541911150316}
   accelPitchFactor: 0.32
   cornerRollFactor: 1.08
   accelerationBoost: 2
@@ -128113,7 +128113,6 @@ MonoBehaviour:
   maxPitch: 18
   maxRoll: 18
   smoothSpeed: 20
-  angleThreshold: 0.1
   showGUI: 1
   fontSize: 20
 --- !u!146 &4375469430294705532
@@ -132947,18 +132946,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   vehicleTransform: {fileID: 1895829198424978172}
-  rigidbody: {fileID: 7685947541911150316}
-  accelPitchFactor: 0.32
-  cornerRollFactor: 0.6
-  accelerationBoost: 2
-  minSpeedForBoost: 5
-  impactFactor: 0.96
-  impactDamping: 2.5
-  maxPitch: 15
-  maxRoll: 15
-  smoothSpeed: 20
-  showGUI: 1
-  fontSize: 20
+  rb: {fileID: 7685947541911150316}
 --- !u!1 &7653956748581885503
 GameObject:
   m_ObjectHideFlags: 0
