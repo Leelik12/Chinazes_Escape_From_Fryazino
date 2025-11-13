@@ -4444,6 +4444,50 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 61268344}
   m_Mesh: {fileID: 1132155182}
+--- !u!1 &64388430
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 64388432}
+  - component: {fileID: 64388431}
+  m_Layer: 0
+  m_Name: ErrorTester
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &64388431
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64388430}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a0c1a9acdc7e0c4e94eb9d532b10383, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &64388432
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 64388430}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 678.23364, y: 64.52164, z: 323.24142}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &64688494
 GameObject:
   m_ObjectHideFlags: 0
@@ -124015,6 +124059,7 @@ GameObject:
   - component: {fileID: 1783440624438593725}
   - component: {fileID: 8422064855269990656}
   - component: {fileID: 8422064855269990657}
+  - component: {fileID: 8422064855269990658}
   m_Layer: 0
   m_Name: VolgaCar
   m_TagString: Car
@@ -128102,6 +128147,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ipAddress: 127.0.0.1
   port: 6065
+  networkSync: {fileID: 8422064855269990658}
   vehicleTransform: {fileID: 1895829198424978172}
   vehicleRigidbody: {fileID: 7685947541911150316}
   maxPitch: 18
@@ -133719,6 +133765,7 @@ MonoBehaviour:
   observableSearch: 2
   ObservedComponents:
   - {fileID: 8422064855269990656}
+  - {fileID: 8422064855269990658}
   - {fileID: 740636810}
   - {fileID: 5235463168296403943}
   sceneViewId: 12
@@ -133754,6 +133801,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   impulseForce: 4000
   cooldownTime: 5
+--- !u!114 &8422064855269990658
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171050281947547841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63d0fffae9542174cacb4ffda70313da, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &8428538889073764768
 Transform:
   m_ObjectHideFlags: 0
@@ -134843,3 +134902,4 @@ SceneRoots:
   - {fileID: 1375592513}
   - {fileID: 8849234316131872626}
   - {fileID: 1895829198424978172}
+  - {fileID: 64388432}

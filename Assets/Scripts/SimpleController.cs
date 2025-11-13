@@ -2,15 +2,17 @@
 using Futurift;
 using Futurift.DataSenders;
 using Futurift.Options;
+using Photon.Pun;
 using UnityEngine;
 
-public class FuturiftTelemetryHandler : MonoBehaviour
+public class FuturiftTelemetryHandler : MonoBehaviourPun
 {
     private const float WAIT_TIME = 0.016f; // 60 Hz
 
     [Header("Connection Settings")]
     [SerializeField] private string ipAddress = "127.0.0.1";
     [SerializeField] private int port = 6065;
+    [SerializeField] private CarNetworkSync networkSync;
 
     [Header("References")]
     [SerializeField] private Transform vehicleTransform;
@@ -111,6 +113,21 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
     private void UpdatePlatformMotion()
     {
+        Vector3 velocity;
+        Vector3 angularVel;
+
+        if (photonView != null && !photonView.IsMine && networkSync != null)
+        {
+            // Берём переданные значения
+            velocity = networkSync.NetworkVelocity;
+            angularVel = networkSync.NetworkAngularVelocity;
+        }
+        else
+        {
+            // Локальный игрок — берём реальные значения Rigidbody
+            velocity = vehicleRigidbody.linearVelocity;
+            angularVel = vehicleRigidbody.angularVelocity;
+        }
         // Текущая скорость
         Vector3 currentVelocity = vehicleRigidbody.linearVelocity;
 
@@ -244,10 +261,10 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
         // Рекомендации
         if (Mathf.Abs(localAccel.z) > 2f && Mathf.Abs(currentPitch) < 5f)
-            GUILayout.Label("⚠️ INCREASE pitchSensitivity!", guiStyle);
+            GUILayout.Label("INCREASE pitchSensitivity!", guiStyle);
 
         if (Mathf.Abs(localAccel.x) > 1.5f && Mathf.Abs(currentRoll) < 3f)
-            GUILayout.Label("⚠️ INCREASE rollSensitivity!", guiStyle);
+            GUILayout.Label("INCREASE rollSensitivity!", guiStyle);
 
         GUILayout.Space(15);
         GUILayout.Label($"Connection: {ipAddress}:{port}", guiStyle);
