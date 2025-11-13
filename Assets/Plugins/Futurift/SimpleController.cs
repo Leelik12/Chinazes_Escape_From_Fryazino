@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class FuturiftTelemetryHandler : MonoBehaviour
 {
-    private const float WAIT_TIME = 0.02f; // 50 Hz update rate
+    private const float WAIT_TIME = 0.016f; // 60 Hz
 
     [Header("Connection Settings")]
     [SerializeField] private string ipAddress = "127.0.0.1";
@@ -14,38 +14,23 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
     [Header("References")]
     [SerializeField] private Transform vehicleTransform;
-    [SerializeField] private Rigidbody rigidbody;
+    [SerializeField] private Rigidbody vehicleRigidbody;
 
-    [Header("Effect Factors")]
-    [Tooltip("Множитель наклона капсулы от продольного ускорения (вперед/назад).")]
-    [SerializeField] private float accelPitchFactor = 0.05f; // УВЕЛИЧЕНО с 0.02 до 0.05
+    [Header("Pitch Settings (Forward/Backward)")]
+    [SerializeField] private float maxPitch = 25f;
+    [SerializeField] private float pitchSensitivity = 2.0f;
+    [SerializeField] private float pitchDamping = 5f;
 
-    [Tooltip("Множитель наклона капсулы от бокового ускорения (в поворотах).")]
-    [SerializeField] private float cornerRollFactor = 0.02f;
+    [Header("Roll Settings (Left/Right)")]
+    [SerializeField] private float maxRoll = 20f;
+    [SerializeField] private float rollSensitivity = 1.5f;
+    [SerializeField] private float rollDamping = 5f;
 
-    [Header("Acceleration Boost")]
-    [Tooltip("Дополнительный множитель для усиления влияния ускорений.")]
-    [SerializeField] private float accelerationBoost = 2.0f;
-
-    [Tooltip("Минимальная скорость (км/ч) для применения усиления ускорений.")]
-    [SerializeField] private float minSpeedForBoost = 5.0f;
+    [Header("Road Influence")]
+    [SerializeField] private float roadInfluence = 0.8f;
 
     [Header("Impact settings")]
-    [Tooltip("Множитель силы удара для отката.")]
-    [SerializeField] private float impactFactor = 0.015f;
-
-    [Tooltip("Скорость гашения удара отката.")]
-    [SerializeField] private float impactDamping = 2.5f;
-
-    [Header("Limits")]
-    [Tooltip("Максимальный угол наклона по тангажу (Pitch).")]
-    [SerializeField] private float maxPitch = 15f; // УВЕЛИЧЕНО с 10 до 15
-
-    [Tooltip("Максимальный угол наклона по крену (Roll).")]
-    [SerializeField] private float maxRoll = 10f;
-
-    [Tooltip("Скорость сглаживания изменений.")]
-    [SerializeField] private float smoothSpeed = 8f;
+    [SerializeField] private float impactFactor = 0.1f;
 
     [Header("Debug GUI")]
     [SerializeField] private bool showGUI = true;
@@ -53,16 +38,14 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
     private FutuRiftController _controller;
 
+    // Для расчета ускорений
     private Vector3 lastVelocity;
-    private Vector3 lastPosition;
+    private Vector3 lastAcceleration;
+    private Vector3 smoothedAcceleration;
+
+    // Текущие углы
     private float currentPitch;
     private float currentRoll;
-    private float impactPitch;
-    private float impactRoll;
-
-    // Сглаживающие фильтры для ускорения
-    private Vector3 smoothedAcceleration;
-    private float accelerationSmoothFactor = 0.2f;
 
     // FPS variables
     private float fps;
@@ -75,7 +58,6 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
     private void Awake()
     {
-        // Инициализация подключения к Futurift
         var udpOptions = new UdpOptions
         {
             ip = ipAddress,
@@ -84,7 +66,6 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
         _controller = new FutuRiftController(new UdpPortSender(udpOptions));
 
-        // Initialize GUI style
         guiStyle = new GUIStyle();
         guiStyle.fontSize = fontSize;
         guiStyle.normal.textColor = Color.white;
@@ -95,8 +76,8 @@ public class FuturiftTelemetryHandler : MonoBehaviour
         StartCoroutine(TelemetryHandler());
         _controller?.Start();
 
-        lastVelocity = rigidbody.linearVelocity;
-        lastPosition = vehicleTransform.position;
+        lastVelocity = vehicleRigidbody.linearVelocity;
+        lastAcceleration = Vector3.zero;
         smoothedAcceleration = Vector3.zero;
     }
 
@@ -108,7 +89,6 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
     private void Update()
     {
-        // FPS calculation
         frameCount++;
         timer += Time.unscaledDeltaTime;
 
@@ -131,88 +111,87 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
     private void UpdatePlatformMotion()
     {
-        Vector3 velocity = rigidbody.linearVelocity;
-        float speedKmh = velocity.magnitude * 3.6f;
+        // Текущая скорость
+        Vector3 currentVelocity = vehicleRigidbody.linearVelocity;
 
-        // Более плавный расчет ускорения
-        Vector3 worldAcceleration = (velocity - lastVelocity) / Time.fixedDeltaTime;
+        // Мгновенное ускорение (очень быстрое)
+        Vector3 instantAcceleration = (currentVelocity - lastVelocity) / Time.fixedDeltaTime;
 
-        // Сглаживаем ускорение для уменьшения резких изменений
-        smoothedAcceleration = Vector3.Lerp(smoothedAcceleration, worldAcceleration, accelerationSmoothFactor);
+        // Легкое сглаживание для устранения шума, но без задержек
+        smoothedAcceleration = Vector3.Lerp(smoothedAcceleration, instantAcceleration, 0.7f);
+
+        // Преобразуем в локальные координаты автомобиля
         Vector3 localAcceleration = vehicleTransform.InverseTransformDirection(smoothedAcceleration);
 
-        // Учитываем наклон дороги
-        Vector3 localGravity = vehicleTransform.InverseTransformDirection(Physics.gravity);
+        // Углы наклона дороги
+        Vector3 localEuler = vehicleTransform.localRotation.eulerAngles;
+        float roadPitch = NormalizeAngle(localEuler.x);
+        float roadRoll = NormalizeAngle(localEuler.z);
 
-        // --- Эффекты от ускорений ---
-        float forwardAccel = localAcceleration.z;
-        float lateralAccel = localAcceleration.x;
+        // РАСЧЕТ PITCH (вперед-назад)
+        float accelerationPitch = 0f;
 
-        // Базовые эффекты от ускорений
-        float targetEffectPitch = -forwardAccel * accelPitchFactor;
-
-        // ИСПРАВЛЕНИЕ: изменен знак для правильного направления крена
-        // При повороте влево - крен влево (отрицательный roll), при повороте вправо - крен вправо (положительный roll)
-        float targetEffectRoll = -lateralAccel * cornerRollFactor;
-
-        // --- УСИЛЕНИЕ ВЛИЯНИЯ УСКОРЕНИЙ ---
-        if (speedKmh > minSpeedForBoost)
+        // Сильное ускорение вперед - наклон назад
+        if (localAcceleration.z > 1.0f)
         {
-            // Применяем дополнительный множитель для усиления эффектов ускорения
-            targetEffectPitch *= accelerationBoost;
-            targetEffectRoll *= accelerationBoost;
+            accelerationPitch = -Mathf.Clamp(localAcceleration.z * pitchSensitivity, 0, maxPitch);
+        }
+        // Торможение - наклон вперед
+        else if (localAcceleration.z < -1.0f)
+        {
+            accelerationPitch = -Mathf.Clamp(localAcceleration.z * pitchSensitivity, -maxPitch, 0);
         }
 
-        // --- Реальные углы: наклон дороги ---
-        Vector3 localEuler = vehicleTransform.localRotation.eulerAngles;
-        float realPitch = NormalizeAngle(localEuler.x);
-        float realRoll = NormalizeAngle(localEuler.z);
+        // РАСЧЕТ ROLL (влево-вправо)
+        float turnRoll = 0f;
 
-        // Учитываем гравитацию в наклонах дороги
-        float gravityPitchInfluence = -localGravity.z * 0.1f;
-        float gravityRollInfluence = -localGravity.x * 0.1f;
+        // Повороты - наклон в противоположную сторону
+        if (Mathf.Abs(localAcceleration.x) > 0.8f)
+        {
+            turnRoll = -Mathf.Clamp(localAcceleration.x * rollSensitivity, -maxRoll, maxRoll);
+        }
 
-        realPitch += gravityPitchInfluence;
-        realRoll += gravityRollInfluence;
+        // Комбинируем все эффекты
+        float targetPitch = accelerationPitch + (roadPitch * roadInfluence);
+        float targetRoll = turnRoll + (roadRoll * roadInfluence);
 
-        // --- Гашение ударов ---
-        impactPitch = Mathf.Lerp(impactPitch, 0f, Time.deltaTime * impactDamping);
-        impactRoll = Mathf.Lerp(impactRoll, 0f, Time.deltaTime * impactDamping);
+        // Ограничиваем
+        targetPitch = Mathf.Clamp(targetPitch, -maxPitch, maxPitch);
+        targetRoll = Mathf.Clamp(targetRoll, -maxRoll, maxRoll);
 
-        // --- ПРОСТОЕ СУММИРОВАНИЕ ---
-        float finalPitch = realPitch + targetEffectPitch + impactPitch;
-        float finalRoll = realRoll + targetEffectRoll + impactRoll;
+        // Быстрое, но плавное применение
+        currentPitch = Mathf.Lerp(currentPitch, targetPitch, Time.deltaTime * pitchDamping);
+        currentRoll = Mathf.Lerp(currentRoll, targetRoll, Time.deltaTime * rollDamping);
 
-        // --- Ограничения ---
-        finalPitch = Mathf.Clamp(finalPitch, -maxPitch, maxPitch);
-        finalRoll = Mathf.Clamp(finalRoll, -maxRoll, maxRoll);
-
-        // --- Улучшенное сглаживание ---
-        float smoothFactor = Mathf.Clamp(Time.deltaTime * smoothSpeed, 0.01f, 0.5f);
-        currentPitch = Mathf.Lerp(currentPitch, finalPitch, smoothFactor);
-        currentRoll = Mathf.Lerp(currentRoll, finalRoll, smoothFactor);
-
-        // --- Передача на капсулу Futurift ---
+        // Передача данных
         if (_controller != null)
         {
             _controller.Pitch = currentPitch;
             _controller.Roll = currentRoll;
         }
 
-        lastVelocity = velocity;
-        lastPosition = vehicleTransform.position;
+        // Сохраняем для следующего кадра
+        lastVelocity = currentVelocity;
+        lastAcceleration = instantAcceleration;
+    }
+
+    private void FixedUpdate()
+    {
+        // Дополнительный расчет в FixedUpdate для более точной физики
+        UpdatePlatformMotion();
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        // Сглаживаем силу удара
-        float impactForce = collision.impulse.magnitude / Time.fixedDeltaTime * 0.5f;
+        // Удары - мгновенный эффект
+        float impactForce = collision.relativeVelocity.magnitude * impactFactor;
+        Vector3 localImpact = vehicleTransform.InverseTransformDirection(collision.relativeVelocity.normalized);
 
-        Vector3 localImpact = vehicleTransform.InverseTransformDirection(collision.impulse.normalized);
+        currentPitch += -localImpact.z * impactForce;
+        currentRoll += -localImpact.x * impactForce;
 
-        // ИСПРАВЛЕНИЕ: также изменен знак для ударов
-        impactPitch = -localImpact.z * impactForce * impactFactor;
-        impactRoll = -localImpact.x * impactForce * impactFactor * 0.3f;
+        currentPitch = Mathf.Clamp(currentPitch, -maxPitch, maxPitch);
+        currentRoll = Mathf.Clamp(currentRoll, -maxRoll, maxRoll);
     }
 
     private float NormalizeAngle(float angle)
@@ -225,78 +204,52 @@ public class FuturiftTelemetryHandler : MonoBehaviour
     {
         if (!showGUI) return;
 
-        // Позиционируем GUI справа, чтобы не пересекался с 2DOF GUI
-        GUILayout.BeginArea(new Rect(Screen.width - 430, 10, 400, 600));
+        GUILayout.BeginArea(new Rect(Screen.width - 450, 10, 440, 600));
 
-        GUILayout.Label($"FUTURIFT CAPSULE", guiStyle);
+        GUILayout.Label($"FUTURIFT CAPSULE - DIRECT PHYSICS", guiStyle);
+        GUILayout.Space(10);
 
-        GUILayout.Space(15);
-
-        // Применяем стиль с увеличенным шрифтом ко всем элементам GUI
         GUILayout.Label($"FPS: {fps:0.0}", guiStyle);
-        GUILayout.Label($"Pitch: {currentPitch:F2}°", guiStyle);
-        GUILayout.Label($"Roll: {currentRoll:F2}°", guiStyle);
+        GUILayout.Label($"Pitch: {currentPitch:F1}°", guiStyle);
+        GUILayout.Label($"Roll: {currentRoll:F1}°", guiStyle);
 
-        float speedKmh = rigidbody.linearVelocity.magnitude * 3.6f;
+        float speedKmh = vehicleRigidbody.linearVelocity.magnitude * 3.6f;
         GUILayout.Label($"Speed: {speedKmh:0.0} km/h", guiStyle);
 
         GUILayout.Space(15);
 
-        // ВЫВОД VELOCITY - вектор скорости
-        Vector3 velocity = rigidbody.linearVelocity;
-        Vector3 localVelocity = vehicleTransform.InverseTransformDirection(velocity);
+        // Детальная диагностика физики
+        Vector3 localAccel = vehicleTransform.InverseTransformDirection(smoothedAcceleration);
+        Vector3 localVel = vehicleTransform.InverseTransformDirection(vehicleRigidbody.linearVelocity);
 
-        GUILayout.Label("VELOCITY VECTOR", guiStyle);
-        GUILayout.Label($"World X: {velocity.x:F2} m/s", guiStyle);
-        GUILayout.Label($"World Y: {velocity.y:F2} m/s", guiStyle);
-        GUILayout.Label($"World Z: {velocity.z:F2} m/s", guiStyle);
+        GUILayout.Label("PHYSICS DATA:", guiStyle);
+        GUILayout.Label($"Accel Forward: {localAccel.z:F2} m/s²", guiStyle);
+        GUILayout.Label($"Accel Lateral: {localAccel.x:F2} m/s²", guiStyle);
+        GUILayout.Label($"Vel Forward: {localVel.z:F1} m/s", guiStyle);
+        GUILayout.Label($"Vel Lateral: {localVel.x:F1} m/s", guiStyle);
 
-        GUILayout.Space(5);
+        GUILayout.Space(10);
 
-        GUILayout.Label($"Local Forward: {localVelocity.z:F2} m/s", guiStyle);
-        GUILayout.Label($"Local Right: {localVelocity.x:F2} m/s", guiStyle);
-        GUILayout.Label($"Local Up: {localVelocity.y:F2} m/s", guiStyle);
+        // Статус эффектов
+        string pitchEffect = Mathf.Abs(localAccel.z) > 1.0f ?
+            (localAccel.z > 0 ? "ACCEL → TILT BACK" : "BRAKE → TILT FORWARD") : "NO PITCH EFFECT";
 
-        GUILayout.Space(15);
+        string rollEffect = Mathf.Abs(localAccel.x) > 0.8f ?
+            (localAccel.x > 0 ? "TURN RIGHT → TILT LEFT" : "TURN LEFT → TILT RIGHT") : "NO ROLL EFFECT";
 
-        // Вектор ускорения в локальных координатах
-        Vector3 localAccel = vehicleTransform.InverseTransformDirection((rigidbody.linearVelocity - lastVelocity) / Time.fixedDeltaTime);
-        GUILayout.Label($"Forward Accel: {localAccel.z:F2} m/s²", guiStyle);
-        GUILayout.Label($"Lateral Accel: {localAccel.x:F2} m/s²", guiStyle);
+        GUILayout.Label($"Pitch Status: {pitchEffect}", guiStyle);
+        GUILayout.Label($"Roll Status: {rollEffect}", guiStyle);
 
-        // Добавим информацию о направлении поворота
-        string turnDirection = localAccel.x > 0 ? "RIGHT" : (localAccel.x < 0 ? "LEFT" : "STRAIGHT");
-        string expectedTilt = localAccel.x > 0 ? "RIGHT" : (localAccel.x < 0 ? "LEFT" : "NONE");
+        GUILayout.Space(10);
 
-        // Добавим информацию о продольном ускорении
-        string pitchDirection = localAccel.z > 0 ? "ACCELERATING" : (localAccel.z < 0 ? "BRAKING" : "COASTING");
-        string expectedPitch = localAccel.z > 0 ? "BACKWARD" : (localAccel.z < 0 ? "FORWARD" : "LEVEL");
+        // Рекомендации
+        if (Mathf.Abs(localAccel.z) > 2f && Mathf.Abs(currentPitch) < 5f)
+            GUILayout.Label("⚠️ INCREASE pitchSensitivity!", guiStyle);
 
-        GUILayout.Label($"Turn Direction: {turnDirection}", guiStyle);
-        GUILayout.Label($"Expected Tilt: {expectedTilt}", guiStyle);
-        GUILayout.Label($"Pitch Direction: {pitchDirection}", guiStyle);
-        GUILayout.Label($"Expected Pitch: {expectedPitch}", guiStyle);
+        if (Mathf.Abs(localAccel.x) > 1.5f && Mathf.Abs(currentRoll) < 3f)
+            GUILayout.Label("⚠️ INCREASE rollSensitivity!", guiStyle);
 
         GUILayout.Space(15);
-
-        // Углы машины
-        Vector3 localEuler = vehicleTransform.localRotation.eulerAngles;
-        GUILayout.Label($"Car Pitch: {NormalizeAngle(localEuler.x):F2}°", guiStyle);
-        GUILayout.Label($"Car Roll: {NormalizeAngle(localEuler.z):F2}°", guiStyle);
-
-        GUILayout.Space(15);
-
-        // Состояние капсулы
-        GUILayout.Label("Capsule Status: ACTIVE", guiStyle);
-        GUILayout.Label($"Update Rate: {1f / WAIT_TIME:0} Hz", guiStyle);
-        GUILayout.Label($"Smoothing: {smoothSpeed:0.0}", guiStyle);
-
-        // Информация об усилении ускорений
-        bool isBoostActive = speedKmh > minSpeedForBoost;
-        string boostStatus = isBoostActive ? $"ACTIVE (x{accelerationBoost})" : "INACTIVE";
-        GUILayout.Label($"Accel Boost: {boostStatus}", guiStyle);
-
-        // Информация о подключении
         GUILayout.Label($"Connection: {ipAddress}:{port}", guiStyle);
 
         GUILayout.EndArea();

@@ -81,7 +81,7 @@ public class CarTelemetryHandler : MonoBehaviour
 
 
         telemetryDataData.Angles = gameObject.transform.eulerAngles*1.2f;
-        telemetryDataData.Velocity = new Vector3(currentLinearAcceleration * 50, currentAngularVelocity * 160, 0);
+        telemetryDataData.Velocity = new Vector3(currentLinearAcceleration * 60, currentAngularVelocity * 200, 0);
 
 
 

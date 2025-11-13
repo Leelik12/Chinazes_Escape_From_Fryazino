@@ -17998,14 +17998,14 @@ Canvas:
   m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 2
-  m_Camera: {fileID: 0}
+  m_Camera: {fileID: 844086817}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
-  m_VertexColorAlwaysGammaSpace: 0
+  m_VertexColorAlwaysGammaSpace: 1
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
@@ -128103,16 +128103,15 @@ MonoBehaviour:
   ipAddress: 127.0.0.1
   port: 6065
   vehicleTransform: {fileID: 1895829198424978172}
-  rigidbody: {fileID: 7685947541911150316}
-  accelPitchFactor: 1.62
-  cornerRollFactor: 1.08
-  accelerationBoost: 2
-  minSpeedForBoost: 5
-  impactFactor: 1.62
-  impactDamping: 2.5
+  vehicleRigidbody: {fileID: 7685947541911150316}
   maxPitch: 18
+  pitchSensitivity: 6
+  pitchDamping: 5
   maxRoll: 18
-  smoothSpeed: 20
+  rollSensitivity: 6
+  rollDamping: 5
+  roadInfluence: 0.3
+  impactFactor: 2
   showGUI: 1
   fontSize: 20
 --- !u!146 &4375469430294705532
