@@ -203,6 +203,3 @@ public class CarControllerSample : MonoBehaviourPun
         steeringWheelVisual.localRotation = Quaternion.Euler(25f, 0f, -currentVisualAngle);
     }
 }
-
-
-

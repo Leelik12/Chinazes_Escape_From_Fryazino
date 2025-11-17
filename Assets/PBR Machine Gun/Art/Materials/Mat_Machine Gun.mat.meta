@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 05f268961a6f897468f805f69656b895
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 254971
+  packageName: PBR Machine Gun
+  packageVersion: 1.0
+  assetPath: Assets/PBR Machine Gun/Art/Materials/Mat_Machine Gun.mat
+  uploadId: 596883

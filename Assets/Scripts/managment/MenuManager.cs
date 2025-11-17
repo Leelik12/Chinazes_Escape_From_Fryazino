@@ -8,9 +8,6 @@ using UnityEngine.SceneManagement;
 
 public class MenuManager : MonoBehaviour
 {
-    public TMP_Text messedge;
-    public TMP_Text Best;
-    public TMP_Text Last;
     public Slider volumeSliderMusik;
     public Slider volumeSliderEngine;
     public AudioMixer audioMixer;
@@ -51,10 +48,6 @@ public class MenuManager : MonoBehaviour
         StaticHolder.EngineVolume = volume;
     }
 
-    public void StartGame()
-    {
-        SceneManager.LoadScene(1);
-    }
     public void EndGame()
     {
         Application.Quit();

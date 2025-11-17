@@ -88,11 +88,6 @@ public class PlayerHealth : MonoBehaviourPun
     {
         Debug.Log($"{gameObject.name} умер!");
         OnDeath?.Invoke();
-
-        // перезагрузка сцены дл€ всех Ч только мастер
-        if (PhotonNetwork.IsMasterClient)
-        {
             PhotonNetwork.LoadLevel(SceneManager.GetActiveScene().name);
-        }
     }
 }

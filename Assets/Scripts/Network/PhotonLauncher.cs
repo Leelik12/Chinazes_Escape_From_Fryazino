@@ -10,13 +10,8 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
 
     void Awake()
     {
-        // Количество сетевых обновлений в секунду (по умолчанию 10)
         PhotonNetwork.SendRate = 120;
-
-        // Сколько раз в секунду PUN сериализует данные объектов (по умолчанию 10)
         PhotonNetwork.SerializationRate = 120;
-
-        // Автоматическая синхронизация сцен (по желанию)
         PhotonNetwork.AutomaticallySyncScene = true;
     }
     void Start()
@@ -49,8 +44,6 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined Room. Players in room: " + PhotonNetwork.CurrentRoom.PlayerCount);
-
-        // Здесь можно сразу вызывать спавн префабов (Car/Turret) через отдельный скрипт RoomController
     }
 
     // Вызывается, если подключение к серверу не удалось
