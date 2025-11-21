@@ -26189,9 +26189,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6fecf2c65c6859f46a449bfeae884b84, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  messedge: {fileID: 0}
-  Best: {fileID: 0}
-  Last: {fileID: 0}
   volumeSliderMusik: {fileID: 1465128003}
   volumeSliderEngine: {fileID: 410596631}
   audioMixer: {fileID: 24100000, guid: c3c175d8752a37c4093a02ffe181acd5, type: 2}
@@ -131952,9 +131949,9 @@ MonoBehaviour:
     rightWheel: {fileID: 382305401509160676}
     motor: 1
     steering: 0
-  maxMotorTorque: 1000
+  maxMotorTorque: 1500
   maxSteeringAngle: 20
-  maxBrakeTorque: 13000
+  maxBrakeTorque: 20000
   gearRatios:
   - 0
   - 3.6
