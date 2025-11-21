@@ -62,7 +62,6 @@ public class CarControllerSample : MonoBehaviourPun
 
         // Газ
         throttleInput = inputControllerReader.Throttle;
-
         // Тормоз
         brakeInput = inputControllerReader.Brake > 0.2f ? inputControllerReader.Brake : 0f;
 

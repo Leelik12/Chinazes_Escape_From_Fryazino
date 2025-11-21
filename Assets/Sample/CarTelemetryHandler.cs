@@ -1,13 +1,17 @@
 using _2DOF;
+using Photon.Pun;
 using System.Collections;
 using TMPro;
 using UnityEngine;
-public class CarTelemetryHandler : MonoBehaviour
+public class CarTelemetryHandler : MonoBehaviour, IPunObservable
 {
     private const float WAIT_TIME = SendingData.WAIT_TIME / 1000f;
 
     private ObjectTelemetryData telemetryDataData;
     private SendingData _sendingData;
+
+    [SerializeField] private Transform proxyTransform; // <-- прокси-точка, которая повторяет наклоны
+
 
     [SerializeField] private Transform vehicleTransform;
     [SerializeField] private Rigidbody rb;
@@ -19,7 +23,8 @@ public class CarTelemetryHandler : MonoBehaviour
     private float currentLinearAcceleration = 0f; // текущий наклон платформы 2DOF по x (учет линейного ускорения)
     private float lastLinearVelocity = 0f;
     private float currentAngularVelocity = 0f; // текущий наклон платформы 2DOF по z (учет угловой скорости)
-
+    private float abobaX;
+    private float abobaZ;
     private void Awake()
     {
         _sendingData = new SendingData();
@@ -81,9 +86,13 @@ public class CarTelemetryHandler : MonoBehaviour
 
 
         telemetryDataData.Angles = gameObject.transform.eulerAngles*1.2f;
-        telemetryDataData.Velocity = new Vector3(currentLinearAcceleration * 60, currentAngularVelocity * 200, 0);
+        telemetryDataData.Velocity = new Vector3(currentLinearAcceleration * 70, currentAngularVelocity * 300, 0);
 
-
+        // Добавляем наклоны на прокси-точку
+        if (proxyTransform != null)
+        {
+            proxyTransform.localRotation = Quaternion.Euler(currentPitch - abobaX * 0.7f, 0f, currentRoll - abobaZ * 0.5f);
+        }
 
     }
 
@@ -93,7 +102,7 @@ public class CarTelemetryHandler : MonoBehaviour
 
         targetPitch = NormalizeAngle(vehicleTransform.eulerAngles.x); // учет наклона поверхности
         targetPitch = Mathf.Clamp(targetPitch, -maxPlatformAngle, maxPlatformAngle);
-
+        abobaX = targetPitch;
         currentPitch = Mathf.Lerp(currentPitch, targetPitch, 0.04f);
 
         //---------------------------------------------------------------------------
@@ -101,7 +110,7 @@ public class CarTelemetryHandler : MonoBehaviour
         
         targetRoll = NormalizeAngle(vehicleTransform.eulerAngles.z);
         targetRoll = Mathf.Clamp(targetRoll, -maxPlatformAngle, maxPlatformAngle);
-
+        abobaZ = targetRoll;
         currentRoll = Mathf.Lerp(currentRoll, targetRoll, 0.04f);
 
         Vector3 resultAngles = new Vector3(currentPitch, currentRoll, 0); // конечный возврат углов для передачи данных в платформу
@@ -114,4 +123,21 @@ public class CarTelemetryHandler : MonoBehaviour
 
         CollisionIntensity = Mathf.Clamp01(CollisionIntensity);
     }
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting) // Владелец объекта отправляет данные
+        {
+            stream.SendNext(currentPitch);
+            stream.SendNext(currentRoll);
+        }
+        else // Другие получают и применяют
+        {
+            currentPitch = (float)stream.ReceiveNext();
+            currentRoll = (float)stream.ReceiveNext();
+
+            if (proxyTransform != null)
+                proxyTransform.localRotation = Quaternion.Euler(currentPitch - abobaX * 0.7f, 0f, currentRoll - abobaZ * 0.5f);
+        }
+    }
+
 }

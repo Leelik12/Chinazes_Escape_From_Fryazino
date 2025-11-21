@@ -42786,6 +42786,60 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3017011441845460544, guid: 55d613bcdcf6f1945a33cb671e38fb9b, type: 3}
   m_PrefabInstance: {fileID: 827513240}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &828022159
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 828022160}
+  - component: {fileID: 828022161}
+  m_Layer: 0
+  m_Name: ProxyCapsula
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &828022160
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 828022159}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 411.99335, y: 63.518448, z: 325.66534}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &828022161
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 828022159}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 11
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &831301982
 GameObject:
   m_ObjectHideFlags: 0
@@ -124057,6 +124111,7 @@ GameObject:
   - component: {fileID: 8422064855269990656}
   - component: {fileID: 8422064855269990657}
   - component: {fileID: 8422064855269990658}
+  - component: {fileID: 8422064855269990659}
   m_Layer: 0
   m_Name: VolgaCar
   m_TagString: Car
@@ -128144,17 +128199,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ipAddress: 127.0.0.1
   port: 6065
-  networkSync: {fileID: 8422064855269990658}
-  vehicleTransform: {fileID: 1895829198424978172}
-  vehicleRigidbody: {fileID: 7685947541911150316}
-  maxPitch: 18
-  pitchSensitivity: 6
-  pitchDamping: 5
-  maxRoll: 18
-  rollSensitivity: 6
-  rollDamping: 5
-  roadInfluence: 0.3
-  impactFactor: 2
+  proxyTransform: {fileID: 828022160}
   showGUI: 1
   fontSize: 20
 --- !u!146 &4375469430294705532
@@ -132987,6 +133032,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a98f823557ab284492611b81aefc361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  proxyTransform: {fileID: 828022160}
   vehicleTransform: {fileID: 1895829198424978172}
   rb: {fileID: 7685947541911150316}
 --- !u!1 &7653956748581885503
@@ -133761,8 +133807,10 @@ MonoBehaviour:
   OwnershipTransfer: 1
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 7636712954908358935}
   - {fileID: 8422064855269990656}
   - {fileID: 8422064855269990658}
+  - {fileID: 8422064855269990659}
   - {fileID: 740636810}
   - {fileID: 5235463168296403943}
   sceneViewId: 12
@@ -133810,6 +133858,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63d0fffae9542174cacb4ffda70313da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8422064855269990659
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171050281947547841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizeVelocity: 1
+  m_SynchronizeAngularVelocity: 1
+  m_TeleportEnabled: 0
+  m_TeleportIfDistanceGreaterThan: 3
 --- !u!4 &8428538889073764768
 Transform:
   m_ObjectHideFlags: 0
@@ -134900,3 +134964,4 @@ SceneRoots:
   - {fileID: 8849234316131872626}
   - {fileID: 1895829198424978172}
   - {fileID: 64388432}
+  - {fileID: 828022160}
