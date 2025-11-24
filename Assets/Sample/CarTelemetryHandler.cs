@@ -91,7 +91,7 @@ public class CarTelemetryHandler : MonoBehaviour, IPunObservable
         // Добавляем наклоны на прокси-точку
         if (proxyTransform != null)
         {
-            proxyTransform.localRotation = Quaternion.Euler(currentPitch - abobaX * 0.7f, 0f, currentRoll - abobaZ * 0.5f);
+            proxyTransform.localRotation = Quaternion.Euler(1.4f*currentPitch - abobaX * 2f, 0f, 1.4f * currentRoll - abobaZ * 2f);
         }
 
     }
@@ -136,7 +136,7 @@ public class CarTelemetryHandler : MonoBehaviour, IPunObservable
             currentRoll = (float)stream.ReceiveNext();
 
             if (proxyTransform != null)
-                proxyTransform.localRotation = Quaternion.Euler(currentPitch - abobaX * 0.7f, 0f, currentRoll - abobaZ * 0.5f);
+                proxyTransform.localRotation = Quaternion.Euler(1.4f * currentPitch - abobaX * 2.5f, 0f, 1.4f * currentRoll - abobaZ * 2.5f);
         }
     }
 

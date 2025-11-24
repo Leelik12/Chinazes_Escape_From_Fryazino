@@ -60,6 +60,9 @@ public class RoomController : MonoBehaviourPunCallbacks
 
     public void OnReadyButtonPressed()
     {
+        //Фикс легендарного теста RIP
+        if (!PhotonNetwork.InRoom) return;
+
         if (isLocalReady) return;
         Debug.Log("Кнопка готовности нажата");
         isLocalReady = true;

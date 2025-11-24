@@ -29,7 +29,13 @@ public class PlayerHealth : MonoBehaviourPun
             healthSlider.value = currentHealth;
         }
     }
-
+    private void Update()
+    {
+        if (currentHealth <= 0f)
+        {
+            Die();
+        }
+    }
     // Урон запрашивается кем угодно, но считается только у владельца
     public void RequestDamage(int damage)
     {
@@ -88,6 +94,6 @@ public class PlayerHealth : MonoBehaviourPun
     {
         Debug.Log($"{gameObject.name} умер!");
         OnDeath?.Invoke();
-            PhotonNetwork.LoadLevel(SceneManager.GetActiveScene().name);
+        PhotonNetwork.LoadLevel(SceneManager.GetActiveScene().name);
     }
 }
