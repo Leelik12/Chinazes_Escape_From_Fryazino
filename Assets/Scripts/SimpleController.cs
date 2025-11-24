@@ -70,8 +70,8 @@ public class FuturiftTelemetryHandler : MonoBehaviour
         currentRoll = NormalizeAngle(angles.z);
         currentPitch = -currentPitch;
         // Просто передаем текущий поворот в контроллер без изменений
-        controller.Pitch = currentPitch*80f;
-        controller.Roll = currentRoll*10f;
+        controller.Pitch = currentPitch*30f;
+        controller.Roll = currentRoll*30f;
     }
 
     private float NormalizeAngle(float angle)

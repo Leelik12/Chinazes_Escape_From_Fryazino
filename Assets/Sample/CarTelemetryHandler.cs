@@ -83,7 +83,7 @@ public class CarTelemetryHandler : MonoBehaviour, IPunObservable
         Vector3 localAngularVelocity = transform.InverseTransformVector(globalAngularVelocity); // считаем угловую скорость относительно локальных координат
 
         currentAngularVelocity = Mathf.Lerp(currentAngularVelocity, Mathf.Clamp(localAngularVelocity.y, -maxPlatformVelocity, maxPlatformVelocity), 0.03f);
-
+        
 
         telemetryDataData.Angles = gameObject.transform.eulerAngles*1.2f;
         telemetryDataData.Velocity = new Vector3(currentLinearAcceleration * 70, currentAngularVelocity * 300, 0);
@@ -91,7 +91,7 @@ public class CarTelemetryHandler : MonoBehaviour, IPunObservable
         // Добавляем наклоны на прокси-точку
         if (proxyTransform != null)
         {
-            proxyTransform.localRotation = Quaternion.Euler(1.4f*currentPitch - abobaX * 2f, 0f, 1.4f * currentRoll - abobaZ * 2f);
+            proxyTransform.localRotation = Quaternion.Euler(currentPitch, 0f, currentRoll);
         }
 
     }
@@ -136,7 +136,7 @@ public class CarTelemetryHandler : MonoBehaviour, IPunObservable
             currentRoll = (float)stream.ReceiveNext();
 
             if (proxyTransform != null)
-                proxyTransform.localRotation = Quaternion.Euler(1.4f * currentPitch - abobaX * 2.5f, 0f, 1.4f * currentRoll - abobaZ * 2.5f);
+                proxyTransform.localRotation = Quaternion.Euler(currentPitch, 0f, currentRoll);
         }
     }
 
