@@ -19471,6 +19471,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1267035403428613244, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+      propertyPath: TouchCollider
+      value: 
+      objectReference: {fileID: 367606699}
+    - target: {fileID: 1267035403428613244, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_MovementType
       value: 0
       objectReference: {fileID: 0}
@@ -19587,8 +19591,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6584464701870486710, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
-      propertyPath: m_IsTrigger
+      propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6584464701870486710, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6584464701870486710, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_ProvidesContacts
@@ -19604,6 +19612,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7104861306706069256, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7901354150064579372, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7901354150064579372, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
@@ -19717,6 +19729,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 430356137a57d384988f81f20f66b55b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!65 &367606699 stripped
+BoxCollider:
+  m_CorrespondingSourceObject: {fileID: 6584464701870486710, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+  m_PrefabInstance: {fileID: 367606677}
+  m_PrefabAsset: {fileID: 0}
 --- !u!134 &368243182
 PhysicsMaterial:
   m_ObjectHideFlags: 0

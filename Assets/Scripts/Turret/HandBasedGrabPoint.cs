@@ -8,7 +8,7 @@ public class HandBasedGrabPoint : XRGrabInteractable
     [Header("Настройки хватов")]
     [SerializeField] private Transform rightHandAttachTransform;
     [SerializeField] private Transform leftHandAttachTransform;
-
+    [SerializeField] private Collider TouchCollider;
     [Header("Настройки кинематики")]
     [Tooltip("Задержка перед возвратом isKinematic = true после подбора, чтобы оружие успело притянуться к руке.")]
     [SerializeField] private float reenableKinematicDelay = 0.1f;
@@ -25,7 +25,7 @@ public class HandBasedGrabPoint : XRGrabInteractable
             savedHasRigidbody = true;
             savedIsKinematic = rb.isKinematic;
             savedUseGravity = rb.useGravity;
-
+            TouchCollider.enabled = false;
             // временно делаем не кинематическим, чтобы XR смог корректно прижать объект к руке
             rb.isKinematic = false;
         }
@@ -66,6 +66,7 @@ public class HandBasedGrabPoint : XRGrabInteractable
             Rigidbody rb = GetComponent<Rigidbody>();
             if (rb != null)
             {
+                TouchCollider.enabled = true;
                 rb.isKinematic = savedIsKinematic;
                 rb.useGravity = savedUseGravity;
             }
