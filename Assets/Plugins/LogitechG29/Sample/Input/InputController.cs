@@ -95,7 +95,7 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                     ""name"": ""Dpad"",
                     ""type"": ""PassThrough"",
                     ""id"": ""c28dad5a-4545-4f5a-b7a6-67d4ca0a9d46"",
-                    ""expectedControlType"": ""Dpad"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -511,6 +511,39 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""f19265b9-9440-4e97-85b1-aef7cf90f25f"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Steering_Steering"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""41e7a8fa-e4da-4b69-9a94-e340ee1f6d3b"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Steering_Steering"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""33c30954-5109-4d83-9b7e-f438a84ba246"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Steering_Steering"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
                     ""name"": """",
                     ""id"": ""a8fcf12e-ef1c-4c67-a48f-4aecbc425dd8"",
                     ""path"": ""<Logitech G29 Racing Wheel>/stick/x"",
@@ -569,6 +602,17 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""dcf1664f-5afd-4799-b0db-51e808307560"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Throttle"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""23c462a6-d9b2-4140-ae65-03d64daa6a0d"",
                     ""path"": ""<Logitech G29 Racing Wheel>/clutchAxis"",
                     ""interactions"": """",
@@ -580,11 +624,33 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""4bc04398-0988-4a76-bec3-820cfd68e159"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Clutch"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""2a00d829-94e4-42aa-87e2-fef9c1a28a2f"",
                     ""path"": ""<Logitech G29 Racing Wheel>/brakeAxis"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Logitech G29"",
+                    ""action"": ""Brake"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""5837e797-b980-4da5-a253-551ff3ec8aa8"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
                     ""action"": ""Brake"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -673,11 +739,33 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""12f98d6c-c18a-4e27-903b-914badcf8d46"",
+                    ""path"": ""<Keyboard>/1"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shifter 1"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""b48abf65-1b78-4e94-99ac-b84eca9b868e"",
                     ""path"": ""<Logitech G29 Racing Wheel>/shifter2"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Logitech G29"",
+                    ""action"": ""Shifter 2"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""39bb93f6-73df-4694-8cc5-c12ca7247d7f"",
+                    ""path"": ""<Keyboard>/2"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
                     ""action"": ""Shifter 2"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -695,11 +783,33 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""8b85adbe-a2bb-4509-baaf-a85d49161f16"",
+                    ""path"": ""<Keyboard>/3"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shifter 3"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""03390530-4184-4bc1-a2bf-6a17fa00f649"",
                     ""path"": ""<Logitech G29 Racing Wheel>/shifter4"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Logitech G29"",
+                    ""action"": ""Shifter 4"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f627073e-4f9e-450e-845e-cd6a9efc40ee"",
+                    ""path"": ""<Keyboard>/4"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
                     ""action"": ""Shifter 4"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
@@ -717,6 +827,17 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""ddfeea4d-420c-45c6-89c9-06498f87a312"",
+                    ""path"": ""<Keyboard>/5"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shifter 5"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""99023c05-692a-47c8-bd75-fe699ff6997f"",
                     ""path"": ""<Logitech G29 Racing Wheel>/shifter6"",
                     ""interactions"": """",
@@ -728,11 +849,33 @@ public partial class @InputController: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""4b8fb70e-6f1e-4d89-907c-f24695fef3c6"",
+                    ""path"": ""<Keyboard>/6"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Shifter 6"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""9f95bf68-a3ca-4a1d-ba8a-6438368e3812"",
                     ""path"": ""<Logitech G29 Racing Wheel>/shifter7"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Logitech G29"",
+                    ""action"": ""Shifter 7"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""9c88894f-5f21-47da-ad98-d3f532be8b53"",
+                    ""path"": ""<Keyboard>/7"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
                     ""action"": ""Shifter 7"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
