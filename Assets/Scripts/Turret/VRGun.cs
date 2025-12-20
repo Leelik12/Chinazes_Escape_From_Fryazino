@@ -110,19 +110,11 @@ public class VRGun : MonoBehaviourPun, IPunObservable
     // --- Стрельба ---
     private void HandleFireInput()
     {
-        if (grabInteractable.attachTransform != null)
-            ap = grabInteractable.attachTransform.name;
-        else
-            ap = null;
-
-        bool isLeftHand = ap != null && ap.Contains("L");
-        bool isRightHand = ap != null && ap.Contains("R");
 
         bool firePressed =
-            (isLeftHand && LeftGrip.action.ReadValue<float>() > 0.8f && LeftTrigger.action.ReadValue<float>() > 0.8f) ||
-            (isRightHand && RightGrip.action.ReadValue<float>() > 0.8f && RightTrigger.action.ReadValue<float>() > 0.8f);
+            (RightTrigger.action.ReadValue<float>() > 0.8f);
 
-        if (firePressed && Time.time >= nextFireTime && grabInteractable.isSelected && !isOverheated)
+        if (firePressed && Time.time >= nextFireTime && !isOverheated)
         {
             nextFireTime = Time.time + fireRate;
 
