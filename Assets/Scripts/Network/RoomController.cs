@@ -17,7 +17,7 @@ public class RoomController : MonoBehaviourPunCallbacks
     public GameObject GunnerBody;
     public GameObject LeftProxyHand;
     public GameObject RightProxyHand;
-
+    public Collider TouchColliderPistol;
     [Header("UI Готовности")]
     public Image firstPlayerReadyCircle;
     public Image secondPlayerReadyCircle;
@@ -93,6 +93,7 @@ public class RoomController : MonoBehaviourPunCallbacks
         {
             PhotonView carView = car.GetComponent<PhotonView>();
             PhotonView bodyView = DriverBody.GetComponent<PhotonView>();
+            TouchColliderPistol.enabled = false;
             // Мастер-клиент — водитель
             if (driverRig != null)
             {
