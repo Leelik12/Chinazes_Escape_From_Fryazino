@@ -19582,6 +19582,10 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6584464701870486710, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+      propertyPath: m_ProvidesContacts
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6882718936322355319, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_Range
       value: 2
@@ -19592,6 +19596,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7104861306706069256, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7901354150064579372, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+      propertyPath: m_ProvidesContacts
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8329448430310332779, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
@@ -102075,7 +102083,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
