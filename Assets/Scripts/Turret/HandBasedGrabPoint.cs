@@ -16,7 +16,6 @@ public class HandBasedGrabPoint : XRGrabInteractable
     private bool savedHasRigidbody = false;
     private bool savedIsKinematic;
     private bool savedUseGravity;
-    private CollisionDetectionMode savedCollisionMode;
 
     protected override void OnSelectEntering(SelectEnterEventArgs args)
     {
@@ -26,7 +25,6 @@ public class HandBasedGrabPoint : XRGrabInteractable
             savedHasRigidbody = true;
             savedIsKinematic = rb.isKinematic;
             savedUseGravity = rb.useGravity;
-            savedCollisionMode = rb.collisionDetectionMode;
 
             // временно делаем не кинематическим, чтобы XR смог корректно прижать объект к руке
             rb.isKinematic = false;
@@ -56,7 +54,6 @@ public class HandBasedGrabPoint : XRGrabInteractable
         yield return new WaitForSeconds(delay);
         rb.isKinematic = true;
         rb.useGravity = savedUseGravity;
-        rb.collisionDetectionMode = savedCollisionMode;
     }
 
     protected override void OnSelectExited(SelectExitEventArgs args)
@@ -71,7 +68,6 @@ public class HandBasedGrabPoint : XRGrabInteractable
             {
                 rb.isKinematic = savedIsKinematic;
                 rb.useGravity = savedUseGravity;
-                rb.collisionDetectionMode = savedCollisionMode;
             }
         }
 

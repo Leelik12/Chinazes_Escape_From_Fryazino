@@ -19522,6 +19522,10 @@ PrefabInstance:
       propertyPath: m_SelectEntered.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
+    - target: {fileID: 1594341059816900329, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+      propertyPath: m_Convex
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1704594362841621566, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
@@ -19583,8 +19587,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6584464701870486710, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
-      propertyPath: m_ProvidesContacts
+      propertyPath: m_IsTrigger
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6584464701870486710, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+      propertyPath: m_ProvidesContacts
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6882718936322355319, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_Range
@@ -19599,8 +19607,12 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7901354150064579372, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
-      propertyPath: m_ProvidesContacts
+      propertyPath: m_IsTrigger
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7901354150064579372, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+      propertyPath: m_ProvidesContacts
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8329448430310332779, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: parent
@@ -19614,7 +19626,22 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1594341059816900329, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+    - {fileID: 8091403927745233434, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+    - {fileID: 4914247952376227690, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+    - {fileID: 3199445381977251241, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+    - {fileID: 1198720442772168799, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+    - {fileID: 374023572597762141, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+    - {fileID: 9174690143207603852, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+    - {fileID: 103295467782668076, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+    - {fileID: 8923645579040341893, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+    - {fileID: 4825162051339553357, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+    - {fileID: 863100263571395302, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+    - {fileID: 8989268201934990984, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+    - {fileID: 6673359218840871343, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+    - {fileID: 2283256428811460791, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
+    - {fileID: 4253988006704642188, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents:
