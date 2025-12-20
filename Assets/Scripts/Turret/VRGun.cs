@@ -6,8 +6,7 @@ using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.UI;
 
 public class VRGun : MonoBehaviourPun, IPunObservable
-{
-    [SerializeField] private XRGrabInteractable grabInteractable;
+{ 
     [SerializeField] private Transform carRoot; // родительский объект (машина, к которой прикрепляется пистолет)
 
     [Header("Настройки стрельбы")]
