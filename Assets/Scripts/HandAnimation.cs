@@ -7,7 +7,7 @@ public class HandAnimationSync : MonoBehaviourPun, IPunObservable
     [Header("XR Input (только для локального игрока)")]
     [SerializeField] private XRInputValueReader<float> m_TriggerInput;
     [SerializeField] private XRInputValueReader<float> m_GripInput;
-
+    [SerializeField] private bool RightHand = false;
     [Header("Аниматор руки")]
     [SerializeField] private Animator animator;
 
@@ -49,6 +49,10 @@ public class HandAnimationSync : MonoBehaviourPun, IPunObservable
         {
             animator.SetFloat("Trigger", 0f);
             animator.SetFloat("Grip", gripStatic);
+        }
+        if (RightHand)
+        {
+            animator.SetFloat("Grip", 1f);
         }
     }
 

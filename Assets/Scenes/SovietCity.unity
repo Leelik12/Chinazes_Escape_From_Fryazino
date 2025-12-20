@@ -12344,6 +12344,7 @@ MonoBehaviour:
     m_InputActionReference: {fileID: -1758520528963094988, guid: c348712bda248c246b8c49b3db54643f, type: 3}
     m_ObjectReferenceObject: {fileID: 0}
     m_ManualValue: 0
+  RightHand: 0
   animator: {fileID: 232265229}
   smoothSpeed: 12
   gripStatic: 1
@@ -19437,43 +19438,43 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1165683500184024347, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.0182
+      value: 0.018249964
       objectReference: {fileID: 0}
     - target: {fileID: 1165683500184024347, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.0216
+      value: 0.02785858
       objectReference: {fileID: 0}
     - target: {fileID: 1165683500184024347, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.0183
+      value: 0.019341499
       objectReference: {fileID: 0}
     - target: {fileID: 1165683500184024347, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7136638
+      value: 0.71190697
       objectReference: {fileID: 0}
     - target: {fileID: 1165683500184024347, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.00000011920926
+      value: 0.049120575
       objectReference: {fileID: 0}
     - target: {fileID: 1165683500184024347, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.00000015646215
+      value: -0.05004436
       objectReference: {fileID: 0}
     - target: {fileID: 1165683500184024347, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.7004884
+      value: 0.6987641
       objectReference: {fileID: 0}
     - target: {fileID: 1165683500184024347, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: 8.041
       objectReference: {fileID: 0}
     - target: {fileID: 1165683500184024347, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: -0.151
       objectReference: {fileID: 0}
     - target: {fileID: 1165683500184024347, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 88.932
+      value: 88.922
       objectReference: {fileID: 0}
     - target: {fileID: 1165683500184024347, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_ConstrainProportionsScale
@@ -22280,6 +22281,7 @@ MonoBehaviour:
     m_InputActionReference: {fileID: 6558622148059887818, guid: c348712bda248c246b8c49b3db54643f, type: 3}
     m_ObjectReferenceObject: {fileID: 0}
     m_ManualValue: 0
+  RightHand: 0
   animator: {fileID: 438284007}
   smoothSpeed: 12
   gripStatic: 1
@@ -125471,31 +125473,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5686134208185136530, guid: 1fd3a7c43c8190f4d8c167ebde694364, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.0302
+      value: -0.0233
       objectReference: {fileID: 0}
     - target: {fileID: 5686134208185136530, guid: 1fd3a7c43c8190f4d8c167ebde694364, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.0473
+      value: 0.0425
       objectReference: {fileID: 0}
     - target: {fileID: 5686134208185136530, guid: 1fd3a7c43c8190f4d8c167ebde694364, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.0283
+      value: 0.0322
       objectReference: {fileID: 0}
     - target: {fileID: 5686134208185136530, guid: 1fd3a7c43c8190f4d8c167ebde694364, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.6672324
+      value: -0.6656643
       objectReference: {fileID: 0}
     - target: {fileID: 5686134208185136530, guid: 1fd3a7c43c8190f4d8c167ebde694364, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0.7210221
+      value: 0.73914707
       objectReference: {fileID: 0}
     - target: {fileID: 5686134208185136530, guid: 1fd3a7c43c8190f4d8c167ebde694364, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.18393461
+      value: 0.085827835
       objectReference: {fileID: 0}
     - target: {fileID: 5686134208185136530, guid: 1fd3a7c43c8190f4d8c167ebde694364, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.03310853
+      value: -0.0564472
       objectReference: {fileID: 0}
     - target: {fileID: 5686134208185136530, guid: 1fd3a7c43c8190f4d8c167ebde694364, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -125507,7 +125509,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5686134208185136530, guid: 1fd3a7c43c8190f4d8c167ebde694364, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: -79.257996
+      value: -63.882996
       objectReference: {fileID: 0}
     - target: {fileID: 5686134208185136530, guid: 1fd3a7c43c8190f4d8c167ebde694364, type: 3}
       propertyPath: m_ConstrainProportionsScale
@@ -132467,6 +132469,7 @@ MonoBehaviour:
     m_InputActionReference: {fileID: 6558622148059887818, guid: c348712bda248c246b8c49b3db54643f, type: 3}
     m_ObjectReferenceObject: {fileID: 0}
     m_ManualValue: 0
+  RightHand: 0
   animator: {fileID: 1585591251}
   smoothSpeed: 12
   gripStatic: 1
@@ -132542,6 +132545,7 @@ MonoBehaviour:
     m_InputActionReference: {fileID: -1758520528963094988, guid: c348712bda248c246b8c49b3db54643f, type: 3}
     m_ObjectReferenceObject: {fileID: 0}
     m_ManualValue: 0
+  RightHand: 1
   animator: {fileID: 1317809005}
   smoothSpeed: 12
   gripStatic: 1
