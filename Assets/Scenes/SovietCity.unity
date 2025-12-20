@@ -19610,7 +19610,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6584464701870486710, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_IsTrigger
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6584464701870486710, guid: 1639f75550f5fc541b09ebb916c3e306, type: 3}
       propertyPath: m_ProvidesContacts
