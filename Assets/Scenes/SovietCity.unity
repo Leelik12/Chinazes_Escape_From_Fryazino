@@ -102116,7 +102116,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -122832,6 +122832,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2447424620550846319, guid: b200f6587d118224eba8467281481800, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2447424620550846319, guid: b200f6587d118224eba8467281481800, type: 3}
       propertyPath: m_TagString
       value: RightHand
       objectReference: {fileID: 0}
@@ -128248,6 +128252,7 @@ MonoBehaviour:
   ipAddress: 127.0.0.1
   port: 6065
   proxyTransform: {fileID: 828022160}
+  smoothingSpeed: 4
   showGUI: 1
   fontSize: 20
 --- !u!146 &4375469430294705532
@@ -129785,6 +129790,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4804964734930210078, guid: 3df3e1220f2164f448701a6de8084f92, type: 3}
       propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4804964734930210078, guid: 3df3e1220f2164f448701a6de8084f92, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4804964734930210078, guid: 3df3e1220f2164f448701a6de8084f92, type: 3}
@@ -132050,7 +132059,7 @@ MonoBehaviour:
     rightWheel: {fileID: 382305401509160676}
     motor: 1
     steering: 0
-  maxMotorTorque: 1500
+  maxMotorTorque: 1300
   maxSteeringAngle: 20
   maxBrakeTorque: 20000
   gearRatios:

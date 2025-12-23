@@ -13,8 +13,11 @@ public class FuturiftTelemetryHandler : MonoBehaviour
     [SerializeField] private int port = 6065;
 
     [Header("References")]
-    [SerializeField] private Transform proxyTransform; // Точка, чей поворот отправляем
-    // Rigidbody и vehicleTransform больше не нужны, можно убрать, если хочешь
+    [SerializeField] private Transform proxyTransform;
+
+    [Header("Smoothing")]
+    [SerializeField] private float smoothingSpeed = 8f;
+    // Чем больше — тем резче, 5–10 обычно оптимально
 
     [Header("Debug GUI")]
     [SerializeField] private bool showGUI = true;
@@ -25,6 +28,9 @@ public class FuturiftTelemetryHandler : MonoBehaviour
     private float currentPitch;
     private float currentRoll;
 
+    private float smoothedPitch;
+    private float smoothedRoll;
+
     private GUIStyle guiStyle;
 
     private void Awake()
@@ -32,9 +38,11 @@ public class FuturiftTelemetryHandler : MonoBehaviour
         var udpOptions = new UdpOptions { ip = ipAddress, port = port };
         controller = new FutuRiftController(new UdpPortSender(udpOptions));
 
-        guiStyle = new GUIStyle();
-        guiStyle.fontSize = fontSize;
-        guiStyle.normal.textColor = Color.white;
+        guiStyle = new GUIStyle
+        {
+            fontSize = fontSize,
+            normal = { textColor = Color.white }
+        };
     }
 
     private void OnEnable()
@@ -62,16 +70,29 @@ public class FuturiftTelemetryHandler : MonoBehaviour
     {
         if (proxyTransform == null) return;
 
-        // Получаем локальные углы прокси-точки (или можно worldAngles, если нужно)
         Vector3 angles = proxyTransform.localEulerAngles;
 
-        // Нормализуем углы в диапазон -180..180
-        currentPitch = NormalizeAngle(angles.x);
-        currentRoll = NormalizeAngle(angles.z);
-        currentPitch = -currentPitch;
-        // Просто передаем текущий поворот в контроллер без изменений
-        controller.Pitch = currentPitch*30f;
-        controller.Roll = currentRoll*30f;
+        float targetPitch = -NormalizeAngle(angles.x) * 20f;
+        float targetRoll = NormalizeAngle(angles.z) * 20f;
+
+        // LERP-сглаживание
+        smoothedPitch = Mathf.Lerp(
+            smoothedPitch,
+            targetPitch,
+            smoothingSpeed * WAIT_TIME
+        );
+
+        smoothedRoll = Mathf.Lerp(
+            smoothedRoll,
+            targetRoll,
+            smoothingSpeed * WAIT_TIME
+        );
+
+        currentPitch = smoothedPitch;
+        currentRoll = smoothedRoll;
+
+        controller.Pitch = smoothedPitch;
+        controller.Roll = smoothedRoll;
     }
 
     private float NormalizeAngle(float angle)

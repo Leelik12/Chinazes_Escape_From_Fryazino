@@ -87,11 +87,11 @@ public class CarTelemetryHandler : MonoBehaviour, IPunObservable
 
         telemetryDataData.Angles = gameObject.transform.eulerAngles*1.2f;
         telemetryDataData.Velocity = new Vector3(currentLinearAcceleration * 70, currentAngularVelocity * 300, 0);
-
+        Debug.Log(currentAngularVelocity);
         // Добавляем наклоны на прокси-точку
         if (proxyTransform != null)
         {
-            proxyTransform.localRotation = Quaternion.Euler(currentPitch, 0f, currentRoll);
+            proxyTransform.localRotation = Quaternion.Euler(currentPitch * 0.5f - currentLinearAcceleration, 0f, currentRoll);
         }
 
     }
@@ -129,14 +129,18 @@ public class CarTelemetryHandler : MonoBehaviour, IPunObservable
         {
             stream.SendNext(currentPitch);
             stream.SendNext(currentRoll);
+            stream.SendNext(currentLinearAcceleration);
+            stream.SendNext(currentAngularVelocity);
         }
         else // Другие получают и применяют
         {
             currentPitch = (float)stream.ReceiveNext();
             currentRoll = (float)stream.ReceiveNext();
+            currentLinearAcceleration = (float)stream.ReceiveNext();
+            currentAngularVelocity = (float)stream.ReceiveNext();
 
             if (proxyTransform != null)
-                proxyTransform.localRotation = Quaternion.Euler(currentPitch, 0f, currentRoll);
+                proxyTransform.localRotation = Quaternion.Euler(currentPitch*0.5f - currentLinearAcceleration, 0f, currentRoll);
         }
     }
 
