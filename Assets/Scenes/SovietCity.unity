@@ -4473,6 +4473,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a0c1a9acdc7e0c4e94eb9d532b10383, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  logFilePath: 
+  logInterval: 1
+  timer: 0
+  frameCount: 0
+  deltaTime: 0
 --- !u!4 &64388432
 Transform:
   m_ObjectHideFlags: 0
@@ -124982,7 +124987,7 @@ MonoBehaviour:
   intensityTurn: 0.6
   intensityDamage: 0.6
   intensityLowHealth: 0.6
-  showHapticsGUI: 1
+  showHapticsGUI: 0
   guiFontSize: 25
   guiWidth: 320
   guiHeight: 500
