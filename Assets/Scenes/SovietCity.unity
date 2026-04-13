@@ -4473,11 +4473,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9a0c1a9acdc7e0c4e94eb9d532b10383, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  logFilePath: 
-  logInterval: 1
-  timer: 0
-  frameCount: 0
-  deltaTime: 0
 --- !u!4 &64388432
 Transform:
   m_ObjectHideFlags: 0
@@ -128257,7 +128252,7 @@ MonoBehaviour:
   ipAddress: 127.0.0.1
   port: 6065
   proxyTransform: {fileID: 828022160}
-  smoothingSpeed: 4
+  smoothingSpeed: 7
   showGUI: 1
   fontSize: 20
 --- !u!146 &4375469430294705532
@@ -131504,7 +131499,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6232745470614056083, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_TrackingType
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6232745470614056090, guid: f6336ac4ac8b4d34bc5072418cdc62a0, type: 3}
       propertyPath: m_Enabled

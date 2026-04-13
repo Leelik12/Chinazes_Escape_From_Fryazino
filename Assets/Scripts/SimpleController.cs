@@ -72,8 +72,8 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
         Vector3 angles = proxyTransform.localEulerAngles;
 
-        float targetPitch = -NormalizeAngle(angles.x) * 20f;
-        float targetRoll = NormalizeAngle(angles.z) * 20f;
+        float targetPitch = -NormalizeAngle(angles.x) * 3f;
+        float targetRoll = NormalizeAngle(angles.z) * 5f;
 
         // LERP-сглаживание
         smoothedPitch = Mathf.Lerp(
@@ -81,13 +81,28 @@ public class FuturiftTelemetryHandler : MonoBehaviour
             targetPitch,
             smoothingSpeed * WAIT_TIME
         );
-
+        
         smoothedRoll = Mathf.Lerp(
             smoothedRoll,
             targetRoll,
             smoothingSpeed * WAIT_TIME
         );
-
+        if (smoothedPitch < -16f)
+        {
+            smoothedPitch = -16f;
+        }
+        else if (smoothedPitch > 16f)
+        {
+            smoothedPitch = 16f;
+        }
+        if (smoothedRoll < -16f)
+        {
+            smoothedRoll = -16f;
+        }
+        else if (smoothedRoll > 16f)
+        {
+            smoothedRoll = 16f;
+        }
         currentPitch = smoothedPitch;
         currentRoll = smoothedRoll;
 
