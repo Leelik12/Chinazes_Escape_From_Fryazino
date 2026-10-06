@@ -1,42 +1,51 @@
 ﻿using UnityEngine;
-using Photon.Pun;
+using Unity.Netcode;
 using System;
 
 namespace RacingProject.Enemy
 {
-    public class EnemyHealth : MonoBehaviourPun
+    public class EnemyHealth : NetworkBehaviour
     {
         [SerializeField] private int maxHealth = 1000;
         private int currentHealth;
+        // Вызывается только на сервере
         public event Action<GameObject> OnDeath;
-        // В Awake, чтобы здоровье было задано до первого RPC урона
+        // В Awake, чтобы здоровье было задано до первого урона
         void Awake()
         {
             currentHealth = maxHealth;
         }
 
-        // Этот метод будет вызываться атакующими игроками
+        // Этот метод вызывается атакующими игроками на своих компьютерах, урон считает сервер
         public void RequestDamage(int damage)
         {
-            // Отправляем RPC хозяину врага
-            photonView.RPC(nameof(TakeDamage), RpcTarget.MasterClient, damage);
+            if (!IsSpawned) return;
+
+            if (IsServer)
+                TakeDamage(damage, NetworkManager.LocalClientId);
+            else
+                TakeDamageRpc(damage);
         }
 
-        [PunRPC]
-        public void TakeDamage(int damage, PhotonMessageInfo info)
+        [Rpc(SendTo.Server)]
+        private void TakeDamageRpc(int damage, RpcParams rpcParams = default)
         {
-            // Выполняется только на мастер-клиенте (или владельце врага)
+            TakeDamage(damage, rpcParams.Receive.SenderClientId);
+        }
+
+        private void TakeDamage(int damage, ulong sender)
+        {
             // Урон, пришедший после смерти, не должен повторно засчитывать убийство
-            if (!photonView.IsMine || currentHealth <= 0) return;
+            if (currentHealth <= 0) return;
 
             currentHealth -= damage;
-            Debug.Log($"Враг получил {damage} урона от {info.Sender} (осталось {currentHealth})");
+            Debug.Log($"Враг получил {damage} урона от игрока {sender} (осталось {currentHealth})");
 
             if (currentHealth <= 0)
             {
                 Debug.Log("Враг умер");
                 OnDeath?.Invoke(gameObject);
-                PhotonNetwork.Destroy(gameObject);
+                NetworkObject.Despawn();
             }
         }
     }

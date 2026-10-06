@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
-using Photon.Pun;
+using Unity.Netcode;
 using System.Collections;
 
 namespace RacingProject.Enemy
 {
-    public class EnemyGun : MonoBehaviourPun, IPunObservable
+    public class EnemyGun : NetworkBehaviour
     {
         [Header("Target")]
         public Transform target;
@@ -32,9 +32,11 @@ namespace RacingProject.Enemy
 
         private float nextFireTime = 0f;
 
-        // Для сетевой интерполяции
-        private Quaternion networkRotation;
+        // Для сетевой интерполяции: поворот пулемёта задаёт сервер
+        private readonly NetworkVariable<Quaternion> networkRotation = new NetworkVariable<Quaternion>(Quaternion.identity);
         private float syncLerpSpeed = 10f;
+        // Мелкие повороты не отправляем, чтобы не гонять переменную каждый тик
+        private const float SendAngleThreshold = 0.5f;
 
         private void Start()
         {
@@ -44,20 +46,31 @@ namespace RacingProject.Enemy
                 if (playerCar != null)
                     target = playerCar.transform;
             }
+        }
 
-            networkRotation = transform.rotation;
+        public override void OnNetworkSpawn()
+        {
+            if (IsServer)
+                networkRotation.Value = transform.rotation;
+            else
+                transform.rotation = networkRotation.Value;
         }
 
         private void Update()
         {
-            if (photonView.IsMine)
+            if (!IsSpawned) return;
+
+            if (IsServer)
             {
                 HandleTurretLogic();
+
+                if (Quaternion.Angle(networkRotation.Value, transform.rotation) > SendAngleThreshold)
+                    networkRotation.Value = transform.rotation;
             }
             else
             {
                 // плавная интерполяция поворота
-                transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.deltaTime * syncLerpSpeed);
+                transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation.Value, Time.deltaTime * syncLerpSpeed);
             }
         }
 
@@ -78,7 +91,7 @@ namespace RacingProject.Enemy
             }
         }
 
-        // Попадание и урон считает только владелец, остальным рассылается результат для эффектов,
+        // Попадание и урон считает только сервер, остальным рассылается результат для эффектов,
         // иначе каждый клиент бросал свой разброс и наносил урон повторно
         private void Fire()
         {
@@ -98,31 +111,16 @@ namespace RacingProject.Enemy
                 }
             }
 
-            photonView.RPC(nameof(ShootRPC), RpcTarget.All, hasHit, hit.point, hit.normal);
+            ShootRpc(hasHit, hit.point, hit.normal);
         }
 
-        [PunRPC]
-        private void ShootRPC(bool hasHit, Vector3 hitPoint, Vector3 hitNormal)
+        [Rpc(SendTo.Everyone)]
+        private void ShootRpc(bool hasHit, Vector3 hitPoint, Vector3 hitNormal)
         {
             ShotEffects.PlayMuzzle(this, muzzleFlash, muzzleLight, lightDuration);
 
             if (hasHit)
                 ShotEffects.SpawnImpact(hitEffectPrefabDust, hitEffectPrefabSparks, hitPoint, hitNormal, 0.01f, hitEffectLifetime);
-        }
-
-        // --- Сетевая передача вращения ---
-        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-        {
-            if (stream.IsWriting)
-            {
-                // только мастер (владелец) передаёт своё направление
-                stream.SendNext(transform.rotation);
-            }
-            else
-            {
-                // клиенты принимают и плавно интерполируют
-                networkRotation = (Quaternion)stream.ReceiveNext();
-            }
         }
     }
 }

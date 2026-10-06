@@ -33795,6 +33795,7 @@ GameObject:
   m_Component:
   - component: {fileID: 657106219}
   - component: {fileID: 657106220}
+  - component: {fileID: 657106221}
   m_Layer: 0
   m_Name: EnemyManager
   m_TagString: Untagged
@@ -33829,6 +33830,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52fc5b7df9b8cb04996811bd43c9a416, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   spawnPoints:
   - {fileID: 107578457}
   - {fileID: 920132991}
@@ -33841,6 +33843,33 @@ MonoBehaviour:
   enemyPrefab: {fileID: 2604432941193830326, guid: 7b29eb5e3eb2f4b45af6264b796a1edb, type: 3}
   killedTextUI: {fileID: 1433185830}
   enemiesPerWave: 2
+--- !u!114 &657106221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 657106218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 277315096
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  m_InScenePlacedDisabledByDefault: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  m_InScenePlaced: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!43 &658493244
 Mesh:
   m_ObjectHideFlags: 0
@@ -125429,7 +125458,6 @@ GameObject:
   - component: {fileID: 7174805918328198065}
   - component: {fileID: 7636712954908358935}
   - component: {fileID: 4351682149000274900}
-  - component: {fileID: 8422064855269990654}
   - component: {fileID: 7459236575644943732}
   - component: {fileID: 1783440624438593725}
   - component: {fileID: 8422064855269990657}
@@ -133857,6 +133885,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a8b1a3b0e6fdd646af42196bcec4e8b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   maxHealth: 1000
   currentHealth: 1000
   healthSlider: {fileID: 2129449395}
@@ -134952,28 +134981,6 @@ RectTransform:
   m_AnchoredPosition: {x: -2.1, y: -75.8}
   m_SizeDelta: {x: 166.84, y: 10.2}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &8422064855269990654
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1171050281947547841}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 0
-  OwnershipTransfer: 1
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 12
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!114 &8422064855269990657
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -135518,6 +135525,26 @@ PrefabInstance:
     - target: {fileID: 121754047777208018, guid: 7b29eb5e3eb2f4b45af6264b796a1edb, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1662663028800305276, guid: 7b29eb5e3eb2f4b45af6264b796a1edb, type: 3}
+      propertyPath: m_InScenePlaced
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1662663028800305276, guid: 7b29eb5e3eb2f4b45af6264b796a1edb, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3935213736
+      objectReference: {fileID: 0}
+    - target: {fileID: 1662663028800305276, guid: 7b29eb5e3eb2f4b45af6264b796a1edb, type: 3}
+      propertyPath: SceneMigrationSynchronization
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1662663028800305276, guid: 7b29eb5e3eb2f4b45af6264b796a1edb, type: 3}
+      propertyPath: m_InScenePlacedDisabledByDefault
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1662663028800305276, guid: 7b29eb5e3eb2f4b45af6264b796a1edb, type: 3}
+      propertyPath: InScenePlacedSourceGlobalObjectIdHash
+      value: 3593328833
       objectReference: {fileID: 0}
     - target: {fileID: 2604432941193830326, guid: 7b29eb5e3eb2f4b45af6264b796a1edb, type: 3}
       propertyPath: m_Name

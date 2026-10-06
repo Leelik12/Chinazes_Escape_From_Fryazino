@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
-using Photon.Pun;
+using Unity.Netcode;
 
 namespace RacingProject.Enemy
 {
     [RequireComponent(typeof(Rigidbody))]
-    public class EnemyCarController : MonoBehaviourPun, IPunObservable
+    // Врагом управляет сервер, клиенту позицию передаёт NetworkTransform на этом же объекте
+    public class EnemyCarController : NetworkBehaviour
     {
         [Header("Target (Player Car)")]
         public Transform target;
@@ -48,16 +49,11 @@ namespace RacingProject.Enemy
         private float stuckTimer;
         private float chosenReverseSteer;
 
-        // Сетевые переменные для сглаживания
-        private Vector3 networkPosition;
-        private Quaternion networkRotation;
-        private Vector3 lastReceivedPosition;
-        private float syncLerpSpeed = 10f;
         private float repathTimer;
 
-        // Колёса у не-владельца: машина кинематическая, WheelCollider не крутятся,
-        // поэтому вращение мешей считается по пройденному пути
-        private float networkSteerAngle;
+        // Колёса у клиента: машина кинематическая, WheelCollider не крутятся,
+        // поэтому вращение мешей считается по пройденному пути, а угол руля задаёт сервер
+        private readonly NetworkVariable<float> networkSteerAngle = new NetworkVariable<float>();
         private float remoteWheelSpin;
         private Vector3 lastRemotePosition;
 
@@ -72,10 +68,11 @@ namespace RacingProject.Enemy
                 navigatorAgent.updateRotation = false;
             }
 
-            // Только не-владельцы должны работать без физики
-            if (!photonView.IsMine && PhotonNetwork.IsConnected)
+            // Физику считает только сервер, у клиента её интерполяция спорила бы с NetworkTransform
+            if (IsSpawned && !IsServer)
             {
                 rb.isKinematic = true;
+                rb.interpolation = RigidbodyInterpolation.None;
             }
             else
             {
@@ -88,23 +85,21 @@ namespace RacingProject.Enemy
                 if (playerCar != null) target = playerCar.transform;
             }
 
-            networkPosition = transform.position;
-            networkRotation = transform.rotation;
             lastRemotePosition = transform.position;
         }
 
         void FixedUpdate()
         {
-            // Только владелец (мастер) управляет движением
-            if (photonView.IsMine)
+            // Только сервер управляет движением
+            if (!IsSpawned || IsServer)
             {
                 HandleMovement();
+                if (IsSpawned)
+                    networkSteerAngle.Value = frontLeftWheel.steerAngle;
             }
             else
             {
-                // У остальных клиентов — плавная интерполяция
-                transform.position = Vector3.Lerp(transform.position, networkPosition, Time.fixedDeltaTime * syncLerpSpeed);
-                transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.fixedDeltaTime * syncLerpSpeed);
+                // У клиента машину двигает NetworkTransform, здесь только колёса
                 AnimateRemoteWheels();
             }
         }
@@ -245,8 +240,8 @@ namespace RacingProject.Enemy
             float radius = rearLeftWheel != null ? rearLeftWheel.radius : 0.35f;
             remoteWheelSpin = Mathf.Repeat(remoteWheelSpin + distance / radius * Mathf.Rad2Deg, 360f);
 
-            SetRemoteWheelRotation(frontLeftWheel, frontLeftMesh, networkSteerAngle);
-            SetRemoteWheelRotation(frontRightWheel, frontRightMesh, networkSteerAngle);
+            SetRemoteWheelRotation(frontLeftWheel, frontLeftMesh, networkSteerAngle.Value);
+            SetRemoteWheelRotation(frontRightWheel, frontRightMesh, networkSteerAngle.Value);
             SetRemoteWheelRotation(rearLeftWheel, rearLeftMesh, 0f);
             SetRemoteWheelRotation(rearRightWheel, rearRightMesh, 0f);
         }
@@ -255,25 +250,6 @@ namespace RacingProject.Enemy
         {
             if (col == null || mesh == null) return;
             mesh.rotation = col.transform.rotation * Quaternion.Euler(remoteWheelSpin, steer, 0f);
-        }
-
-        // --- Синхронизация через сеть ---
-        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-        {
-            if (stream.IsWriting)
-            {
-                // Только владелец (мастер) отправляет
-                stream.SendNext(transform.position);
-                stream.SendNext(transform.rotation);
-                stream.SendNext(frontLeftWheel.steerAngle);
-            }
-            else
-            {
-                // Все остальные принимают
-                networkPosition = (Vector3)stream.ReceiveNext();
-                networkRotation = (Quaternion)stream.ReceiveNext();
-                networkSteerAngle = (float)stream.ReceiveNext();
-            }
         }
     }
 }

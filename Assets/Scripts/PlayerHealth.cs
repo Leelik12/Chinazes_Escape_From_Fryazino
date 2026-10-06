@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using Photon.Pun;
+using Unity.Netcode;
 
 namespace RacingProject
 {
-    public class PlayerHealth : MonoBehaviourPun
+    public class PlayerHealth : NetworkBehaviour
     {
         [Header("Health Settings")]
         [SerializeField] private int maxHealth = 1000;
@@ -21,6 +21,9 @@ namespace RacingProject
         public int MaxHealth => maxHealth;
         public bool IsDead => isDead;
 
+        // Пишет только сервер, оба игрока получают изменения через OnValueChanged
+        private readonly NetworkVariable<int> networkHealth = new NetworkVariable<int>();
+
         private bool isDead;
 
         void Start()
@@ -34,44 +37,51 @@ namespace RacingProject
             }
         }
 
-        // Урон запрашивается кем угодно, но считается только у владельца
+        public override void OnNetworkSpawn()
+        {
+            if (IsServer)
+                networkHealth.Value = maxHealth;
+            networkHealth.OnValueChanged += OnHealthChanged;
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            networkHealth.OnValueChanged -= OnHealthChanged;
+        }
+
+        // Урон запрашивается кем угодно, но считается только на сервере
         public void RequestDamage(int damage)
         {
-            if (isDead || photonView.Owner == null) return;
+            if (isDead || !IsSpawned) return;
 
-            if (photonView.IsMine)
+            if (IsServer)
             {
                 ApplyDamage(damage);
             }
             else
             {
-                // просим владельца обработать урон
-                photonView.RPC(nameof(RPC_RequestDamageFromOther), photonView.Owner, damage);
+                // просим сервер обработать урон
+                RequestDamageRpc(damage);
             }
         }
 
-        // Получено с другого клиента
-        [PunRPC]
-        private void RPC_RequestDamageFromOther(int damage)
+        // Получено с клиента
+        [Rpc(SendTo.Server)]
+        private void RequestDamageRpc(int damage)
         {
-            if (!photonView.IsMine) return;
             ApplyDamage(damage);
         }
 
-        // Применяем урон только на своём клиенте, потом синхронизируем
+        // Здоровье меняет только сервер, остальным его рассылает NetworkVariable
         private void ApplyDamage(int damage)
         {
             if (isDead) return;
 
-            int newHealth = Mathf.Clamp(currentHealth - damage, 0, maxHealth);
-
-            // RpcTarget.All выполняется локально сразу, поэтому здоровье владельца меняется здесь же
-            photonView.RPC(nameof(RPC_SyncHealth), RpcTarget.All, newHealth);
+            networkHealth.Value = Mathf.Clamp(networkHealth.Value - damage, 0, maxHealth);
         }
 
-        // Рассылаем обновлённое здоровье; события урона и смерти срабатывают на всех клиентах
-        [PunRPC]
-        private void RPC_SyncHealth(int newHealth)
+        // Обновлённое здоровье; события урона и смерти срабатывают у обоих игроков
+        private void OnHealthChanged(int previous, int newHealth)
         {
             if (isDead) return;
 

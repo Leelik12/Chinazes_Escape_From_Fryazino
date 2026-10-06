@@ -1,4 +1,5 @@
-﻿using Unity.Netcode;
+﻿using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
@@ -31,6 +32,10 @@ namespace RacingProject.Network
         public Color connectedColor = Color.green;
         public Color disconnectedColor = Color.red;
 
+        [Header("Перезапуск")]
+        [Tooltip("Пауза между гибелью машины и перезапуском: за это время напарник получает последнее здоровье и отдачу гибели")]
+        [SerializeField] private float restartDelay = 1.5f;
+
         // Пишет только сервер; клиент просит его через SetReadyRpc
         private readonly NetworkVariable<bool> hostReady = new NetworkVariable<bool>();
         private readonly NetworkVariable<bool> clientReady = new NetworkVariable<bool>();
@@ -38,6 +43,7 @@ namespace RacingProject.Network
 
         private bool isLocalReady = false;
         private bool rigsActivated = false;
+        private bool restartPending = false;
         private PlayerHealth carHealth;
 
         // Во время раунда новые подключения не принимаются
@@ -178,6 +184,14 @@ namespace RacingProject.Network
 
         private void OnCarDestroyed()
         {
+            if (!IsServer || restartPending) return;
+            restartPending = true;
+            StartCoroutine(RestartAfterDelay());
+        }
+
+        private IEnumerator RestartAfterDelay()
+        {
+            yield return new WaitForSeconds(restartDelay);
             RestartRound();
         }
 

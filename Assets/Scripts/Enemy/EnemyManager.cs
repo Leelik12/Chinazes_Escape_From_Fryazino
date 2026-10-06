@@ -1,17 +1,12 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
-using ExitGames.Client.Photon;
+using Unity.Netcode;
 using TMPro;
 
 namespace RacingProject.Enemy
 {
-    public class EnemyManager : MonoBehaviourPunCallbacks
+    public class EnemyManager : NetworkBehaviour
     {
-        // Свойство комнаты со счётом убийств: враги умирают только у мастера,
-        // а через свойство счёт видят оба игрока
-        private const string KillsKey = "Kills";
-
         [Header("Спавнпоинты")]
         [Tooltip("Все точки спавна врагов")]
         [SerializeField] private Transform[] spawnPoints;
@@ -20,6 +15,7 @@ namespace RacingProject.Enemy
         [SerializeField] private Transform[] initialSpawnPoints;
 
         [Header("Префаб врага")]
+        [Tooltip("Префаб с NetworkObject, зарегистрированный в списке сетевых префабов NetworkManager")]
         [SerializeField] private GameObject enemyPrefab;
 
         [Header("UI")]
@@ -28,13 +24,26 @@ namespace RacingProject.Enemy
         [Header("Настройки")]
         [SerializeField] private int enemiesPerWave = 2;
 
+        // Враги живут и умирают на сервере, счёт убийств видят оба игрока
+        private readonly NetworkVariable<int> killedEnemies = new NetworkVariable<int>();
+
         private List<GameObject> activeEnemies = new List<GameObject>();
-        private int killedEnemies = 0;
         private bool gameStarted = false;
 
         void Start()
         {
             UpdateUI();
+        }
+
+        public override void OnNetworkSpawn()
+        {
+            killedEnemies.OnValueChanged += OnKillsChanged;
+            UpdateUI();
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            killedEnemies.OnValueChanged -= OnKillsChanged;
         }
 
         // Вызывается при старте игры из RoomController
@@ -43,10 +52,10 @@ namespace RacingProject.Enemy
             if (gameStarted) return;
             gameStarted = true;
 
-            // Только мастер-клиент отвечает за спавн врагов и счёт
-            if (PhotonNetwork.IsMasterClient)
+            // Только сервер отвечает за спавн врагов и счёт
+            if (IsServer)
             {
-                PublishKills(0);
+                killedEnemies.Value = 0;
                 SpawnInitialEnemies();
             }
         }
@@ -55,14 +64,16 @@ namespace RacingProject.Enemy
         {
             foreach (var spawn in initialSpawnPoints)
             {
-                Debug.Log($"[EnemyManager] Мастер спавнит врага в {spawn.name}");
+                Debug.Log($"[EnemyManager] Сервер спавнит врага в {spawn.name}");
                 SpawnEnemyAt(spawn.position, spawn.rotation);
             }
         }
 
         private void SpawnEnemyAt(Vector3 position, Quaternion rotation)
         {
-            GameObject enemy = PhotonNetwork.Instantiate(enemyPrefab.name, position, rotation);
+            GameObject enemy = Instantiate(enemyPrefab, position, rotation);
+            // Враги уничтожаются вместе со сценой при перезапуске раунда
+            enemy.GetComponent<NetworkObject>().Spawn(true);
             activeEnemies.Add(enemy);
 
             EnemyHealth enemyHealth = enemy.GetComponent<EnemyHealth>();
@@ -72,16 +83,15 @@ namespace RacingProject.Enemy
             }
         }
 
+        // Только на сервере
         private void OnEnemyKilled(GameObject enemy)
         {
-            killedEnemies++;
-            UpdateUI();
-            PublishKills(killedEnemies);
+            killedEnemies.Value++;
 
             activeEnemies.Remove(enemy);
 
-            // Только мастер решает, когда начинать новую волну
-            if (PhotonNetwork.IsMasterClient && activeEnemies.Count == 0)
+            // Сервер решает, когда начинать новую волну
+            if (activeEnemies.Count == 0)
             {
                 SpawnRandomWave();
             }
@@ -104,26 +114,16 @@ namespace RacingProject.Enemy
             }
         }
 
-        private void PublishKills(int kills)
+        private void OnKillsChanged(int previous, int current)
         {
-            if (PhotonNetwork.InRoom)
-                PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { { KillsKey, kills } });
-        }
-
-        public override void OnRoomPropertiesUpdate(Hashtable changedProps)
-        {
-            if (changedProps.TryGetValue(KillsKey, out object value) && value is int kills)
-            {
-                killedEnemies = kills;
-                UpdateUI();
-            }
+            UpdateUI();
         }
 
         private void UpdateUI()
         {
             if (killedTextUI != null)
             {
-                killedTextUI.text = $"Убито: {killedEnemies}";
+                killedTextUI.text = $"Убито: {killedEnemies.Value}";
             }
         }
     }

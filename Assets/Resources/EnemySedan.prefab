@@ -951,8 +951,9 @@ GameObject:
   - component: {fileID: 8570003600637726975}
   - component: {fileID: 8289045746923086140}
   - component: {fileID: 583441400760956488}
-  - component: {fileID: 7528373230309646946}
   - component: {fileID: 3383208808950930546}
+  - component: {fileID: 1662663028800305276}
+  - component: {fileID: 7678513949393096724}
   m_Layer: 0
   m_Name: EnemySedan
   m_TagString: Untagged
@@ -1096,6 +1097,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e61ee83716b2b6b4da36763a84de731d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   target: {fileID: 0}
   navigatorAgent: {fileID: 4047319052806723869}
   motorForce: 750
@@ -1103,6 +1105,7 @@ MonoBehaviour:
   maxSteerAngle: 30
   brakeForce: 18000
   stoppingDistance: 20
+  repathInterval: 0.25
   frontLeftWheel: {fileID: 6045715257144834362}
   frontRightWheel: {fileID: 2917502288810888140}
   rearLeftWheel: {fileID: 58327596043950313}
@@ -1118,29 +1121,6 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &7528373230309646946
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2604432941193830326}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 1
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: 583441400760956488}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!114 &3383208808950930546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1153,7 +1133,81 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8a4b169941bb05540af776a5b6120171, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   maxHealth: 1000
+--- !u!114 &1662663028800305276
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2604432941193830326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 0
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  m_InScenePlacedDisabledByDefault: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  m_InScenePlaced: 0
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
+--- !u!114 &7678513949393096724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2604432941193830326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  NetworkTransformExpanded: 0
+  AutoOwnerAuthorityTickOffset: 1
+  PositionInterpolationType: 0
+  RotationInterpolationType: 0
+  ScaleInterpolationType: 0
+  PositionLerpSmoothing: 1
+  PositionMaxInterpolationTime: 0.1
+  RotationLerpSmoothing: 1
+  RotationMaxInterpolationTime: 0.1
+  ScaleLerpSmoothing: 1
+  ScaleMaxInterpolationTime: 0.1
+  AuthorityMode: 0
+  TickSyncChildren: 0
+  UseUnreliableDeltas: 0
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 1
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 1
+  SyncScaleX: 0
+  SyncScaleY: 0
+  SyncScaleZ: 0
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  SwitchTransformSpaceWhenParented: 0
+  Interpolate: 1
+  SlerpPosition: 0
 --- !u!1 &2666817346989633140
 GameObject:
   m_ObjectHideFlags: 0
@@ -2144,7 +2198,6 @@ GameObject:
   - component: {fileID: 6698780977220354134}
   - component: {fileID: 8368550766230856326}
   - component: {fileID: 3481837358506643789}
-  - component: {fileID: 4996794356863934323}
   - component: {fileID: 5223058258298431165}
   m_Layer: 0
   m_Name: Machine
@@ -2317,29 +2370,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.06762695, y: 0.16483307, z: 0.22735238}
   m_Center: {x: -0.0025634766, y: 0.17315727, z: -0.33889103}
---- !u!114 &4996794356863934323
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4084788870004627767}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents:
-  - {fileID: 5223058258298431165}
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!114 &5223058258298431165
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2352,6 +2382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 01b18208d3174bc4fa309e0105b09956, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
   target: {fileID: 0}
   fireRate: 1
   damage: 7
