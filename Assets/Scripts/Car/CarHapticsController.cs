@@ -40,6 +40,8 @@ namespace RacingProject.Car
         private Dictionary<string, int> hapticEventCounts = new Dictionary<string, int>();
         private Vector3 lastVelocity;
         private Vector3 smoothedLocalAccel;
+        private Vector3 lastPosition;
+        private Vector3 transformVelocity;
         private bool lowHealthTriggered = false;
 
         // GUI стиль
@@ -54,6 +56,7 @@ namespace RacingProject.Car
         {
             // Инициализация счетчиков
             InitializeEventCounters();
+            lastPosition = transform.position;
 
             // Инициализация GUI стиля
             guiStyle = new GUIStyle();
@@ -90,8 +93,16 @@ namespace RacingProject.Car
 
         private void Update()
         {
+            // У второго игрока Rigidbody машины кинематический и его скорость равна нулю,
+            // поэтому скорость считается по движению, которое задаёт сеть
+            if (Time.deltaTime > 0f)
+                transformVelocity = (transform.position - lastPosition) / Time.deltaTime;
+            lastPosition = transform.position;
+
             CheckHealth();
         }
+
+        private Vector3 CurrentVelocity => carRigidbody.isKinematic ? transformVelocity : carRigidbody.linearVelocity;
 
         // Скорость Rigidbody меняется только на шаге физики: при расчёте по кадрам ускорение
         // было то нулевым, то завышенным, и зависело от FPS
@@ -103,7 +114,8 @@ namespace RacingProject.Car
         private void CheckMovementHaptics()
         {
             float dt = Time.fixedDeltaTime;
-            Vector3 accel = (carRigidbody.linearVelocity - lastVelocity) / dt * accelerationGain;
+            Vector3 velocity = CurrentVelocity;
+            Vector3 accel = (velocity - lastVelocity) / dt * accelerationGain;
             Vector3 rawLocalAccel = transform.InverseTransformDirection(accel);
             smoothedLocalAccel = Vector3.Lerp(smoothedLocalAccel, rawLocalAccel, 1f - Mathf.Exp(-dt / Mathf.Max(accelSmoothTime, 0.0001f)));
             Vector3 localAccel = smoothedLocalAccel;
@@ -118,7 +130,7 @@ namespace RacingProject.Car
             if (Mathf.Abs(localAccel.x) > sideAccelThreshold)
                 PlayMovementEvent(localAccel.x > 0 ? HapticEvents.TurnRight : HapticEvents.TurnLeft, intensityTurn);
 
-            lastVelocity = carRigidbody.linearVelocity;
+            lastVelocity = velocity;
         }
 
         // Пока ускорение выше порога, условие верно каждый кадр: без проверки паттерн

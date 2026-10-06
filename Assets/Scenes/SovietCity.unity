@@ -124048,7 +124048,6 @@ GameObject:
   - component: {fileID: 7459236575644943732}
   - component: {fileID: 1783440624438593725}
   - component: {fileID: 8422064855269990656}
-  - component: {fileID: 8422064855269990659}
   m_Layer: 0
   m_Name: VolgaCar
   m_TagString: Car
@@ -133705,7 +133704,6 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 7636712954908358935}
   - {fileID: 8422064855269990656}
-  - {fileID: 8422064855269990659}
   - {fileID: 740636810}
   - {fileID: 5235463168296403943}
   sceneViewId: 12
@@ -133727,22 +133725,6 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 0
---- !u!114 &8422064855269990659
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1171050281947547841}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 64179f3720bbfe947b7724caa67b7c1d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SynchronizeVelocity: 1
-  m_SynchronizeAngularVelocity: 1
-  m_TeleportEnabled: 0
-  m_TeleportIfDistanceGreaterThan: 3
 --- !u!4 &8428538889073764768
 Transform:
   m_ObjectHideFlags: 0

@@ -53,15 +53,20 @@ namespace RacingProject.Car
         public float impulseCooldown = 5f;      // задержка между импульсами (в секундах)
         private float impulseTimer = 0f;
 
+        private RigidbodyInterpolation ownerInterpolation;
+        private bool? hasAuthority;
+
         private void Start()
         {
             Engine.Play();
             rb = GetComponent<Rigidbody>();
             rb.centerOfMass = new Vector3(0, -0.8f, 0);
+            ownerInterpolation = rb.interpolation;
         }
 
         public void FixedUpdate()
         {
+            ApplyNetworkAuthority();
             if (!photonView.IsMine) return;
 
             // Газ
@@ -170,6 +175,18 @@ namespace RacingProject.Car
             HandleHatSwitchImpulse();
 
         }
+        // Физику машины считает только владелец (водитель). У второго игрока машину двигает
+        // PhotonTransformView, а собственная физика и интерполяция Rigidbody спорили бы с сетью
+        private void ApplyNetworkAuthority()
+        {
+            bool mine = photonView.IsMine;
+            if (hasAuthority == mine) return;
+            hasAuthority = mine;
+
+            rb.isKinematic = !mine;
+            rb.interpolation = mine ? ownerInterpolation : RigidbodyInterpolation.None;
+        }
+
         private void HandleHatSwitchImpulse()
         {
             if (impulseTimer > 0f) return; // ждём перезарядку
