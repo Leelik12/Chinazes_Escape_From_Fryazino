@@ -123,6 +123,60 @@ namespace RacingProject.Network
             Stop();
         }
 
+        // IPv4-адреса этого компьютера в локальных сетях — их показывает хост, чтобы клиент мог
+        // подключиться по адресу (-connect), если broadcast не проходит
+        // Сначала адаптеры со шлюзом (Wi-Fi, Ethernet); виртуальные сети без шлюза — только если других нет
+        public static List<string> GetLocalAddresses()
+        {
+            List<string> addresses = GetLocalAddresses(true);
+            return addresses.Count > 0 ? addresses : GetLocalAddresses(false);
+        }
+
+        private static List<string> GetLocalAddresses(bool withGatewayOnly)
+        {
+            var addresses = new List<string>();
+            try
+            {
+                foreach (NetworkInterface adapter in NetworkInterface.GetAllNetworkInterfaces())
+                {
+                    if (adapter.OperationalStatus != OperationalStatus.Up
+                        || adapter.NetworkInterfaceType == NetworkInterfaceType.Loopback)
+                        continue;
+
+                    IPInterfaceProperties properties = adapter.GetIPProperties();
+                    if (withGatewayOnly && !HasIPv4Gateway(properties))
+                        continue;
+
+                    foreach (UnicastIPAddressInformation info in properties.UnicastAddresses)
+                    {
+                        byte[] ip = info.Address.GetAddressBytes();
+                        // 169.254.x.x — адаптер без сети, по нему не подключиться
+                        if (info.Address.AddressFamily != AddressFamily.InterNetwork || (ip[0] == 169 && ip[1] == 254))
+                            continue;
+
+                        string address = info.Address.ToString();
+                        if (!addresses.Contains(address))
+                            addresses.Add(address);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("LAN discovery: не удалось получить список адаптеров: " + e.Message);
+            }
+            return addresses;
+        }
+
+        private static bool HasIPv4Gateway(IPInterfaceProperties properties)
+        {
+            foreach (GatewayIPAddressInformation gateway in properties.GatewayAddresses)
+            {
+                if (gateway.Address.AddressFamily == AddressFamily.InterNetwork && !gateway.Address.Equals(IPAddress.Any))
+                    return true;
+            }
+            return false;
+        }
+
         // Общий broadcast Windows отправляет только через один адаптер, поэтому шлём ещё и в broadcast
         // каждой IPv4-подсети (Wi-Fi, Ethernet), а также на loopback для запуска двух копий на одном ПК
         private static List<IPEndPoint> GetBroadcastTargets()

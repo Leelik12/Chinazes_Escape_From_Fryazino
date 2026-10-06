@@ -48,6 +48,9 @@ namespace RacingProject.Network
 
         // Во время раунда новые подключения не принимаются
         public bool GameStarted => IsSpawned && gameStarted.Value;
+        // Для статуса в лобби: нажал ли «Готов» этот игрок и его напарник
+        public bool LocalReady => isLocalReady;
+        public bool PartnerReady => IsSpawned && (IsServer ? clientReady.Value : hostReady.Value);
 
         private void Awake()
         {

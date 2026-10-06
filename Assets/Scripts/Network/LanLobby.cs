@@ -29,11 +29,16 @@ namespace RacingProject.Network
 
         // Сообщение о разрыве соединения: показывается после перезагрузки сцены
         private static string pendingStatus;
+        // Уведомление хосту «напарник отключился»: переживает перезапуск раунда, гаснет с подключением нового
+        private static string hostNotice;
+        // Адрес из -connect используется только при запуске игры, а не после каждого возврата в меню
+        private static bool commandLineUsed;
 
         private readonly LanDiscovery discovery = new LanDiscovery();
         private RoomController room;
         private string idleStatus = "";
         private string connectAddress;
+        private string localAddresses;
         private float searchEndTime;
         private bool wasConnected;
         private bool reloading;
@@ -60,10 +65,12 @@ namespace RacingProject.Network
             }
 
             manager.OnClientStopped += OnClientStopped;
+            manager.OnClientDisconnectCallback += OnPartnerDisconnected;
             manager.ConnectionApprovalCallback = ApproveConnection;
             wasConnected = manager.IsListening;
 
-            string address = GetCommandLineAddress();
+            string address = commandLineUsed ? null : GetCommandLineAddress();
+            commandLineUsed = true;
             if (address != null && !manager.IsListening)
                 Connect(address, gamePort);
         }
@@ -75,6 +82,7 @@ namespace RacingProject.Network
             NetworkManager manager = NetworkManager.Singleton;
             if (manager == null) return;
             manager.OnClientStopped -= OnClientStopped;
+            manager.OnClientDisconnectCallback -= OnPartnerDisconnected;
             if (manager.ConnectionApprovalCallback == ApproveConnection)
                 manager.ConnectionApprovalCallback = null;
         }
@@ -85,6 +93,7 @@ namespace RacingProject.Network
             if (manager == null || manager.IsListening) return;
 
             discovery.Stop();
+            hostNotice = null;
             Transport.SetConnectionData("127.0.0.1", gamePort, "0.0.0.0");
             if (!manager.StartHost())
             {
@@ -189,18 +198,50 @@ namespace RacingProject.Network
 
             string status;
             if (searching)
-                status = "Поиск игры в сети...";
+                status = "Поиск игры в сети... " + Mathf.CeilToInt(Mathf.Max(0f, searchEndTime - Time.unscaledTime)) + " с";
+            else if (online && manager.IsServer && manager.ConnectedClientsIds.Count < RoomController.RequiredPlayers)
+                status = (string.IsNullOrEmpty(hostNotice) ? "" : hostNotice + "\n")
+                    + "Игра создана (IP: " + GetLocalAddresses() + "). Ждём второго игрока...";
             else if (online && manager.IsServer)
-                status = manager.ConnectedClientsIds.Count < RoomController.RequiredPlayers
-                    ? "Игра создана. Ждём второго игрока..."
-                    : "Второй игрок подключился. Нажмите «Готов»";
+            {
+                hostNotice = null;
+                status = "Второй игрок подключился. " + GetReadyStatus();
+            }
             else if (online && manager.IsConnectedClient)
-                status = "Подключено. Нажмите «Готов»";
+                status = "Подключено к " + connectAddress + ". " + GetReadyStatus();
             else if (online)
                 status = "Подключение к " + connectAddress + "...";
             else
                 status = idleStatus;
             SetText(statusText, status);
+        }
+
+        private string GetReadyStatus()
+        {
+            if (!room.LocalReady)
+                return room.PartnerReady ? "Напарник готов, нажмите «Готов»" : "Нажмите «Готов»";
+            return "Ждём готовности напарника...";
+        }
+
+        // Адреса не меняются за время игры, поэтому берутся один раз
+        private string GetLocalAddresses()
+        {
+            if (localAddresses == null)
+            {
+                var addresses = LanDiscovery.GetLocalAddresses();
+                localAddresses = addresses.Count > 0 ? string.Join(", ", addresses) : "нет сети";
+            }
+            return localAddresses;
+        }
+
+        // На хосте: напарник вышел или пропала связь
+        private void OnPartnerDisconnected(ulong clientId)
+        {
+            NetworkManager manager = NetworkManager.Singleton;
+            if (!manager.IsServer || manager.ShutdownInProgress || clientId == NetworkManager.ServerClientId) return;
+
+            hostNotice = room.GameStarted ? "Напарник отключился, раунд остановлен" : "Напарник отключился";
+            Debug.Log("LanLobby: " + hostNotice);
         }
 
         // Хост пускает только одного напарника и только до старта раунда
@@ -226,14 +267,19 @@ namespace RacingProject.Network
                 // До игры дело не дошло — достаточно сообщения
                 string reason = NetworkManager.Singleton.DisconnectReason;
                 idleStatus = string.IsNullOrEmpty(reason) ? "Не удалось подключиться к " + connectAddress : reason;
+                Debug.Log("LanLobby: " + idleStatus);
                 return;
             }
 
             if (pendingStatus == null)
             {
+                // NGO при штатном закрытии хоста присылает «Disconnected due to host shutting down.»
                 string reason = NetworkManager.Singleton.DisconnectReason;
-                pendingStatus = string.IsNullOrEmpty(reason) ? "Соединение с хостом потеряно" : reason;
+                pendingStatus = !string.IsNullOrEmpty(reason) && reason.Contains("shutting down")
+                    ? "Хост закрыл игру"
+                    : "Соединение с хостом потеряно";
             }
+            Debug.Log("LanLobby: соединение закрыто, возврат в меню. " + pendingStatus);
 
             // Сцена могла уйти далеко от меню — начинаем с чистой
             reloading = true;
