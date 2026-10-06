@@ -1,19 +1,9 @@
-﻿using UnityEngine;
-
-namespace RacingProject
+﻿namespace RacingProject
 {
     // Теги объектов сцены
     public static class Tags
     {
         public const string Car = "Car";
-        public const string LeftHand = "LeftHand";
-        public const string RightHand = "RightHand";
-    }
-
-    // Слои из Project Settings > Tags and Layers
-    public static class Layers
-    {
-        public static readonly int WeaponHeld = LayerMask.NameToLayer("WeaponHeld");
     }
 
     // ID событий bHaptics из привязанного приложения

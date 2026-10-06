@@ -74,13 +74,13 @@ Assets/
     Enemy/                     — EnemyCarController (ИИ), EnemyGun (турель), EnemyHealth, EnemyManager (спавн)
     Network/                   — PhotonLauncher (подключение), RoomController (роли, старт и перезапуск раунда)
     PlayerBody/                — IK головы и рук, сетевое следование прокси-точек
-    Turret/                    — VRGun (пистолет стрелка), захват и возврат оружия
+    Turret/                    — VRGun (пистолет стрелка, закреплён в правой руке)
     Management/                — MenuManager (меню, громкость), StaticHolder, расстановка препятствий на террейне
     Telemetry/                 — CarTelemetryHandler (2DOF), FuturiftTelemetryHandler (FutuRift)
     PlayerHealth.cs, BarGradient.cs, HandAnimationSync.cs
     ShotEffects.cs             — общие эффекты выстрела (вспышка, попадание) для оружия игрока и врагов
     PooledEffect.cs            — экземпляр эффекта попадания в пуле ShotEffects
-    GameConstants.cs           — теги, слои и ID событий bHaptics
+    GameConstants.cs           — теги и ID событий bHaptics
   Plugins/
     2DOF/                      — отправка телеметрии на платформу 2DOF (сборка TwoDOF)
     Futurift/                  — контроллер FutuRift, UDP 127.0.0.1:6065 или COM-порт (сборка Futurift)
@@ -108,7 +108,7 @@ ProjectSettings/               — настройки проекта
 - **Отладочные панели** (`Show GUI` у FutuRift, `Show Haptics GUI` у bHaptics) рисуются только в редакторе и development-сборках.
 - **Раунд**: игра стартует, когда в комнате два игрока и оба нажали «готов» (свойство игрока `IsReady`). При уничтожении машины или выходе напарника мастер-клиент сбрасывает готовность и перезагружает сцену у всех. Врагов спавнит и убивает мастер-клиент, счёт убийств передаётся обоим игрокам через свойство комнаты `Kills`.
 - **Сборки**: собственные скрипты и используемые ими плагины (2DOF, FutuRift, пример G29) вынесены в отдельные asmdef, поэтому правка скриптов не перекомпилирует сторонние ассеты в `Assembly-CSharp`. Новые зависимости скриптов нужно добавлять в ссылки `Assets/Scripts/RacingProject.asmdef`.
-- **Теги и слои**: код опирается на тег `Car` (машина игроков), теги `LeftHand`/`RightHand` (интеракторы рук) и слой `WeaponHeld` (взятое в руку оружие); имена собраны в `GameConstants.cs`.
+- **Теги**: враги ищут машину игроков по тегу `Car`; теги и ID событий bHaptics собраны в `GameConstants.cs`.
 - **Кодировка**: собственные скрипты хранятся в UTF-8 с BOM, правило задано в `.editorconfig`.
 - **Звук**: громкость двигателя и музыки — параметры `EngineVolume` и `MusikVolume` в AudioMixer. Слайдер 0..1 переводится в децибелы логарифмически (1 = 0 дБ, 0 = тишина), значения сохраняются в `PlayerPrefs` через `StaticHolder` и переживают перезапуск игры.
 - **Рендер**: профили `PC_RPAsset` и `Mobile_RPAsset` в `Assets/Settings`.
