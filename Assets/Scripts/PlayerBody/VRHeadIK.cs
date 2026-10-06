@@ -22,19 +22,21 @@ public class VRHeadIK : MonoBehaviourPun
     [Range(0f, 1f)]
     public float clampWeight = 0.7f; // ограничение угла поворота головы
 
-    void Start()
+    private Renderer[] headRenderers;
+    private bool? headVisible;
+
+    void Awake()
     {
-        // Скрываем голову локального игрока
-        if (photonView.IsMine && headVisualRoot != null)
-            SetHeadVisible(false);
+        if (headVisualRoot != null)
+            headRenderers = headVisualRoot.GetComponentsInChildren<Renderer>(true);
     }
 
+    // Владелец тела меняется при старте игры, поэтому видимость проверяется каждый кадр,
+    // но рендеры переключаются только при изменении
     void Update()
     {
-        if (photonView.IsMine && headVisualRoot != null)
-            SetHeadVisible(false);
-        else
-            SetHeadVisible(true);
+        // Скрываем голову локального игрока
+        SetHeadVisible(!photonView.IsMine);
     }
 
     void OnAnimatorIK(int layerIndex)
@@ -57,23 +59,9 @@ public class VRHeadIK : MonoBehaviourPun
 
     private void SetHeadVisible(bool visible)
     {
-        if (headVisualRoot == null) return;
-        foreach (var r in headVisualRoot.GetComponentsInChildren<Renderer>(true))
+        if (headRenderers == null || headVisible == visible) return;
+        headVisible = visible;
+        foreach (var r in headRenderers)
             r.enabled = visible;
-    }
-
-    // Синхронизация прокси по сети, если нужно
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(headProxy.localPosition);
-            stream.SendNext(headProxy.localRotation);
-        }
-        else
-        {
-            headProxy.localPosition = (Vector3)stream.ReceiveNext();
-            headProxy.localRotation = (Quaternion)stream.ReceiveNext();
-        }
     }
 }

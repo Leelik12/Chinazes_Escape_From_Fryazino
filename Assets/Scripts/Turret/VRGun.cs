@@ -49,7 +49,6 @@ public class VRGun : MonoBehaviourPun, IPunObservable
     public float effectOffset = 0.01f;
 
     private float nextFireTime = 0f;
-    private string ap = null;
 
     // --- Данные для синхронизации позиции ---
     private Vector3 networkLocalPos;
@@ -141,23 +140,11 @@ public class VRGun : MonoBehaviourPun, IPunObservable
 
     private void ShootLocal(Vector3 origin, Vector3 direction)
     {
-        if (muzzleFlash != null) muzzleFlash.Play();
-        if (muzzleLight != null) StartCoroutine(MuzzleLightFlash());
-        if (audioSource != null && shotSound != null) audioSource.PlayOneShot(shotSound);
-        StartCoroutine(MoveRecoil());
+        PlayShotFeedback();
 
         if (Physics.Raycast(origin, direction, out RaycastHit hit, range))
         {
-            if (hitEffectPrefabDust != null)
-            {
-                GameObject fxDust = Instantiate(hitEffectPrefabDust, hit.point + hit.normal * effectOffset, Quaternion.LookRotation(hit.normal));
-                Destroy(fxDust, hitEffectLifetime);
-            }
-            if (hitEffectPrefabSparks != null)
-            {
-                GameObject fxSparks = Instantiate(hitEffectPrefabSparks, hit.point + hit.normal * effectOffset, Quaternion.LookRotation(hit.normal));
-                Destroy(fxSparks, hitEffectLifetime);
-            }
+            ShotEffects.SpawnImpact(hitEffectPrefabDust, hitEffectPrefabSparks, hit.point, hit.normal, effectOffset, hitEffectLifetime);
 
             EnemyHealth enemy = hit.collider.GetComponentInParent<EnemyHealth>();
             if (enemy != null)
@@ -168,17 +155,15 @@ public class VRGun : MonoBehaviourPun, IPunObservable
     [PunRPC]
     public void Shoot(Vector3 origin, Vector3 direction)
     {
-        if (muzzleFlash != null) muzzleFlash.Play();
-        if (muzzleLight != null) StartCoroutine(MuzzleLightFlash());
-        if (audioSource != null && shotSound != null) audioSource.PlayOneShot(shotSound);
-        StartCoroutine(MoveRecoil());
+        PlayShotFeedback();
     }
 
-    private IEnumerator MuzzleLightFlash()
+    // Вспышка, звук и движение затвора — одинаково у стрелка и у второго игрока
+    private void PlayShotFeedback()
     {
-        muzzleLight.enabled = true;
-        yield return new WaitForSeconds(lightDuration);
-        muzzleLight.enabled = false;
+        ShotEffects.PlayMuzzle(this, muzzleFlash, muzzleLight, lightDuration);
+        if (audioSource != null && shotSound != null) audioSource.PlayOneShot(shotSound);
+        StartCoroutine(MoveRecoil());
     }
 
     private IEnumerator MoveRecoil()

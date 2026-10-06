@@ -45,8 +45,6 @@ GameObject:
   - component: {fileID: 8993342078253333423}
   - component: {fileID: 8125956730882998714}
   - component: {fileID: 8275757283893329539}
-  - component: {fileID: -430961421613295797}
-  - component: {fileID: 3056991172302549018}
   - component: {fileID: -8652610414649150735}
   m_Layer: 0
   m_Name: FullMagazinePistol
@@ -220,7 +218,7 @@ MonoBehaviour:
   m_SelectEntered:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: -430961421613295797}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GrabParenter, Assembly-CSharp
         m_MethodName: OnGrab
         m_Mode: 0
@@ -235,7 +233,7 @@ MonoBehaviour:
   m_SelectExited:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: -430961421613295797}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GrabParenter, Assembly-CSharp
         m_MethodName: OnUngrab
         m_Mode: 0
@@ -320,33 +318,8 @@ MonoBehaviour:
   m_FarAttachMode: 1
   rightHandAttachTransform: {fileID: 6182692170492681277}
   leftHandAttachTransform: {fileID: 6182692170492681277}
+  TouchCollider: {fileID: 0}
   reenableKinematicDelay: 0.2
---- !u!114 &-430961421613295797
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5961424690434214311}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b324cb66d707b044fbce43400c1e2246, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  parent: {fileID: 0}
---- !u!114 &3056991172302549018
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5961424690434214311}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6cdee5f08d63314a95ba73d6315957f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ammoAmount: 17
 --- !u!114 &-8652610414649150735
 MonoBehaviour:
   m_ObjectHideFlags: 0

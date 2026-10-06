@@ -15,35 +15,20 @@ public class VRArmIK : MonoBehaviourPun
     public Vector3 leftOffset = Vector3.zero;   // смещение относительно прокси для левой руки
     public Vector3 rightOffset = Vector3.zero;  // смещение относительно прокси для правой руки
 
+    // Прокси-точки синхронизируются по сети, поэтому для своего и чужого аватара IK одинаковый
     void OnAnimatorIK(int layerIndex)
     {
         if (animator == null) return;
 
-        // Локальный игрок
-        if (photonView.IsMine)
-        {
-            animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
-            animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
-            animator.SetIKPosition(AvatarIKGoal.LeftHand, proxyLeft.TransformPoint(leftOffset));
-            animator.SetIKRotation(AvatarIKGoal.LeftHand, proxyLeft.rotation);
+        SetHandIK(AvatarIKGoal.LeftHand, proxyLeft, leftOffset);
+        SetHandIK(AvatarIKGoal.RightHand, proxyRight, rightOffset);
+    }
 
-            animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
-            animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
-            animator.SetIKPosition(AvatarIKGoal.RightHand, proxyRight.TransformPoint(rightOffset));
-            animator.SetIKRotation(AvatarIKGoal.RightHand, proxyRight.rotation);
-        }
-        else
-        {
-            // Другие игроки — используем прокси точки без изменений
-            animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
-            animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
-            animator.SetIKPosition(AvatarIKGoal.LeftHand, proxyLeft.TransformPoint(leftOffset));
-            animator.SetIKRotation(AvatarIKGoal.LeftHand, proxyLeft.rotation);
-
-            animator.SetIKPositionWeight(AvatarIKGoal.RightHand, 1);
-            animator.SetIKRotationWeight(AvatarIKGoal.RightHand, 1);
-            animator.SetIKPosition(AvatarIKGoal.RightHand, proxyRight.TransformPoint(rightOffset));
-            animator.SetIKRotation(AvatarIKGoal.RightHand, proxyRight.rotation);
-        }
+    private void SetHandIK(AvatarIKGoal goal, Transform proxy, Vector3 offset)
+    {
+        animator.SetIKPositionWeight(goal, 1);
+        animator.SetIKRotationWeight(goal, 1);
+        animator.SetIKPosition(goal, proxy.TransformPoint(offset));
+        animator.SetIKRotation(goal, proxy.rotation);
     }
 }

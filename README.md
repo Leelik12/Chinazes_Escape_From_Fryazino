@@ -6,7 +6,7 @@
 
 - Главное меню в VR: «Начать игру», «Выйти из игры», страница советов, настройки громкости двигателя и музыки (`AudioMixer`).
 - Сетевая игра на двоих через Photon PUN 2: первый вошедший создаёт комнату на 2 игроков и становится мастер-клиентом (водителем), второй подключается и становится стрелком.
-- Управление автомобилем на `WheelCollider`: механическая коробка передач (задняя, нейтраль, 1–5), газ/тормоз/ручник, расчёт оборотов и скорости, вывод скорости и передачи на UI, звук двигателя, магнитола.
+- Управление автомобилем на `WheelCollider`: механическая коробка передач (задняя, нейтраль, 1–6) с переключением через сцепление, газ/тормоз, ограничение скорости на каждой передаче, вывод скорости и передачи на UI, звук двигателя, толчок машины крестовиной руля, если она застряла, магнитола.
 - Поддержка руля Logitech G29 (через Logitech G SDK и Input System).
 - Синхронизация по сети: позиция и поворот машины, поворот руля, IK рук и головы водителя, оружие и руки стрелка.
 - Противники: машины с ИИ (преследование игрока) и турелями, стреляющими по машине игроков; спавн через `EnemyManager`.
@@ -44,16 +44,17 @@
 
 ### Управление водителем без руля (отладка)
 
-В `CarController` (`Assets/Scripts/Car/CarController.cs`) предусмотрено управление с клавиатуры:
+Машиной управляет `CarControllerSample` (`Assets/Scripts/Car/CarControllerSample.cs`) через `InputControllerReader` из `Assets/Plugins/LogitechG29`. В схеме ввода `InputController.inputactions` действия руля продублированы на клавиатуре:
 
 | Клавиша | Действие |
 |---|---|
 | `W` / `S` | газ / тормоз |
 | `A` / `D` | руль |
-| `E` / `Q` | передача вверх / вниз |
-| `Space` | ручник |
+| `F` | сцепление |
+| `1`–`6` | передачи 1–6 |
+| `7` | задняя передача |
 
-С рулём G29 используется `CarControllerSample` (`Assets/Scripts/Car/CarControllerSample.cs`), читающий газ и тормоз через `InputControllerReader`.
+Передача переключается только при выжатом сцеплении и соответствует нажатой клавише: если отпустить цифру, пока зажата `F`, включится нейтраль. Поэтому сначала отпускайте `F`, потом цифру.
 
 ## Сборка
 
@@ -69,14 +70,15 @@ File → Build Profiles → выбрать платформу (Windows для П
 Assets/
   Scenes/SovietCity.unity      — основная сцена (меню + игровая локация)
   Scripts/
-    Car/                       — CarController, CarControllerSample (G29), CarHapticsController (bHaptics), Magnitola
+    Car/                       — CarControllerSample (управление машиной), CarHapticsController (bHaptics), Magnitola
     Enemy/                     — EnemyCarController (ИИ), EnemyGun (турель), EnemyHealth, EnemyManager (спавн)
-    Network/                   — PhotonLauncher (подключение), RoomController (роли, старт и перезапуск раунда), CarNetworkSync
-    PlayerBody/                — IK головы и рук, синхронизация руля и рук водителя
+    Network/                   — PhotonLauncher (подключение), RoomController (роли, старт и перезапуск раунда)
+    PlayerBody/                — IK головы и рук, сетевое следование прокси-точек
     Turret/                    — VRGun (пистолет стрелка), захват и возврат оружия
     Management/                — MenuManager (меню, громкость), StaticHolder, расстановка препятствий на террейне
     Telemetry/                 — CarTelemetryHandler (2DOF), FuturiftTelemetryHandler (FutuRift)
     PlayerHealth.cs, BarGradient.cs, HandAnimationSync.cs
+    ShotEffects.cs             — общие эффекты выстрела (вспышка, попадание) для оружия игрока и врагов
   Plugins/
     2DOF/                      — отправка телеметрии на платформу 2DOF
     Futurift/                  — контроллер FutuRift (UDP 127.0.0.1:6065 или COM-порт)

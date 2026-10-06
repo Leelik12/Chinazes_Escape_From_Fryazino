@@ -102,32 +102,10 @@ public class EnemyGun : MonoBehaviourPun, IPunObservable
     [PunRPC]
     private void ShootRPC(bool hasHit, Vector3 hitPoint, Vector3 hitNormal)
     {
-        // Muzzle flash и свет
-        if (muzzleFlash != null)
-            muzzleFlash.Play();
-        if (muzzleLight != null)
-            StartCoroutine(MuzzleLightFlash());
+        ShotEffects.PlayMuzzle(this, muzzleFlash, muzzleLight, lightDuration);
 
-        if (!hasHit) return;
-
-        // Эффекты попадания
-        if (hitEffectPrefabDust != null)
-        {
-            GameObject fx1 = Instantiate(hitEffectPrefabDust, hitPoint + hitNormal * 0.01f, Quaternion.LookRotation(hitNormal));
-            Destroy(fx1, hitEffectLifetime);
-        }
-        if (hitEffectPrefabSparks != null)
-        {
-            GameObject fx2 = Instantiate(hitEffectPrefabSparks, hitPoint + hitNormal * 0.01f, Quaternion.LookRotation(hitNormal));
-            Destroy(fx2, hitEffectLifetime);
-        }
-    }
-
-    private IEnumerator MuzzleLightFlash()
-    {
-        muzzleLight.enabled = true;
-        yield return new WaitForSeconds(lightDuration);
-        muzzleLight.enabled = false;
+        if (hasHit)
+            ShotEffects.SpawnImpact(hitEffectPrefabDust, hitEffectPrefabSparks, hitPoint, hitNormal, 0.01f, hitEffectLifetime);
     }
 
     // --- Сетевая передача вращения ---

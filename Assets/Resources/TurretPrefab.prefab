@@ -11,10 +11,8 @@ GameObject:
   - component: {fileID: 1874121851845313741}
   - component: {fileID: 3291546869716913000}
   - component: {fileID: 741153548008849314}
-  - component: {fileID: 8229383595977420062}
   - component: {fileID: 8331150404820737010}
   - component: {fileID: 3373749241883742303}
-  - component: {fileID: 7513146234462417229}
   - component: {fileID: 8105727791952454666}
   - component: {fileID: 6293118762942675922}
   - component: {fileID: 4240256207283913564}
@@ -102,18 +100,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &8229383595977420062
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1245781075208822391}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b324cb66d707b044fbce43400c1e2246, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!54 &8331150404820737010
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -189,7 +175,7 @@ MonoBehaviour:
   m_SelectEntered:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8229383595977420062}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GrabParenter, Assembly-CSharp
         m_MethodName: OnGrab
         m_Mode: 0
@@ -204,7 +190,7 @@ MonoBehaviour:
   m_SelectExited:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8229383595977420062}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GrabParenter, Assembly-CSharp
         m_MethodName: OnUngrab
         m_Mode: 0
@@ -287,111 +273,6 @@ MonoBehaviour:
   m_StartingMultipleGrabTransformers: []
   m_AddDefaultGrabTransformers: 1
   m_FarAttachMode: 1
---- !u!114 &7513146234462417229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1245781075208822391}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec74476b2a811514bac4c263755af6bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  grabInteractable: {fileID: 3373749241883742303}
-  fireRate: 0.4
-  damage: 10
-  range: 1000
-  muzzleFlash: {fileID: 5760782250411353398}
-  muzzleLight: {fileID: 7718545993001289813}
-  lightDuration: 0.03
-  LeftTrigger:
-    m_UseReference: 0
-    m_Action:
-      m_Name: Left Trigger
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 0b6a1ef1-cf95-4731-b5d8-0d7fde9ba0c9
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings:
-      - m_Name: 
-        m_Id: 5b386236-0f97-4560-a59f-8c18f8bfe3d0
-        m_Path: <XRController>{LeftHand}/trigger
-        m_Interactions: 
-        m_Processors: 
-        m_Groups: 
-        m_Action: Left Trigger
-        m_Flags: 0
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  RightTrigger:
-    m_UseReference: 0
-    m_Action:
-      m_Name: Right Trigger
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 50d04a70-7650-408c-99ab-979d934e981f
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings:
-      - m_Name: 
-        m_Id: ac327198-b0b1-4122-8d49-a177344a39e6
-        m_Path: <XRController>{RightHand}/trigger
-        m_Interactions: 
-        m_Processors: 
-        m_Groups: 
-        m_Action: Right Trigger
-        m_Flags: 0
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  LeftGrip:
-    m_UseReference: 0
-    m_Action:
-      m_Name: Left Grip
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 5a726596-b880-4729-ab51-9e1975b68c1e
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings:
-      - m_Name: 
-        m_Id: 1277d1f3-a86b-45dd-9876-0298e17ded2d
-        m_Path: <XRController>{LeftHand}/{Grip}
-        m_Interactions: 
-        m_Processors: 
-        m_Groups: 
-        m_Action: Left Grip
-        m_Flags: 0
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  RightGrip:
-    m_UseReference: 0
-    m_Action:
-      m_Name: Right Grip
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 5882ba1a-41a8-40d3-ade9-5606eb130e4c
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings:
-      - m_Name: 
-        m_Id: 4fbc5ae9-e250-4379-9767-33ed88ac3bd4
-        m_Path: <XRController>{RightHand}/{Grip}
-        m_Interactions: 
-        m_Processors: 
-        m_Groups: 
-        m_Action: Right Grip
-        m_Flags: 0
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  firePoint: {fileID: 590007785185172126}
-  hitEffectPrefabDust: {fileID: 7696382627074872733, guid: b480801021ed3124199b46408fbeceb5, type: 3}
-  hitEffectPrefabSparks: {fileID: 6681638757615295765, guid: d193c6b047ee13d48ae2176875362613, type: 3}
-  hitEffectLifetime: 1
-  audioSource: {fileID: 6999700595175138571}
-  shotSound: {fileID: 8300000, guid: 223a553ee0bd6b741aa726d8738e7a46, type: 3}
 --- !u!114 &8105727791952454666
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10547,7 +10428,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5405786684256593580}
-  - component: {fileID: 2899265166875061467}
   - component: {fileID: 4391089790161787410}
   - component: {fileID: 5710190273329979660}
   m_Layer: 0
@@ -10575,19 +10455,6 @@ Transform:
   - {fileID: 8755122763481060670}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 2.72, y: 0, z: 0}
---- !u!114 &2899265166875061467
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5686592774748647817}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 959d3bf136e6795488c58dd1edc8063d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rotationSpeed: 90
 --- !u!114 &4391089790161787410
 MonoBehaviour:
   m_ObjectHideFlags: 0

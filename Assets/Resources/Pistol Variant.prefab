@@ -799,9 +799,6 @@ PrefabInstance:
       addedObject: {fileID: 6584464701870486710}
     - targetCorrespondingSourceObject: {fileID: 4043241439066821443, guid: 726cd21416e138640a4f2575ffe04009, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 8329448430310332779}
-    - targetCorrespondingSourceObject: {fileID: 4043241439066821443, guid: 726cd21416e138640a4f2575ffe04009, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1267035403428613244}
     - targetCorrespondingSourceObject: {fileID: 4043241439066821443, guid: 726cd21416e138640a4f2575ffe04009, type: 3}
       insertIndex: -1
@@ -823,11 +820,6 @@ Transform:
 --- !u!4 &1165683500184024347 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3699612562426939897, guid: 726cd21416e138640a4f2575ffe04009, type: 3}
-  m_PrefabInstance: {fileID: 2556633852836019426}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1704594362841621561 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3809222279368906971, guid: 726cd21416e138640a4f2575ffe04009, type: 3}
   m_PrefabInstance: {fileID: 2556633852836019426}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &1704594363839395900 stripped
@@ -909,19 +901,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.14030457, y: 0.49883896, z: 0.44558695}
   m_Center: {x: 0.006881713, y: 0.03819652, z: 0.07022846}
---- !u!114 &8329448430310332779
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1974413213117247393}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b324cb66d707b044fbce43400c1e2246, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  parent: {fileID: 0}
 --- !u!114 &1267035403428613244
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -970,7 +949,7 @@ MonoBehaviour:
   m_SelectEntered:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8329448430310332779}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GrabParenter, Assembly-CSharp
         m_MethodName: OnGrab
         m_Mode: 0
@@ -985,7 +964,7 @@ MonoBehaviour:
   m_SelectExited:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8329448430310332779}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: GrabParenter, Assembly-CSharp
         m_MethodName: OnUngrab
         m_Mode: 0
@@ -1070,6 +1049,7 @@ MonoBehaviour:
   m_FarAttachMode: 1
   rightHandAttachTransform: {fileID: 1162694622339555187}
   leftHandAttachTransform: {fileID: 110887359976107746}
+  TouchCollider: {fileID: 0}
   reenableKinematicDelay: 0.1
 --- !u!65 &7813358431848154821
 BoxCollider:
@@ -1104,52 +1084,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 430356137a57d384988f81f20f66b55b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grabInteractable: {fileID: 1267035403428613244}
-  maxAmmo: 17
-  currentAmmo: 17
-  magazineSpawner: {fileID: 0}
-  IsCharged: 1
-  emptyMagazinePrefab: {fileID: 5961424690434214311, guid: 55f709cc5c3bcad48bb9cc2cc4e91742, type: 3}
-  ejectPoint: {fileID: 6151547630238904674}
-  internalMagazineModel: {fileID: 1704594362841621561}
-  movablePart: {fileID: 1704594363839395900}
-  recoilDistance: 0.2
-  recoilDuration: 0.1
+  carRoot: {fileID: 0}
   fireRate: 0.2
   damage: 30
   range: 100
-  muzzleFlash: {fileID: 1710448422620365296}
-  muzzleLight: {fileID: 6882718936322355319}
-  lightDuration: 0.05
-  triggerAction:
-    m_UseReference: 0
-    m_Action:
-      m_Name: Trigger
-      m_Type: 0
-      m_ExpectedControlType: 
-      m_Id: 6fa24f0c-36f3-41b5-a5b5-957178f2be5a
-      m_Processors: 
-      m_Interactions: 
-      m_SingletonActionBindings:
-      - m_Name: 
-        m_Id: f239a5bc-2b83-4bf7-ad99-d37a27ef1235
-        m_Path: <XRController>{LeftHand}/trigger
-        m_Interactions: 
-        m_Processors: 
-        m_Groups: 
-        m_Action: Trigger
-        m_Flags: 0
-      - m_Name: 
-        m_Id: c3bfb404-153a-4fbb-9ed4-27bdde90e22a
-        m_Path: <XRController>{RightHand}/trigger
-        m_Interactions: 
-        m_Processors: 
-        m_Groups: 
-        m_Action: Trigger
-        m_Flags: 0
-      m_Flags: 0
-    m_Reference: {fileID: 0}
-  firePoint: {fileID: 2089948566737513269}
+  heatPerShot: 8
+  heatCooldownRate: 5
+  maxHeat: 100
+  heatSlider: {fileID: 0}
+  uiGradient: {fileID: 0}
+  movablePart: {fileID: 1704594363839395900}
+  recoilDistance: 0.2
+  recoilDuration: 0.1
   LeftTrigger:
     m_UseReference: 0
     m_Action:
@@ -1230,10 +1176,13 @@ MonoBehaviour:
         m_Flags: 0
       m_Flags: 0
     m_Reference: {fileID: 0}
+  firePoint: {fileID: 2089948566737513269}
+  muzzleFlash: {fileID: 1710448422620365296}
+  muzzleLight: {fileID: 6882718936322355319}
+  lightDuration: 0.05
   audioSource: {fileID: 6646660256364381031}
   shotSound: {fileID: 8300000, guid: 223a553ee0bd6b741aa726d8738e7a46, type: 3}
   hitEffectPrefabDust: {fileID: 7696382627074872733, guid: b480801021ed3124199b46408fbeceb5, type: 3}
   hitEffectPrefabSparks: {fileID: 6681638757615295765, guid: d193c6b047ee13d48ae2176875362613, type: 3}
   hitEffectLifetime: 100
   effectOffset: 0.01
-  enemyTag: Enemy

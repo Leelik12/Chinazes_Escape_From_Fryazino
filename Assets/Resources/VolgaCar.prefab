@@ -1687,7 +1687,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6704912473730075123}
   - component: {fileID: 3308470427513120227}
-  - component: {fileID: 2119978635982333145}
   - component: {fileID: 2653169087785068734}
   - component: {fileID: 3366714752465420824}
   - component: {fileID: 8874258514382067931}
@@ -1752,55 +1751,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!114 &2119978635982333145
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6270027474100401102}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d667d9ce869a780478b1215f76155628, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Engine: {fileID: 2718979333800445044}
-  Idle: {fileID: 8300000, guid: c502041826854664683f9914f63427b0, type: 3}
-  Racing: {fileID: 8300000, guid: 22cd46996da3b624bb08935264560d8c, type: 3}
-  frontLeftWheel: {fileID: 3449862577062240033}
-  frontRightWheel: {fileID: 8933803013322083955}
-  rearLeftWheel: {fileID: 4448609742725291946}
-  rearRightWheel: {fileID: 4759685226303708651}
-  frontLeftTransform: {fileID: 7988851831364922297}
-  frontRightTransform: {fileID: 4466218323574533746}
-  rearLeftTransform: {fileID: 8213103149381626971}
-  rearRightTransform: {fileID: 1771454285464817120}
-  maxMotorTorque: 225
-  minStartTorque: 0
-  maxSteeringAngle: 15
-  brakeForce: 15000
-  idleRPM: 800
-  maxRPM: 6000
-  engineSmoothTime: 0.2
-  currentGear: 1
-  maxGear: 6
-  gearRatios:
-  - -3
-  - 0
-  - 36
-  - 26.4
-  - 19.2
-  - 14.4
-  speedText: {fileID: 3837282523413278764}
-  rpmText: {fileID: 0}
-  GearText: {fileID: 7177829119678583470}
-  speedNeedle: {fileID: 0}
-  rpmNeedle: {fileID: 0}
-  speedMaxAngle: -220
-  speedMinAngle: 40
-  rpmMaxAngle: -220
-  rpmMinAngle: 40
-  maxSpeed: 240
 --- !u!114 &2653169087785068734
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1825,6 +1775,8 @@ MonoBehaviour:
     steering: 0
   maxMotorTorque: 1100
   maxSteeringAngle: 15
+  maxBrakeTorque: 10000
+  clutchThreshold: 0.5
   gearRatios:
   - 0
   - 3.8
@@ -1834,13 +1786,24 @@ MonoBehaviour:
   - 1
   - 0.8
   - -0.5
+  gearSpeedLimits:
+  - 0
+  - 20
+  - 40
+  - 60
+  - 90
+  - 120
+  - 150
+  - 20
   Engine: {fileID: 2718979333800445044}
   Racing: {fileID: 8300000, guid: 22cd46996da3b624bb08935264560d8c, type: 3}
   speedText: {fileID: 3837282523413278764}
   GearText: {fileID: 7177829119678583470}
-  rpmNeedle: {fileID: 0}
-  rpmMaxAngle: -220
-  rpmMinAngle: 40
+  steeringWheelVisual: {fileID: 0}
+  visualWheelRotationAngle: 450
+  steeringSmoothness: 10
+  impulseForce: 5000
+  impulseCooldown: 5
 --- !u!114 &3366714752465420824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1853,15 +1816,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a98f823557ab284492611b81aefc361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  proxyTransform: {fileID: 0}
   vehicleTransform: {fileID: 6704912473730075123}
-  rigidbody: {fileID: 3308470427513120227}
-  accelPitchFactor: 0.02
-  cornerRollFactor: 0.02
-  impactFactor: 0.015
-  impactDamping: 2.5
-  smoothSpeed: 5
-  maxPitch: 10
-  maxRoll: 10
+  rb: {fileID: 0}
 --- !u!114 &8874258514382067931
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1876,15 +1833,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ipAddress: 127.0.0.1
   port: 6065
-  vehicleTransform: {fileID: 6704912473730075123}
-  vehicleRigidbody: {fileID: 3308470427513120227}
-  accelPitchFactor: 0.02
-  cornerRollFactor: 0.02
-  impactFactor: 0.015
-  impactDamping: 2.5
-  smoothSpeed: 5
-  maxPitch: 10
-  maxRoll: 10
+  proxyTransform: {fileID: 0}
+  smoothingSpeed: 8
+  showGUI: 1
+  fontSize: 20
 --- !u!114 &3720777719273757681
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1956,6 +1908,7 @@ MonoBehaviour:
   maxHealth: 1000
   currentHealth: 1000
   healthSlider: {fileID: 0}
+  HPBAR: {fileID: 0}
 --- !u!114 &6882618497860547506
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1973,6 +1926,15 @@ MonoBehaviour:
   accelThreshold: 40
   brakeThreshold: -40
   sideAccelThreshold: 12
+  intensityAccel: 0.5
+  intensityBrake: 0.5
+  intensityTurn: 0.5
+  intensityDamage: 0.5
+  intensityLowHealth: 1
+  showHapticsGUI: 1
+  guiFontSize: 15
+  guiWidth: 300
+  guiHeight: 400
 --- !u!1 &6849182677450794535
 GameObject:
   m_ObjectHideFlags: 0

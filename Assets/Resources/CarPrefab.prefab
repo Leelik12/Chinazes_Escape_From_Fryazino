@@ -2242,7 +2242,6 @@ GameObject:
   - component: {fileID: 1922814478498086415}
   - component: {fileID: 7119444504510287894}
   - component: {fileID: 1338070715416753954}
-  - component: {fileID: 7262483883512531954}
   - component: {fileID: 220491886232306391}
   - component: {fileID: 7128644551823164359}
   - component: {fileID: 1785256251211191791}
@@ -2384,55 +2383,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 0
   m_CollisionDetection: 1
---- !u!114 &7262483883512531954
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5585150818638848003}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d667d9ce869a780478b1215f76155628, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Engine: {fileID: 4057842371191530734}
-  Idle: {fileID: 8300000, guid: c502041826854664683f9914f63427b0, type: 3}
-  Racing: {fileID: 8300000, guid: 22cd46996da3b624bb08935264560d8c, type: 3}
-  frontLeftWheel: {fileID: 7892607705989316975}
-  frontRightWheel: {fileID: 2456993314727013636}
-  rearLeftWheel: {fileID: 5090813886223813261}
-  rearRightWheel: {fileID: 1328043285012204043}
-  frontLeftTransform: {fileID: 1050448405186592473}
-  frontRightTransform: {fileID: 6221029474900014443}
-  rearLeftTransform: {fileID: 7709370267103449534}
-  rearRightTransform: {fileID: 1938976022034600097}
-  maxMotorTorque: 225
-  minStartTorque: 0
-  maxSteeringAngle: 15
-  brakeForce: 15000
-  idleRPM: 800
-  maxRPM: 6000
-  engineSmoothTime: 0.2
-  currentGear: 1
-  maxGear: 6
-  gearRatios:
-  - -2
-  - 0
-  - 36
-  - 26.4
-  - 19.2
-  - 14.4
-  speedText: {fileID: 7595019373002027494}
-  rpmText: {fileID: 0}
-  GearText: {fileID: 3959337189810455716}
-  speedNeedle: {fileID: 0}
-  rpmNeedle: {fileID: 0}
-  speedMaxAngle: -220
-  speedMinAngle: 40
-  rpmMaxAngle: -220
-  rpmMinAngle: 40
-  maxSpeed: 180
 --- !u!114 &220491886232306391
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2457,13 +2407,35 @@ MonoBehaviour:
     steering: 0
   maxMotorTorque: 1100
   maxSteeringAngle: 15
+  maxBrakeTorque: 10000
+  clutchThreshold: 0.5
+  gearRatios:
+  - 0
+  - 3.8
+  - 2.2
+  - 1.5
+  - 1.2
+  - 1
+  - 0.8
+  - -0.5
+  gearSpeedLimits:
+  - 0
+  - 20
+  - 40
+  - 60
+  - 90
+  - 120
+  - 150
+  - 20
   Engine: {fileID: 4057842371191530734}
   Racing: {fileID: 8300000, guid: 22cd46996da3b624bb08935264560d8c, type: 3}
   speedText: {fileID: 7595019373002027494}
   GearText: {fileID: 3959337189810455716}
-  rpmNeedle: {fileID: 0}
-  rpmMaxAngle: -220
-  rpmMinAngle: 40
+  steeringWheelVisual: {fileID: 0}
+  visualWheelRotationAngle: 450
+  steeringSmoothness: 10
+  impulseForce: 5000
+  impulseCooldown: 5
 --- !u!114 &7128644551823164359
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2476,8 +2448,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a98f823557ab284492611b81aefc361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  proxyTransform: {fileID: 0}
   vehicleTransform: {fileID: 4179029275498097055}
-  rigidbody: {fileID: 1338070715416753954}
+  rb: {fileID: 0}
 --- !u!114 &1785256251211191791
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2492,6 +2465,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ipAddress: 127.0.0.1
   port: 6065
+  proxyTransform: {fileID: 0}
+  smoothingSpeed: 8
+  showGUI: 1
+  fontSize: 20
 --- !u!114 &2072264700086779431
 MonoBehaviour:
   m_ObjectHideFlags: 0

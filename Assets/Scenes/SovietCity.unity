@@ -4453,7 +4453,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 64388432}
-  - component: {fileID: 64388431}
   m_Layer: 0
   m_Name: ErrorTester
   m_TagString: Untagged
@@ -4461,18 +4460,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &64388431
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 64388430}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a0c1a9acdc7e0c4e94eb9d532b10383, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &64388432
 Transform:
   m_ObjectHideFlags: 0
@@ -124150,7 +124137,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1895829198424978172}
   - component: {fileID: 7685947541911150316}
-  - component: {fileID: 6496540955629297622}
   - component: {fileID: 7174805918328198065}
   - component: {fileID: 7636712954908358935}
   - component: {fileID: 4351682149000274900}
@@ -124158,8 +124144,6 @@ GameObject:
   - component: {fileID: 7459236575644943732}
   - component: {fileID: 1783440624438593725}
   - component: {fileID: 8422064855269990656}
-  - component: {fileID: 8422064855269990657}
-  - component: {fileID: 8422064855269990658}
   - component: {fileID: 8422064855269990659}
   m_Layer: 0
   m_Name: VolgaCar
@@ -130690,58 +130674,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
---- !u!114 &6496540955629297622
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1171050281947547841}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d667d9ce869a780478b1215f76155628, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Engine: {fileID: 7131508894998118267}
-  Idle: {fileID: 8300000, guid: c502041826854664683f9914f63427b0, type: 3}
-  Racing: {fileID: 8300000, guid: 22cd46996da3b624bb08935264560d8c, type: 3}
-  frontLeftWheel: {fileID: 7540058759702127662}
-  frontRightWheel: {fileID: 4375469430294705532}
-  rearLeftWheel: {fileID: 8862897423011341477}
-  rearRightWheel: {fileID: 382305401509160676}
-  frontLeftTransform: {fileID: 2998815347581604022}
-  frontRightTransform: {fileID: 8843034629337994621}
-  rearLeftTransform: {fileID: 3943245684431640404}
-  rearRightTransform: {fileID: 6905861607731115759}
-  steeringWheel: {fileID: 175449374544540940}
-  maxSteeringWheelAngle: 80
-  steeringWheelSmoothness: 20
-  maxMotorTorque: 200
-  minStartTorque: 0
-  maxSteeringAngle: 15
-  brakeForce: 15000
-  idleRPM: 800
-  maxRPM: 6000
-  engineSmoothTime: 0.2
-  currentGear: 1
-  maxGear: 6
-  gearRatios:
-  - -3
-  - 0
-  - 36
-  - 26.4
-  - 19.2
-  - 14.4
-  speedText: {fileID: 8215463873935280931}
-  rpmText: {fileID: 0}
-  GearText: {fileID: 2656896523107756449}
-  speedNeedle: {fileID: 0}
-  rpmNeedle: {fileID: 0}
-  speedMaxAngle: -220
-  speedMinAngle: 40
-  rpmMaxAngle: -220
-  rpmMinAngle: 40
-  maxSpeed: 240
 --- !u!1 &6499889927782118748
 GameObject:
   m_ObjectHideFlags: 0
@@ -132062,6 +131994,7 @@ MonoBehaviour:
   maxMotorTorque: 1300
   maxSteeringAngle: 20
   maxBrakeTorque: 20000
+  clutchThreshold: 0.5
   gearRatios:
   - 0
   - 3.6
@@ -133875,7 +133808,6 @@ MonoBehaviour:
   ObservedComponents:
   - {fileID: 7636712954908358935}
   - {fileID: 8422064855269990656}
-  - {fileID: 8422064855269990658}
   - {fileID: 8422064855269990659}
   - {fileID: 740636810}
   - {fileID: 5235463168296403943}
@@ -133898,32 +133830,6 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 0
---- !u!114 &8422064855269990657
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1171050281947547841}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4bcc291d5c54d10428610cfb20c019a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  impulseForce: 4000
-  cooldownTime: 5
---- !u!114 &8422064855269990658
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1171050281947547841}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 63d0fffae9542174cacb4ffda70313da, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &8422064855269990659
 MonoBehaviour:
   m_ObjectHideFlags: 0
