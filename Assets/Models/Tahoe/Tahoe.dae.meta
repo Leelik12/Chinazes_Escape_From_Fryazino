@@ -1,0 +1,252 @@
+fileFormatVersion: 2
+guid: 6b62507a6fdcba144a677290a06a486b
+ModelImporter:
+  serializedVersion: 22200
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Chrome
+    second: {fileID: 2100000, guid: 4958fceb8bc68cb4184f67e9a2169c55, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Color_M08
+    second: {fileID: 2100000, guid: 40c801fb90aa03e45ba30a5afb3174b8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_1_smool
+    second: {fileID: 2100000, guid: 2048584a1fbed1247aa57fd43f43a568, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_2018_chevrolet_tahoe_instrumentcluster
+    second: {fileID: 2100000, guid: 6234f4e032928064983433b17cafff05, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_ambulance_lights_new1
+    second: {fileID: 2100000, guid: 69cbee66605944b4b9e6ab576e6df151, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_black
+    second: {fileID: 2100000, guid: 734ab9e37bc1aa7459e8cc1eca4fc1ad, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_brakelits_m
+    second: {fileID: 2100000, guid: fcd6792fff38f5048aac5cdfbd4e227d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_butt_ons
+    second: {fileID: 2100000, guid: 91c98561c844d034cb4e80593498cb76, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_che_coloradozr2_17_symbols_diff_2cc90156_2ab0_44fd_b84f_be2b27035396
+    second: {fileID: 2100000, guid: 7fa330ecaafb9be459ae8ff5debcc6b8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_dar_tailight
+    second: {fileID: 2100000, guid: 1c6beaa73d9ff174ebbeb72a4ba9933f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_glass_light
+    second: {fileID: 2100000, guid: 56484fead72895040adb885e4e1fd582, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_hallogenheadlight
+    second: {fileID: 2100000, guid: 44f40d1eab0fad24286635f1a7fe27cf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_hallogenheadlight_2
+    second: {fileID: 2100000, guid: 51be8a7abb5c9734c9e35f478d6b9352, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_logo3
+    second: {fileID: 2100000, guid: 21b7c38b8c38eac448584821900e25cd, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_rgba111111ff
+    second: {fileID: 2100000, guid: 02ba8800dea6fa64cba1084aeb46afe7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_rgba171717ff
+    second: {fileID: 2100000, guid: 520f7b7aa886d43429296861628709a7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_rgba930000ff
+    second: {fileID: 2100000, guid: 6a1ffc995c394e44895136efe47f9279, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_rgba93f3ffff
+    second: {fileID: 2100000, guid: 284d32f0e2bfbbf4ea6f5fc48cc08c99, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_script_rt_dials_ztype
+    second: {fileID: 2100000, guid: 5e340cd6b326f404f96a93112e9563cc, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_side_lits
+    second: {fileID: 2100000, guid: 92e9cc98284c55b4f9c9addf4f987fc5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_taillight_taho_r3
+    second: {fileID: 2100000, guid: 3683957859c8c0f4db87e6be739b7de9, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_tree
+    second: {fileID: 2100000, guid: 90973fae9d223f34eacda2d515acf7a0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_vehicle_generic_detail2
+    second: {fileID: 2100000, guid: ddb61bffa343fd147a3850fead76eae4, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_vehicle_generic_glasswindows2
+    second: {fileID: 2100000, guid: acf5e9c7c81e4184ab43b012d898f31b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_vehicle_generic_smallspecmap__PAINT_1_
+    second: {fileID: 2100000, guid: dcbca5dd4bf7df7429af77fb2bf22de7, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_vehicle_generic_tyrewallblack
+    second: {fileID: 2100000, guid: b6e24a3bb0686994cb0200135362be9f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_wheel1b_diff
+    second: {fileID: 2100000, guid: 6ed5b224777d78e409f7c1ad16ffa9ff, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: _2021_Chevrolet_Tahoe_RST_wtf_1
+    second: {fileID: 2100000, guid: 701ace653744c45479ba40e33ad9f8d3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: material
+    second: {fileID: 2100000, guid: ed5a33a4b63c6f442aa567585456bbb1, type: 2}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 0
+    motionNodeName: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 0.0254
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importPhysicalCameras: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    strictVertexDataChecks: 0
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 0.0254
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 2
+  humanoidOversampling: 1
+  avatarSetup: 0
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  importBlendShapeDeformPercent: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

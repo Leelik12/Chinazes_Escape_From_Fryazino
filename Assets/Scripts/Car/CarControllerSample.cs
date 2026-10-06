@@ -37,6 +37,8 @@ namespace RacingProject.Car
         [SerializeField] private Transform steeringWheelVisual;
         [SerializeField] private float visualWheelRotationAngle = 450f;
         [SerializeField] private float steeringSmoothness = 10f;
+        [Tooltip("Наклон руля к водителю, градусы: руль вращается вокруг оси рулевой колонки")]
+        [SerializeField] private float steeringWheelTilt = 25f;
 
         private float currentVisualAngle = 0f;
 
@@ -226,7 +228,7 @@ namespace RacingProject.Car
 
             float targetAngle = inputControllerReader.Steering * visualWheelRotationAngle;
             currentVisualAngle = Mathf.Lerp(currentVisualAngle, targetAngle, Time.deltaTime * steeringSmoothness);
-            steeringWheelVisual.localRotation = Quaternion.Euler(25f, 0f, -currentVisualAngle);
+            steeringWheelVisual.localRotation = Quaternion.Euler(steeringWheelTilt, 0f, -currentVisualAngle);
         }
     }
 }
