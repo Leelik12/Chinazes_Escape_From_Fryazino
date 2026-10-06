@@ -17,7 +17,18 @@ namespace RacingProject.Management
 
         private void Awake()
         {
-            bool vr = ViewModeService.IsVR;
+            Apply(ViewModeService.Current);
+            ViewModeService.Changed += Apply;
+        }
+
+        private void OnDestroy()
+        {
+            ViewModeService.Changed -= Apply;
+        }
+
+        private void Apply(ViewMode mode)
+        {
+            bool vr = mode == ViewMode.VR;
 
             SetActive(vrOnlyObjects, vr);
             SetEnabled(vrOnlyBehaviours, vr);
