@@ -7,6 +7,8 @@
         "Bhaptics.SDK2",
         "Unity.XR.Interaction.Toolkit",
         "Unity.XR.Management",
+        "Unity.Netcode.Runtime",
+        "Unity.Networking.Transport",
         "Unity.InputSystem",
         "Unity.TextMeshPro",
         "UnityEngine.UI",
