@@ -1,31 +1,24 @@
-﻿using Photon.Pun;
-using Photon.Realtime;
+﻿using Unity.Netcode;
 using UnityEngine;
-using ExitGames.Client.Photon;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using RacingProject.Enemy;
 
 namespace RacingProject.Network
 {
-    public class RoomController : MonoBehaviourPunCallbacks
+    // Готовность игроков и старт раунда. Хост — водитель, подключившийся клиент — стрелок
+    public class RoomController : NetworkBehaviour
     {
-        // Ключ свойства игрока «готов к старту»
-        public const string ReadyKey = "IsReady";
         // Игра рассчитана ровно на двоих: водитель и стрелок
-        private const int RequiredPlayers = 2;
+        public const int RequiredPlayers = 2;
 
         [Header("Ссылки на XR Rigs")]
         public GameObject driverRig;       // XR Rig водителя (без рук)
         public GameObject gunnerRig;       // XR Rig пулемётчика (с руками)
         public GameObject car;
-        public GameObject Turret;
-        public GameObject MachineGun;
         public GameObject Menu;
         public GameObject DriverBody;
         public GameObject GunnerBody;
-        public GameObject LeftProxyHand;
-        public GameObject RightProxyHand;
         public Collider TouchColliderPistol;
         [Header("UI Готовности")]
         public Image firstPlayerReadyCircle;
@@ -38,11 +31,17 @@ namespace RacingProject.Network
         public Color connectedColor = Color.green;
         public Color disconnectedColor = Color.red;
 
+        // Пишет только сервер; клиент просит его через SetReadyRpc
+        private readonly NetworkVariable<bool> hostReady = new NetworkVariable<bool>();
+        private readonly NetworkVariable<bool> clientReady = new NetworkVariable<bool>();
+        private readonly NetworkVariable<bool> gameStarted = new NetworkVariable<bool>();
+
         private bool isLocalReady = false;
-        private bool gameStarted = false;
+        private bool rigsActivated = false;
         private PlayerHealth carHealth;
-        private float connectionCheckTimer = 0f;
-        private float connectionCheckInterval = 1f;
+
+        // Во время раунда новые подключения не принимаются
+        public bool GameStarted => IsSpawned && gameStarted.Value;
 
         private void Awake()
         {
@@ -56,101 +55,98 @@ namespace RacingProject.Network
                 carHealth = car.GetComponent<PlayerHealth>();
             if (carHealth != null)
                 carHealth.OnDeath += OnCarDestroyed;
-
-            // После перезапуска раунда игроки уже в комнате
-            UpdateReadyUI();
         }
 
-        private void OnDestroy()
+        public override void OnNetworkSpawn()
+        {
+            if (IsServer)
+                NetworkManager.OnClientDisconnectCallback += OnClientDisconnected;
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            if (NetworkManager != null)
+                NetworkManager.OnClientDisconnectCallback -= OnClientDisconnected;
+        }
+
+        public override void OnDestroy()
         {
             if (carHealth != null)
                 carHealth.OnDeath -= OnCarDestroyed;
+            base.OnDestroy();
         }
 
         private void Update()
         {
-            // Проверяем подключение раз в секунду
-            connectionCheckTimer += Time.deltaTime;
-            if (connectionCheckTimer >= connectionCheckInterval)
-            {
-                connectionCheckTimer = 0f;
-                UpdateConnectionStatus();
-            }
+            UpdateConnectionStatus();
+            UpdateReadyUI();
         }
 
         private void UpdateConnectionStatus()
         {
             if (connectionStatusCircle == null) return;
 
-            if (PhotonNetwork.IsConnected && PhotonNetwork.InRoom)
-            {
-                connectionStatusCircle.color = connectedColor;
-            }
-            else
-            {
-                connectionStatusCircle.color = disconnectedColor;
-            }
+            NetworkManager manager = NetworkManager.Singleton;
+            bool connected = manager != null && (manager.IsServer ? manager.IsListening : manager.IsConnectedClient);
+            connectionStatusCircle.color = connected ? connectedColor : disconnectedColor;
         }
 
         public void OnReadyButtonPressed()
         {
-            //Фикс легендарного теста RIP
-            if (!PhotonNetwork.InRoom) return;
+            // Без соединения кнопка ничего не делает
+            if (!IsSpawned) return;
 
             if (isLocalReady) return;
             Debug.Log("Кнопка готовности нажата");
             isLocalReady = true;
-
-            // Устанавливаем CustomProperty "IsReady"
-            Hashtable props = new Hashtable { { ReadyKey, true } };
-            PhotonNetwork.LocalPlayer.SetCustomProperties(props);
-
-            UpdateReadyUI();
-            CheckAllPlayersReady();
+            SetReadyRpc();
         }
 
-        private void CheckAllPlayersReady()
+        [Rpc(SendTo.Server)]
+        private void SetReadyRpc(RpcParams rpcParams = default)
         {
-            if (gameStarted) return;
+            if (rpcParams.Receive.SenderClientId == NetworkManager.ServerClientId)
+                hostReady.Value = true;
+            else
+                clientReady.Value = true;
+
+            TryStartGame();
+        }
+
+        // Только на сервере: оба подключены и оба готовы — стартуем у всех
+        private void TryStartGame()
+        {
+            if (gameStarted.Value) return;
 
             // Без второго игрока не стартуем
-            if (PhotonNetwork.PlayerList.Length < RequiredPlayers) return;
+            if (NetworkManager.ConnectedClientsIds.Count < RequiredPlayers) return;
+            if (!hostReady.Value || !clientReady.Value) return;
 
-            foreach (var player in PhotonNetwork.PlayerList)
-            {
-                if (!IsReady(player))
-                    return;
-            }
-
-            // Все игроки готовы — активируем риги
-            ActivatePlayerRigs();
+            gameStarted.Value = true;
+            StartGameRpc();
         }
 
-        private static bool IsReady(Player player)
+        [Rpc(SendTo.Everyone)]
+        private void StartGameRpc()
         {
-            return player != null
-                && player.CustomProperties.TryGetValue(ReadyKey, out object value)
-                && value is bool ready && ready;
+            ActivatePlayerRigs();
         }
 
         private void ActivatePlayerRigs()
         {
-            gameStarted = true;
-            LocalPlayerRole.Set(PhotonNetwork.IsMasterClient ? PlayerRole.Driver : PlayerRole.Gunner);
+            if (rigsActivated) return;
+            rigsActivated = true;
 
-            if (PhotonNetwork.IsMasterClient)
+            LocalPlayerRole.Set(IsServer ? PlayerRole.Driver : PlayerRole.Gunner);
+
+            if (IsServer)
             {
-                PhotonView carView = car.GetComponent<PhotonView>();
-                PhotonView bodyView = DriverBody.GetComponent<PhotonView>();
+                // Хост — водитель
                 TouchColliderPistol.enabled = false;
-                // Мастер-клиент — водитель
                 if (driverRig != null)
                 {
                     DriverBody.SetActive(true);
                     driverRig.SetActive(true);
-                    carView.TransferOwnership(PhotonNetwork.LocalPlayer);
-                    bodyView.TransferOwnership(PhotonNetwork.LocalPlayer);
-                    Debug.Log("Права на машину выданы");
                 }
                 if (gunnerRig != null)
                 {
@@ -160,12 +156,7 @@ namespace RacingProject.Network
             }
             else
             {
-                PhotonView TurretView = Turret.GetComponent<PhotonView>();
-                PhotonView MachineGunView = MachineGun.GetComponent<PhotonView>();
-                PhotonView GunnerView = GunnerBody.GetComponent<PhotonView>();
-                PhotonView LeftHand = LeftProxyHand.GetComponent<PhotonView>();
-                PhotonView RightHand = RightProxyHand.GetComponent<PhotonView>();
-                // Второй игрок — пулемётчик
+                // Клиент — пулемётчик
                 if (driverRig != null)
                 {
                     driverRig.SetActive(false);
@@ -174,12 +165,6 @@ namespace RacingProject.Network
                 {
                     GunnerBody.SetActive(true);
                     gunnerRig.SetActive(true);
-                    TurretView.TransferOwnership(PhotonNetwork.LocalPlayer);
-                    MachineGunView.TransferOwnership(PhotonNetwork.LocalPlayer);
-                    GunnerView.TransferOwnership(PhotonNetwork.LocalPlayer);
-                    LeftHand.TransferOwnership(PhotonNetwork.LocalPlayer);
-                    RightHand.TransferOwnership(PhotonNetwork.LocalPlayer);
-                    Debug.Log("Права на туррель и пулемет выданы");
                 }
                 Menu.SetActive(false);
             }
@@ -196,69 +181,36 @@ namespace RacingProject.Network
             RestartRound();
         }
 
-        // Перезапуск раунда: мастер сбрасывает готовность всех игроков и перезагружает сцену у всех.
-        // Сброс отправляется раньше загрузки, иначе после рестарта старые флаги сразу запустили бы игру
+        // Перезапуск раунда: сервер перезагружает сцену у всех. Соединение остаётся,
+        // а готовность и роли сбрасываются вместе с новыми объектами сцены
         private void RestartRound()
         {
-            if (!PhotonNetwork.IsMasterClient) return;
+            if (!IsServer) return;
 
-            foreach (var player in PhotonNetwork.PlayerList)
-                player.SetCustomProperties(new Hashtable { { ReadyKey, false } });
-
-            PhotonNetwork.LoadLevel(SceneManager.GetActiveScene().name);
+            NetworkManager.SceneManager.LoadScene(SceneManager.GetActiveScene().name, LoadSceneMode.Single);
         }
 
-        public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+        private void OnClientDisconnected(ulong clientId)
         {
-            if (changedProps.ContainsKey(ReadyKey))
-            {
-                UpdateReadyUI();
-                CheckAllPlayersReady();
-            }
-        }
-
-        public override void OnJoinedRoom()
-        {
-            UpdateReadyUI();
-        }
-
-        public override void OnPlayerEnteredRoom(Player newPlayer)
-        {
-            UpdateReadyUI();
-        }
-
-        public override void OnPlayerLeftRoom(Player otherPlayer)
-        {
-            UpdateReadyUI();
+            if (clientId == NetworkManager.ServerClientId) return;
 
             // Напарник вышел посреди игры — возвращаем оставшегося в меню
-            if (gameStarted)
+            if (gameStarted.Value)
                 RestartRound();
+            else
+                clientReady.Value = false;
         }
 
         private void UpdateReadyUI()
         {
-            Player[] players = PhotonNetwork.PlayerList;
-            SetReadyCircle(firstPlayerReadyCircle, players.Length > 0 ? players[0] : null);
-            SetReadyCircle(secondPlayerReadyCircle, players.Length > 1 ? players[1] : null);
+            SetReadyCircle(firstPlayerReadyCircle, IsSpawned && hostReady.Value);
+            SetReadyCircle(secondPlayerReadyCircle, IsSpawned && clientReady.Value);
         }
 
-        private void SetReadyCircle(Image circle, Player player)
+        private void SetReadyCircle(Image circle, bool ready)
         {
             if (circle == null) return;
-            circle.color = IsReady(player) ? readyColor : notReadyColor;
-        }
-
-        public override void OnDisconnected(DisconnectCause cause)
-        {
-            if (connectionStatusCircle != null)
-                connectionStatusCircle.color = disconnectedColor;
-        }
-
-        public override void OnConnectedToMaster()
-        {
-            if (connectionStatusCircle != null)
-                connectionStatusCircle.color = connectedColor;
+            circle.color = ready ? readyColor : notReadyColor;
         }
     }
 }
