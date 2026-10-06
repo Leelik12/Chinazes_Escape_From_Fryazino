@@ -1,0 +1,25 @@
+{
+    "name": "RacingProject",
+    "rootNamespace": "",
+    "references": [
+        "PhotonUnityNetworking",
+        "PhotonRealtime",
+        "Bhaptics.SDK2",
+        "Unity.XR.Interaction.Toolkit",
+        "Unity.InputSystem",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI",
+        "Futurift",
+        "TwoDOF",
+        "LogitechG29.Sample"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

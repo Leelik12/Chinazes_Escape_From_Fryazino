@@ -1,76 +1,79 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
-public class BarGradient : MonoBehaviour
+namespace RacingProject
 {
-    [Header("=== Health Settings ===")]
-    [SerializeField] private Slider healthSlider;
-    [SerializeField] private Image healthFillImage;
-    [SerializeField] private Gradient healthGradient;
-    [SerializeField] private float healthUpdateSpeed = 5f;
-
-    [Header("=== Overheat Settings ===")]
-    [SerializeField] private Slider overheatSlider;
-    [SerializeField] private Image overheatFillImage;
-    [SerializeField] private Gradient overheatGradient;
-    [SerializeField] private float overheatUpdateSpeed = 5f;
-
-    private float targetHealthValue;
-    private float targetOverheatValue;
-
-    private void Start()
+    public class BarGradient : MonoBehaviour
     {
-        if (healthSlider != null)
+        [Header("=== Health Settings ===")]
+        [SerializeField] private Slider healthSlider;
+        [SerializeField] private Image healthFillImage;
+        [SerializeField] private Gradient healthGradient;
+        [SerializeField] private float healthUpdateSpeed = 5f;
+
+        [Header("=== Overheat Settings ===")]
+        [SerializeField] private Slider overheatSlider;
+        [SerializeField] private Image overheatFillImage;
+        [SerializeField] private Gradient overheatGradient;
+        [SerializeField] private float overheatUpdateSpeed = 5f;
+
+        private float targetHealthValue;
+        private float targetOverheatValue;
+
+        private void Start()
         {
-            targetHealthValue = healthSlider.value;
-            UpdateHealthColor();
+            if (healthSlider != null)
+            {
+                targetHealthValue = healthSlider.value;
+                UpdateHealthColor();
+            }
+
+            if (overheatSlider != null)
+            {
+                targetOverheatValue = overheatSlider.value;
+                UpdateOverheatColor();
+            }
         }
 
-        if (overheatSlider != null)
+        private void Update()
         {
-            targetOverheatValue = overheatSlider.value;
-            UpdateOverheatColor();
-        }
-    }
+            if (healthSlider != null && healthFillImage != null)
+            {
+                healthSlider.value = Mathf.Lerp(healthSlider.value, targetHealthValue, Time.deltaTime * healthUpdateSpeed);
+                UpdateHealthColor();
+            }
 
-    private void Update()
-    {
-        if (healthSlider != null && healthFillImage != null)
+            if (overheatSlider != null && overheatFillImage != null)
+            {
+                overheatSlider.value = Mathf.Lerp(overheatSlider.value, targetOverheatValue, Time.deltaTime * overheatUpdateSpeed);
+                UpdateOverheatColor();
+            }
+        }
+
+        // === HEALTH ===
+        public void SetHealth(float currentHealth, float maxHealth)
         {
-            healthSlider.value = Mathf.Lerp(healthSlider.value, targetHealthValue, Time.deltaTime * healthUpdateSpeed);
-            UpdateHealthColor();
+            if (healthSlider == null) return;
+            targetHealthValue = Mathf.Clamp01(currentHealth / maxHealth) * healthSlider.maxValue;
         }
 
-        if (overheatSlider != null && overheatFillImage != null)
+        private void UpdateHealthColor()
         {
-            overheatSlider.value = Mathf.Lerp(overheatSlider.value, targetOverheatValue, Time.deltaTime * overheatUpdateSpeed);
-            UpdateOverheatColor();
+            float normalized = healthSlider.normalizedValue;
+            healthFillImage.color = healthGradient.Evaluate(normalized);
         }
-    }
 
-    // === HEALTH ===
-    public void SetHealth(float currentHealth, float maxHealth)
-    {
-        if (healthSlider == null) return;
-        targetHealthValue = Mathf.Clamp01(currentHealth / maxHealth) * healthSlider.maxValue;
-    }
+        // === OVERHEAT ===
+        public void SetOverheat(float currentHeat, float maxHeat)
+        {
+            if (overheatSlider == null) return;
+            targetOverheatValue = Mathf.Clamp01(currentHeat / maxHeat) * overheatSlider.maxValue;
+        }
 
-    private void UpdateHealthColor()
-    {
-        float normalized = healthSlider.normalizedValue;
-        healthFillImage.color = healthGradient.Evaluate(normalized);
-    }
-
-    // === OVERHEAT ===
-    public void SetOverheat(float currentHeat, float maxHeat)
-    {
-        if (overheatSlider == null) return;
-        targetOverheatValue = Mathf.Clamp01(currentHeat / maxHeat) * overheatSlider.maxValue;
-    }
-
-    private void UpdateOverheatColor()
-    {
-        float normalized = overheatSlider.normalizedValue;
-        overheatFillImage.color = overheatGradient.Evaluate(normalized);
+        private void UpdateOverheatColor()
+        {
+            float normalized = overheatSlider.normalizedValue;
+            overheatFillImage.color = overheatGradient.Evaluate(normalized);
+        }
     }
 }

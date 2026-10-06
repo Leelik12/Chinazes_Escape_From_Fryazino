@@ -69,7 +69,7 @@ File → Build Profiles → выбрать платформу (Windows для П
 ```
 Assets/
   Scenes/SovietCity.unity      — основная сцена (меню + игровая локация)
-  Scripts/
+  Scripts/                     — сборка RacingProject (RacingProject.asmdef), пространства имён RacingProject.<Папка>
     Car/                       — CarControllerSample (управление машиной), CarHapticsController (bHaptics), Magnitola
     Enemy/                     — EnemyCarController (ИИ), EnemyGun (турель), EnemyHealth, EnemyManager (спавн)
     Network/                   — PhotonLauncher (подключение), RoomController (роли, старт и перезапуск раунда)
@@ -79,10 +79,12 @@ Assets/
     Telemetry/                 — CarTelemetryHandler (2DOF), FuturiftTelemetryHandler (FutuRift)
     PlayerHealth.cs, BarGradient.cs, HandAnimationSync.cs
     ShotEffects.cs             — общие эффекты выстрела (вспышка, попадание) для оружия игрока и врагов
+    PooledEffect.cs            — экземпляр эффекта попадания в пуле ShotEffects
+    GameConstants.cs           — теги, слои и ID событий bHaptics
   Plugins/
-    2DOF/                      — отправка телеметрии на платформу 2DOF
-    Futurift/                  — контроллер FutuRift (UDP 127.0.0.1:6065 или COM-порт)
-    LogitechG29/               — поддержка руля Logitech G29
+    2DOF/                      — отправка телеметрии на платформу 2DOF (сборка TwoDOF)
+    Futurift/                  — контроллер FutuRift, UDP 127.0.0.1:6065 или COM-порт (сборка Futurift)
+    LogitechG29/               — поддержка руля Logitech G29 (Sample/ — сборка LogitechG29.Sample)
   Resources/                   — префабы для Photon: машина игроков, враги, турель, пистолет, эффекты, XR Origin
   Photon/                      — Photon PUN 2
   Bhaptics/                    — bHaptics SDK2
@@ -102,6 +104,8 @@ ProjectSettings/               — настройки проекта
 - **Роли и телеметрия**: роль локального игрока (`LocalPlayerRole`) задаётся при старте игры. Данные на 2DOF уходят только у водителя, на FutuRift — только у стрелка; в меню обе платформы не получают данных. Чтобы проверить платформу без второго игрока, включите `Send Without Role` у нужного обработчика на машине `VolgaCar`.
 - **Отладочные панели** (`Show GUI` у FutuRift, `Show Haptics GUI` у bHaptics) рисуются только в редакторе и development-сборках.
 - **Раунд**: игра стартует, когда в комнате два игрока и оба нажали «готов» (свойство игрока `IsReady`). При уничтожении машины или выходе напарника мастер-клиент сбрасывает готовность и перезагружает сцену у всех.
+- **Сборки**: собственные скрипты и используемые ими плагины (2DOF, FutuRift, пример G29) вынесены в отдельные asmdef, поэтому правка скриптов не перекомпилирует сторонние ассеты в `Assembly-CSharp`. Новые зависимости скриптов нужно добавлять в ссылки `Assets/Scripts/RacingProject.asmdef`.
+- **Теги и слои**: код опирается на тег `Car` (машина игроков), теги `LeftHand`/`RightHand` (интеракторы рук) и слой `WeaponHeld` (взятое в руку оружие); имена собраны в `GameConstants.cs`.
 - **Кодировка**: собственные скрипты хранятся в UTF-8 с BOM, правило задано в `.editorconfig`.
 - **Звук**: громкость двигателя и музыки — параметры `EngineVolume` и `MusikVolume` в AudioMixer, значения сохраняются в `StaticHolder` на время сессии.
 - **Рендер**: профили `PC_RPAsset` и `Mobile_RPAsset` в `Assets/Settings`.

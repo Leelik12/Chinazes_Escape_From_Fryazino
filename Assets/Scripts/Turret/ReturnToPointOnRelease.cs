@@ -2,63 +2,66 @@
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-[RequireComponent(typeof(XRGrabInteractable))]
-public class ReturnToPointOnRelease : MonoBehaviour
+namespace RacingProject.Turret
 {
-    [Header("Точка возврата")]
-    public Transform returnPoint; // куда возвращать
-
-    [Header("Параметры возврата")]
-    public bool smoothReturn = true; // если true — возвращаем плавно
-    public float returnSpeed = 5f;   // скорость возврата при smoothReturn
-
-    private XRGrabInteractable grab;
-    private bool isReturning = false;
-
-    void Awake()
+    [RequireComponent(typeof(XRGrabInteractable))]
+    public class ReturnToPointOnRelease : MonoBehaviour
     {
-        grab = GetComponent<XRGrabInteractable>();
-        grab.selectExited.AddListener(OnRelease);
-        grab.selectEntered.AddListener(OnGrab);
-    }
+        [Header("Точка возврата")]
+        public Transform returnPoint; // куда возвращать
 
-    private void OnGrab(SelectEnterEventArgs arg)
-    {
-        isReturning = false;
-    }
+        [Header("Параметры возврата")]
+        public bool smoothReturn = true; // если true — возвращаем плавно
+        public float returnSpeed = 5f;   // скорость возврата при smoothReturn
 
-    private void OnRelease(SelectExitEventArgs arg)
-    {
-        if (returnPoint != null)
+        private XRGrabInteractable grab;
+        private bool isReturning = false;
+
+        void Awake()
         {
-            if (smoothReturn)
+            grab = GetComponent<XRGrabInteractable>();
+            grab.selectExited.AddListener(OnRelease);
+            grab.selectEntered.AddListener(OnGrab);
+        }
+
+        private void OnGrab(SelectEnterEventArgs arg)
+        {
+            isReturning = false;
+        }
+
+        private void OnRelease(SelectExitEventArgs arg)
+        {
+            if (returnPoint != null)
             {
-                isReturning = true;
-            }
-            else
-            {
-                // моментально
-                transform.position = returnPoint.position;
-                transform.rotation = new Quaternion(0f,0f,0f,0f);
+                if (smoothReturn)
+                {
+                    isReturning = true;
+                }
+                else
+                {
+                    // моментально
+                    transform.position = returnPoint.position;
+                    transform.rotation = new Quaternion(0f,0f,0f,0f);
+                }
             }
         }
-    }
 
-    void Update()
-    {
-        if (isReturning && returnPoint != null)
+        void Update()
         {
-            // Плавно возвращаем
-            transform.position = Vector3.Lerp(transform.position, returnPoint.position, Time.deltaTime * returnSpeed);
-            transform.rotation = Quaternion.Slerp(transform.rotation, returnPoint.rotation, Time.deltaTime * returnSpeed);
-
-            // Останавливаем, если достаточно близко
-            if (Vector3.Distance(transform.position, returnPoint.position) < 0.01f &&
-                Quaternion.Angle(transform.rotation, returnPoint.rotation) < 1f)
+            if (isReturning && returnPoint != null)
             {
-                isReturning = false;
-                transform.position = returnPoint.position;
-                transform.rotation = returnPoint.rotation;
+                // Плавно возвращаем
+                transform.position = Vector3.Lerp(transform.position, returnPoint.position, Time.deltaTime * returnSpeed);
+                transform.rotation = Quaternion.Slerp(transform.rotation, returnPoint.rotation, Time.deltaTime * returnSpeed);
+
+                // Останавливаем, если достаточно близко
+                if (Vector3.Distance(transform.position, returnPoint.position) < 0.01f &&
+                    Quaternion.Angle(transform.rotation, returnPoint.rotation) < 1f)
+                {
+                    isReturning = false;
+                    transform.position = returnPoint.position;
+                    transform.rotation = returnPoint.rotation;
+                }
             }
         }
     }

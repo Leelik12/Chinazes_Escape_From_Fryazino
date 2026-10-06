@@ -34294,7 +34294,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 520737341}
-        m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: RacingProject.Management.MenuManager, RacingProject
         m_MethodName: EndGame
         m_Mode: 1
         m_Arguments:
@@ -71414,7 +71414,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 218785754}
-        m_TargetAssemblyTypeName: RoomController, Assembly-CSharp
+        m_TargetAssemblyTypeName: RacingProject.Network.RoomController, RacingProject
         m_MethodName: OnReadyButtonPressed
         m_Mode: 1
         m_Arguments:
@@ -128235,6 +128235,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ipAddress: 127.0.0.1
   port: 6065
+  sendWithoutRole: 0
   proxyTransform: {fileID: 828022160}
   smoothingSpeed: 7
   showGUI: 1
@@ -133034,6 +133035,7 @@ MonoBehaviour:
   proxyTransform: {fileID: 828022160}
   vehicleTransform: {fileID: 1895829198424978172}
   rb: {fileID: 7685947541911150316}
+  sendWithoutRole: 0
 --- !u!1 &7653956748581885503
 GameObject:
   m_ObjectHideFlags: 0
