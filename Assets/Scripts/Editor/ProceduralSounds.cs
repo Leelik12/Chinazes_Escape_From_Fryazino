@@ -18,6 +18,10 @@ namespace RacingProject.EditorTools
             Directory.CreateDirectory(OutputFolder);
             WriteWav(Path.Combine(OutputFolder, "Explosion.wav"), SynthesizeExplosion(new System.Random(17)));
             WriteWav(Path.Combine(OutputFolder, "HitMarker.wav"), SynthesizeHitMarker());
+            WriteWav(Path.Combine(OutputFolder, "EnemyShot.wav"), SynthesizeShot(new System.Random(23)));
+            WriteWav(Path.Combine(OutputFolder, "EnemyEngine.wav"), SynthesizeEngine(new System.Random(31)));
+            WriteWav(Path.Combine(OutputFolder, "Nitro.wav"), SynthesizeNitro(new System.Random(41)));
+            WriteWav(Path.Combine(OutputFolder, "Pickup.wav"), SynthesizePickup());
             AssetDatabase.Refresh();
             Debug.Log("Звуки сгенерированы в " + OutputFolder);
         }
@@ -77,6 +81,131 @@ namespace RacingProject.EditorTools
             }
             Normalize(samples, 0.7f, softClip: false);
             return samples;
+        }
+
+        // Выстрел пулемёта: щелчок, короткий шумовой хлопок и низкий удар
+        private static float[] SynthesizeShot(System.Random random)
+        {
+            float duration = 0.35f;
+            int length = (int)(duration * SampleRate);
+            var samples = new float[length];
+
+            float body = 0f, phase = 0f;
+            for (int i = 0; i < length; i++)
+            {
+                float t = (float)i / SampleRate;
+                float noise = (float)(random.NextDouble() * 2.0 - 1.0);
+
+                float crack = noise * Mathf.Exp(-t / 0.003f);
+                body += OnePoleCoefficient(Mathf.Lerp(400f, 3000f, Mathf.Exp(-t / 0.03f))) * (noise - body);
+                float bodyEnvelope = (1f - Mathf.Exp(-t / 0.001f)) * Mathf.Exp(-t / 0.05f);
+
+                float frequency = Mathf.Lerp(60f, 130f, Mathf.Exp(-t / 0.03f));
+                phase += 2f * Mathf.PI * frequency / SampleRate;
+                float thump = Mathf.Sin(phase) * Mathf.Exp(-t / 0.06f);
+
+                samples[i] = crack * 0.6f + body * bodyEnvelope * 2.5f + thump * 0.8f;
+            }
+
+            FadeOut(samples, 0.1f);
+            Normalize(samples, 0.9f, softClip: true);
+            return samples;
+        }
+
+        // Двигатель врага, бесшовная петля: вспышки в цилиндрах с частотой 40 Гц (ровно 40 периодов
+        // за секунду петли) и немного шума выхлопа. Высоту тона по скорости меняет EnemyEngineSound
+        private static float[] SynthesizeEngine(System.Random random)
+        {
+            float duration = 1f;
+            float firing = 40f;
+            float crossfade = 0.1f;
+            int length = (int)((duration + crossfade) * SampleRate);
+            var samples = new float[length];
+
+            float exhaust = 0f;
+            for (int i = 0; i < length; i++)
+            {
+                float t = (float)i / SampleRate;
+                float noise = (float)(random.NextDouble() * 2.0 - 1.0);
+
+                // Каждый такт — затухающий импульс; гармоники дают «рычание»
+                float cyclePhase = (t * firing) % 1f;
+                float pulse = Mathf.Exp(-cyclePhase / 0.18f);
+                float tone = 0f;
+                for (int k = 1; k <= 6; k++)
+                    tone += Mathf.Sin(2f * Mathf.PI * firing * k * t) / k;
+
+                exhaust += OnePoleCoefficient(300f) * (noise - exhaust);
+                samples[i] = tone * (0.4f + pulse) * 0.5f + exhaust * pulse * 3f;
+            }
+
+            samples = MakeLoop(samples, (int)(crossfade * SampleRate));
+            Normalize(samples, 0.8f, softClip: true);
+            return samples;
+        }
+
+        // Нитро, бесшовная петля: шипение струи и низкий гул
+        private static float[] SynthesizeNitro(System.Random random)
+        {
+            float duration = 2f;
+            float crossfade = 0.2f;
+            int length = (int)((duration + crossfade) * SampleRate);
+            var samples = new float[length];
+
+            float low = 0f, high = 0f, roar = 0f;
+            for (int i = 0; i < length; i++)
+            {
+                float noise = (float)(random.NextDouble() * 2.0 - 1.0);
+
+                // Полоса ~800–4000 Гц: разность двух фильтров низких частот
+                low += OnePoleCoefficient(800f) * (noise - low);
+                high += OnePoleCoefficient(4000f) * (noise - high);
+                roar += OnePoleCoefficient(90f) * (noise - roar);
+
+                samples[i] = (high - low) * 1.2f + roar * 6f;
+            }
+
+            samples = MakeLoop(samples, (int)(crossfade * SampleRate));
+            Normalize(samples, 0.7f, softClip: true);
+            return samples;
+        }
+
+        // Подбор ремкомплекта: три восходящие ноты
+        private static float[] SynthesizePickup()
+        {
+            float[] notes = { 660f, 880f, 1320f };
+            float step = 0.08f;
+            float duration = step * notes.Length + 0.3f;
+            int length = (int)(duration * SampleRate);
+            var samples = new float[length];
+
+            for (int n = 0; n < notes.Length; n++)
+            {
+                int start = (int)(n * step * SampleRate);
+                for (int i = start; i < length; i++)
+                {
+                    float t = (float)(i - start) / SampleRate;
+                    float envelope = (1f - Mathf.Exp(-t / 0.002f)) * Mathf.Exp(-t / 0.12f);
+                    samples[i] += (Mathf.Sin(2f * Mathf.PI * notes[n] * t) + 0.3f * Mathf.Sin(4f * Mathf.PI * notes[n] * t)) * envelope;
+                }
+            }
+
+            Normalize(samples, 0.7f, softClip: false);
+            return samples;
+        }
+
+        // Петля без щелчка на стыке: хвост длиной crossfade плавно перетекает в начало
+        private static float[] MakeLoop(float[] samples, int crossfade)
+        {
+            int length = samples.Length - crossfade;
+            var loop = new float[length];
+            Array.Copy(samples, loop, length);
+            for (int i = 0; i < crossfade; i++)
+            {
+                float w = (float)i / crossfade;
+                loop[i] = samples[length + i] * (1f - w) + samples[i] * w;
+            }
+            return loop;
         }
 
         private static float OnePoleCoefficient(float cutoff)

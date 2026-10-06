@@ -24,6 +24,10 @@ namespace RacingProject.Enemy
         public Light muzzleLight;
         public float lightDuration = 0.05f;
 
+        [Header("Sound")]
+        public AudioSource shotAudio;
+        public AudioClip shotSound;
+
         [Header("Hit Effects")]
         public GameObject hitEffectPrefabDust;
         public GameObject hitEffectPrefabSparks;
@@ -118,6 +122,8 @@ namespace RacingProject.Enemy
         private void ShootRpc(bool hasHit, Vector3 hitPoint, Vector3 hitNormal)
         {
             ShotEffects.PlayMuzzle(this, muzzleFlash, muzzleLight, lightDuration);
+            if (shotAudio != null && shotSound != null)
+                shotAudio.PlayOneShot(shotSound);
 
             if (hasHit)
                 ShotEffects.SpawnImpact(hitEffectPrefabDust, hitEffectPrefabSparks, hitPoint, hitNormal, 0.01f, hitEffectLifetime);

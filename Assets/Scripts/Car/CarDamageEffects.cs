@@ -1,13 +1,17 @@
 ﻿using UnityEngine;
+using RacingProject.Enemy;
 
 namespace RacingProject.Car
 {
-    // Видимые повреждения машины игроков: дым из-под капота густеет и темнеет по мере потери прочности,
-    // перед гибелью появляется огонь, при гибели — взрыв. Прочность синхронизирует PlayerHealth,
+    // Видимые повреждения машины: дым из-под капота густеет и темнеет по мере потери прочности,
+    // перед гибелью появляется огонь, при гибели — взрыв. Работает и для машины игроков (PlayerHealth),
+    // и для врагов (EnemyHealth, взрыв врага создаёт он сам). Прочность синхронизирована,
     // поэтому эффекты одинаковы у обоих игроков
     public class CarDamageEffects : MonoBehaviour
     {
         [SerializeField] private PlayerHealth health;
+        [Tooltip("Для машины врага вместо PlayerHealth")]
+        [SerializeField] private EnemyHealth enemyHealth;
         [SerializeField] private ParticleSystem smoke;
         [SerializeField] private ParticleSystem fire;
         [Tooltip("Создаётся при гибели машины")]
@@ -30,7 +34,7 @@ namespace RacingProject.Car
 
         private void Awake()
         {
-            if (health == null)
+            if (health == null && enemyHealth == null)
                 health = GetComponentInParent<PlayerHealth>();
         }
 
@@ -48,9 +52,14 @@ namespace RacingProject.Car
 
         private void Update()
         {
-            if (health == null || health.MaxHealth <= 0) return;
+            float fraction;
+            if (enemyHealth != null)
+                fraction = enemyHealth.HealthFraction;
+            else if (health != null && health.MaxHealth > 0)
+                fraction = Mathf.Clamp01((float)health.CurrentHealth / health.MaxHealth);
+            else
+                return;
 
-            float fraction = Mathf.Clamp01((float)health.CurrentHealth / health.MaxHealth);
             if (Mathf.Approximately(fraction, lastFraction)) return;
             lastFraction = fraction;
 

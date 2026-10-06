@@ -19,6 +19,23 @@ namespace RacingProject.Enemy
         [Tooltip("Префаб с NetworkObject, зарегистрированный в списке сетевых префабов NetworkManager")]
         [SerializeField] private GameObject enemyPrefab;
 
+        [Header("Босс")]
+        [Tooltip("Усиленный враг (тоже зарегистрирован в списке сетевых префабов)")]
+        [SerializeField] private GameObject bossPrefab;
+        [Tooltip("Босс выезжает в каждой такой волне (0 — без босса)")]
+        [SerializeField] private int bossEveryWaves = 5;
+
+        [Header("Очки")]
+        [Tooltip("Машина игроков: очки за выживание идут, пока она цела")]
+        [SerializeField] private PlayerHealth carHealth;
+        [Tooltip("Убийства с паузой не больше этой складываются в комбо, с")]
+        [SerializeField] private float comboWindow = 5f;
+        [Tooltip("Наибольший множитель комбо")]
+        [SerializeField] private int maxCombo = 5;
+        [Tooltip("Очки за выживание каждые survivalInterval секунд")]
+        [SerializeField] private int survivalPoints = 10;
+        [SerializeField] private float survivalInterval = 5f;
+
         [Header("UI")]
         [SerializeField] private TMP_Text killedTextUI;
 
@@ -43,14 +60,22 @@ namespace RacingProject.Enemy
         // Враги живут и умирают на сервере, счёт убийств и номер волны видят оба игрока
         private readonly NetworkVariable<int> killedEnemies = new NetworkVariable<int>();
         private readonly NetworkVariable<int> wave = new NetworkVariable<int>();
+        private readonly NetworkVariable<int> score = new NetworkVariable<int>();
+        private readonly NetworkVariable<int> combo = new NetworkVariable<int>(1);
+        // Прочность босса для UI, -1 — босса нет
+        private readonly NetworkVariable<float> bossHealth = new NetworkVariable<float>(-1f);
 
         // Итог раунда для экрана гибели
         public int Wave => wave.Value;
         public int Kills => killedEnemies.Value;
+        public int Score => score.Value;
 
         private List<GameObject> activeEnemies = new List<GameObject>();
         private int pendingReinforcements;
         private bool gameStarted = false;
+        private EnemyHealth boss;
+        private float lastKillTime = float.NegativeInfinity;
+        private float nextSurvivalTime;
 
         void Start()
         {
@@ -61,6 +86,9 @@ namespace RacingProject.Enemy
         {
             killedEnemies.OnValueChanged += OnKillsChanged;
             wave.OnValueChanged += OnKillsChanged;
+            score.OnValueChanged += OnKillsChanged;
+            combo.OnValueChanged += OnKillsChanged;
+            bossHealth.OnValueChanged += OnBossHealthChanged;
             UpdateUI();
         }
 
@@ -68,6 +96,29 @@ namespace RacingProject.Enemy
         {
             killedEnemies.OnValueChanged -= OnKillsChanged;
             wave.OnValueChanged -= OnKillsChanged;
+            score.OnValueChanged -= OnKillsChanged;
+            combo.OnValueChanged -= OnKillsChanged;
+            bossHealth.OnValueChanged -= OnBossHealthChanged;
+        }
+
+        // Сервер: очки за выживание, сброс комбо, прочность босса для UI
+        private void Update()
+        {
+            if (!IsServer || !IsSpawned || !gameStarted) return;
+
+            bool carAlive = carHealth == null || !carHealth.IsDead;
+            if (carAlive && Time.time >= nextSurvivalTime)
+            {
+                nextSurvivalTime = Time.time + survivalInterval;
+                score.Value += survivalPoints;
+            }
+
+            if (combo.Value > 1 && Time.time - lastKillTime > comboWindow)
+                combo.Value = 1;
+
+            float bossFraction = boss != null ? boss.HealthFraction : -1f;
+            if (!Mathf.Approximately(bossHealth.Value, bossFraction))
+                bossHealth.Value = bossFraction;
         }
 
         // Вызывается при старте игры из RoomController
@@ -80,7 +131,10 @@ namespace RacingProject.Enemy
             if (IsServer)
             {
                 killedEnemies.Value = 0;
+                score.Value = 0;
+                combo.Value = 1;
                 wave.Value = 1;
+                nextSurvivalTime = Time.time + survivalInterval;
                 SpawnInitialEnemies();
             }
         }
@@ -94,9 +148,14 @@ namespace RacingProject.Enemy
             }
         }
 
-        private void SpawnEnemyAt(Vector3 position, Quaternion rotation)
+        private GameObject SpawnEnemyAt(Vector3 position, Quaternion rotation)
         {
-            GameObject enemy = Instantiate(enemyPrefab, position, rotation);
+            return SpawnEnemyAt(enemyPrefab, position, rotation);
+        }
+
+        private GameObject SpawnEnemyAt(GameObject prefab, Vector3 position, Quaternion rotation)
+        {
+            GameObject enemy = Instantiate(prefab, position, rotation);
             ApplyWaveDifficulty(enemy);
             // Враги уничтожаются вместе со сценой при перезапуске раунда
             enemy.GetComponent<NetworkObject>().Spawn(true);
@@ -107,6 +166,7 @@ namespace RacingProject.Enemy
             {
                 enemyHealth.OnDeath += OnEnemyKilled;
             }
+            return enemy;
         }
 
         // Здоровье и урон врага считает только сервер, поэтому усиливать достаточно его копию до спавна
@@ -133,6 +193,14 @@ namespace RacingProject.Enemy
         {
             killedEnemies.Value++;
 
+            // Комбо: убийства подряд с короткой паузой умножают очки
+            combo.Value = Time.time - lastKillTime <= comboWindow ? Mathf.Min(combo.Value + 1, maxCombo) : 1;
+            lastKillTime = Time.time;
+            EnemyHealth killed = enemy.GetComponent<EnemyHealth>();
+            score.Value += (killed != null ? killed.ScoreValue : 0) * combo.Value;
+            if (killed == boss)
+                boss = null;
+
             activeEnemies.Remove(enemy);
 
             // Сервер решает, когда начинать новую волну; волна кончается, когда подъехали и убиты все
@@ -155,6 +223,18 @@ namespace RacingProject.Enemy
 
             List<Transform> availablePoints = new List<Transform>(wavePoints);
             int spawned = 0;
+
+            // Волна с боссом: он занимает место одного из врагов
+            if (bossPrefab != null && bossEveryWaves > 0 && wave.Value % bossEveryWaves == 0)
+            {
+                int bossIndex = Random.Range(0, availablePoints.Count);
+                Transform bossPoint = availablePoints[bossIndex];
+                availablePoints.RemoveAt(bossIndex);
+
+                boss = SpawnEnemyAt(bossPrefab, bossPoint.position, bossPoint.rotation).GetComponent<EnemyHealth>();
+                spawned++;
+            }
+
             while (spawned < count && availablePoints.Count > 0)
             {
                 int index = Random.Range(0, availablePoints.Count);
@@ -196,14 +276,27 @@ namespace RacingProject.Enemy
             UpdateUI();
         }
 
+        private void OnBossHealthChanged(float previous, float current)
+        {
+            UpdateUI();
+        }
+
         private void UpdateUI()
         {
-            if (killedTextUI != null)
+            if (killedTextUI == null) return;
+
+            if (wave.Value <= 0)
             {
-                killedTextUI.text = wave.Value > 0
-                    ? $"Волна {wave.Value}  Убито: {killedEnemies.Value}"
-                    : $"Убито: {killedEnemies.Value}";
+                killedTextUI.text = $"Убито: {killedEnemies.Value}";
+                return;
             }
+
+            string text = $"Волна {wave.Value}  Убито: {killedEnemies.Value}\nОчки: {score.Value}";
+            if (combo.Value > 1)
+                text += $"  x{combo.Value}";
+            if (bossHealth.Value >= 0f)
+                text += $"\nБосс: {Mathf.CeilToInt(bossHealth.Value * 100f)}%";
+            killedTextUI.text = text;
         }
     }
 }

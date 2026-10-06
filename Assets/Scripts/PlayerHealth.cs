@@ -80,6 +80,15 @@ namespace RacingProject
             networkHealth.Value = Mathf.Clamp(networkHealth.Value - damage, 0, maxHealth);
         }
 
+        // Ремонт: вызывает только сервер (ремкомплект). Возвращает false, если чинить нечего
+        public bool Heal(int amount)
+        {
+            if (!IsServer || isDead || networkHealth.Value >= maxHealth) return false;
+
+            networkHealth.Value = Mathf.Min(networkHealth.Value + amount, maxHealth);
+            return true;
+        }
+
         // Обновлённое здоровье; события урона и смерти срабатывают у обоих игроков
         private void OnHealthChanged(int previous, int newHealth)
         {

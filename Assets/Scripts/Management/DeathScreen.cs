@@ -54,13 +54,15 @@ namespace RacingProject.Management
 
             int kills = enemyManager != null ? enemyManager.Kills : 0;
             int wave = enemyManager != null ? enemyManager.Wave : 0;
-            bool newRecord = GameRecords.SubmitKills(kills);
+            int score = enemyManager != null ? enemyManager.Score : 0;
+            GameRecords.SubmitKills(kills);
+            bool newRecord = GameRecords.SubmitScore(score);
 
-            CanvasGroup group = BuildOverlay(cam, wave, kills, newRecord);
+            CanvasGroup group = BuildOverlay(cam, wave, kills, score, newRecord);
             StartCoroutine(FadeIn(group));
         }
 
-        private CanvasGroup BuildOverlay(Camera cam, int wave, int kills, bool newRecord)
+        private CanvasGroup BuildOverlay(Camera cam, int wave, int kills, int score, bool newRecord)
         {
             var root = new GameObject("DeathScreen", typeof(RectTransform), typeof(Canvas), typeof(CanvasGroup));
             root.transform.SetParent(cam.transform, false);
@@ -86,9 +88,9 @@ namespace RacingProject.Management
 
             string record = newRecord
                 ? $"<color=#{ColorUtility.ToHtmlStringRGB(recordColor)}>Новый рекорд!</color>"
-                : $"Рекорд: {GameRecords.BestKills}";
-            AddText(root.transform, "Машина уничтожена", 90f, new Vector2(0f, 120f));
-            AddText(root.transform, $"Волна {wave}    Убито: {kills}\n{record}", 56f, new Vector2(0f, -60f));
+                : $"Рекорд: {GameRecords.BestScore}";
+            AddText(root.transform, "Машина уничтожена", 90f, new Vector2(0f, 160f));
+            AddText(root.transform, $"Очки: {score}\nВолна {wave}    Убито: {kills}\n{record}", 56f, new Vector2(0f, -60f));
 
             var group = root.GetComponent<CanvasGroup>();
             group.alpha = 0f;
