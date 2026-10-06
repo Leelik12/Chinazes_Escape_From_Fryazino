@@ -1,6 +1,5 @@
 ﻿using _2DOF;
 using Photon.Pun;
-using System.Collections;
 using UnityEngine;
 using RacingProject.Network;
 
@@ -9,12 +8,12 @@ namespace RacingProject.Telemetry
     // Телеметрия машины для платформы водителя 2DOF.
     // Наклоны считает владелец машины (водитель) и рассылает по сети; у стрелка по ним
     // поворачивается прокси-точка, которую читает FuturiftTelemetryHandler.
-    // В платформу 2DOF данные уходят только с компьютера водителя
+    // В платформу 2DOF данные уходят только с компьютера водителя.
+    // Расчёт идёт в FixedUpdate: скорость Rigidbody меняется только на шаге физики,
+    // а при опросе по кадрам ускорение зависело от FPS
     [RequireComponent(typeof(PhotonView))]
     public class CarTelemetryHandler : MonoBehaviour, IPunObservable
     {
-        private const float WAIT_TIME = SendingData.WAIT_TIME / 1000f;
-
         private ObjectTelemetryData telemetryDataData;
         private SendingData _sendingData;
 
@@ -27,6 +26,10 @@ namespace RacingProject.Telemetry
         [Tooltip("Отправлять на 2DOF без роли водителя — для проверки платформы без второго игрока")]
         [SerializeField] private bool sendWithoutRole = false;
 
+        [Tooltip("Множитель продольного ускорения. Старый расчёт по кадрам завышал ускорение примерно вдвое при 72–90 FPS, " +
+                 "значение 2 сохраняет прежнюю силу наклона")]
+        [SerializeField] private float accelerationGain = 2f;
+
         private const float maxPlatformAngle = 15f; // Максимальные Angles платформы 2DOF (влияет на статичные наклоны, зависящие от поверхности)
         private const float maxPlatformVelocity = 100f; // Максимальная Velocity платформы 2DOF (влияет на наклоны в зависимости от линейного ускорения/угловой скорости)
         private float currentPitch = 0f; // текущий наклон платформы 2DOF по x (учет наклона поверхности)
@@ -36,8 +39,6 @@ namespace RacingProject.Telemetry
         private float currentAngularVelocity = 0f; // текущий наклон платформы 2DOF по z (учет угловой скорости)
 
         private PhotonView photonView;
-        private Coroutine telemetryLoop;
-        private WaitForSeconds wait;
         private bool sending;
 
         private bool ShouldSendToPlatform => sendWithoutRole || LocalPlayerRole.Current == PlayerRole.Driver;
@@ -45,44 +46,29 @@ namespace RacingProject.Telemetry
         private void Awake()
         {
             photonView = GetComponent<PhotonView>();
-            wait = new WaitForSeconds(WAIT_TIME);
             _sendingData = new SendingData();
             telemetryDataData = _sendingData.ObjectTelemetryData;
         }
 
 
-        public void OnEnable()
-        {
-            telemetryLoop = StartCoroutine(TelemetryHandler());
-        }
-
-        // Выключение компонента не останавливает корутину, поэтому останавливаем по ссылке
         public void OnDisable()
         {
-            if (telemetryLoop != null)
-                StopCoroutine(telemetryLoop);
-            telemetryLoop = null;
             StopSending();
         }
 
-        private IEnumerator TelemetryHandler()
+        private void FixedUpdate()
         {
-            while (true)
+            // У стрелка значения приходят по сети, локальный пересчёт сбивал бы прокси-точку
+            if (photonView.IsMine)
             {
-                // У стрелка значения приходят по сети, локальный пересчёт сбивал бы прокси-точку
-                if (photonView.IsMine)
-                {
-                    UpdatePlatformVelocity();
-                    UpdatePlatformAngles();
-                }
-
-                if (ShouldSendToPlatform)
-                    StartSending();
-                else
-                    StopSending();
-
-                yield return wait;
+                UpdatePlatformVelocity();
+                UpdatePlatformAngles();
             }
+
+            if (ShouldSendToPlatform)
+                StartSending();
+            else
+                StopSending();
         }
 
         // Поток плагина пишет данные в memory-mapped file, который читает ПО платформы
@@ -112,7 +98,7 @@ namespace RacingProject.Telemetry
             Vector3 localLinearVelocity = transform.InverseTransformVector(globalLinearVelocity); // считаем линейную скорость относительно локальных координат
 
             // считаем линейное ускорение
-            float linearAcceleration = (localLinearVelocity.z - lastLinearVelocity) / Time.deltaTime;
+            float linearAcceleration = (localLinearVelocity.z - lastLinearVelocity) / Time.fixedDeltaTime * accelerationGain;
             lastLinearVelocity = localLinearVelocity.z;
 
             linearAcceleration = Mathf.Clamp(linearAcceleration, -maxPlatformVelocity, maxPlatformVelocity);

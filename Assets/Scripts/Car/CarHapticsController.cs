@@ -16,6 +16,13 @@ namespace RacingProject.Car
         [SerializeField] private float brakeThreshold = -4f;
         [SerializeField] private float sideAccelThreshold = 3f;
 
+        [Header("Расчёт ускорения")]
+        [Tooltip("Множитель ускорения. Старый расчёт по кадрам завышал ускорение примерно вдвое при 72–90 FPS, " +
+                 "значение 2 сохраняет прежнюю чувствительность порогов")]
+        [SerializeField] private float accelerationGain = 2f;
+        [Tooltip("Время сглаживания ускорения, сек. Гасит одиночные скачки скорости: у стрелка её перезаписывает сеть")]
+        [SerializeField] private float accelSmoothTime = 0.1f;
+
         [Header("Интенсивности вибраций")]
         [SerializeField] private float intensityAccel = 0.5f;
         [SerializeField] private float intensityBrake = 0.5f;
@@ -32,6 +39,7 @@ namespace RacingProject.Car
         // Счетчики срабатываний
         private Dictionary<string, int> hapticEventCounts = new Dictionary<string, int>();
         private Vector3 lastVelocity;
+        private Vector3 smoothedLocalAccel;
         private bool lowHealthTriggered = false;
 
         // GUI стиль
@@ -82,14 +90,23 @@ namespace RacingProject.Car
 
         private void Update()
         {
-            CheckMovementHaptics();
             CheckHealth();
+        }
+
+        // Скорость Rigidbody меняется только на шаге физики: при расчёте по кадрам ускорение
+        // было то нулевым, то завышенным, и зависело от FPS
+        private void FixedUpdate()
+        {
+            CheckMovementHaptics();
         }
 
         private void CheckMovementHaptics()
         {
-            Vector3 accel = (carRigidbody.linearVelocity - lastVelocity) / Time.deltaTime;
-            Vector3 localAccel = transform.InverseTransformDirection(accel);
+            float dt = Time.fixedDeltaTime;
+            Vector3 accel = (carRigidbody.linearVelocity - lastVelocity) / dt * accelerationGain;
+            Vector3 rawLocalAccel = transform.InverseTransformDirection(accel);
+            smoothedLocalAccel = Vector3.Lerp(smoothedLocalAccel, rawLocalAccel, 1f - Mathf.Exp(-dt / Mathf.Max(accelSmoothTime, 0.0001f)));
+            Vector3 localAccel = smoothedLocalAccel;
 
             // Ускорение вперед в разгоне/торможении
             if (localAccel.z > accelThreshold)

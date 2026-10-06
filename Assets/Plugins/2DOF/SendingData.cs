@@ -20,37 +20,49 @@ namespace _2DOF
         public readonly ObjectTelemetryData ObjectTelemetryData = new();
 
         private const string MAP_NAME = "2DOFMemoryDataGrabber";
+        private const int VALUES_COUNT = 6;
         private Thread _thread;
+        private volatile bool _running;
 
         /// <summary>
         /// Запуск отправки данных.
         /// </summary>
         public void SendingStart()
         {
-            _thread = new Thread(HandlerData);
+            if (_running) return;
+            _running = true;
+            // Фоновый поток не держит процесс, если остановку не вызвали
+            _thread = new Thread(HandlerData) { IsBackground = true };
             _thread.Start();
         }
 
         /// <summary>
         /// Остановка отправки данных.
+        /// Поток завершается сам после текущей записи, вместо Thread.Abort посреди записи в файл.
         /// </summary>
         public void SendingStop()
         {
-            _thread?.Abort();
+            if (!_running) return;
+            _running = false;
+            _thread?.Join(WAIT_TIME * 5);
+            _thread = null;
         }
 
         private void HandlerData()
         {
-            using var memoryMappedFile = MemoryMappedFile.CreateOrOpen(MAP_NAME, ObjectTelemetryData.DataArray.Length);
+            // Размер в байтах. Раньше передавалось число значений (6 байт) при записи 6 double;
+            // работало только потому, что Windows округляет отображение до страницы памяти
+            using var memoryMappedFile = MemoryMappedFile.CreateOrOpen(MAP_NAME, VALUES_COUNT * sizeof(double));
+            using var accessor = memoryMappedFile.CreateViewAccessor();
 
-            while (true)
+            while (_running)
             {
-                using var accessor = memoryMappedFile.CreateViewAccessor();
-
-                accessor.WriteArray(0, ObjectTelemetryData.DataArray, 0, 6);
-
+                accessor.WriteArray(0, ObjectTelemetryData.DataArray, 0, VALUES_COUNT);
                 Thread.Sleep(WAIT_TIME);
             }
+
+            // Нули возвращают платформу в нейтраль, иначе она осталась бы в последнем наклоне
+            accessor.WriteArray(0, new double[VALUES_COUNT], 0, VALUES_COUNT);
         }
     }
 }
