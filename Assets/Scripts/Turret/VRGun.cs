@@ -5,6 +5,8 @@ using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.UI;
 using RacingProject.Enemy;
+using RacingProject.Desktop;
+using RacingProject.Management;
 
 namespace RacingProject.Turret
 {
@@ -41,6 +43,10 @@ namespace RacingProject.Turret
         public InputActionProperty LeftGrip;
         public InputActionProperty RightGrip;
         public Transform firePoint;
+
+        [Header("Режим монитора")]
+        [Tooltip("Прицел мышью: в режиме монитора курок — левая кнопка, выстрел летит в точку под центром экрана")]
+        [SerializeField] private DesktopGunnerAim desktopAim;
 
         [Header("Эффекты")]
         public ParticleSystem muzzleFlash;
@@ -114,18 +120,24 @@ namespace RacingProject.Turret
         private void HandleFireInput()
         {
 
-            bool firePressed =
-                (RightTrigger.action.ReadValue<float>() > 0.8f);
+            bool useDesktopAim = !ViewModeService.IsVR && desktopAim != null && desktopAim.isActiveAndEnabled;
+            bool firePressed = useDesktopAim
+                ? desktopAim.FirePressed
+                : RightTrigger.action.ReadValue<float>() > 0.8f;
 
             if (firePressed && Time.time >= nextFireTime && !isOverheated)
             {
                 nextFireTime = Time.time + fireRate;
 
+                Vector3 direction = useDesktopAim
+                    ? (desktopAim.AimPoint - firePoint.position).normalized
+                    : firePoint.forward;
+
                 // локальный выстрел
-                ShootLocal(firePoint.position, firePoint.forward);
+                ShootLocal(firePoint.position, direction);
 
                 // синхронизируем с другими
-                photonView.RPC(nameof(Shoot), RpcTarget.Others, firePoint.position, firePoint.forward);
+                photonView.RPC(nameof(Shoot), RpcTarget.Others, firePoint.position, direction);
 
                 currentHeat += heatPerShot;
                 if (currentHeat >= maxHeat)
