@@ -58,6 +58,8 @@
 
 File → Build Profiles → выбрать платформу (Windows для ПК-VR или Android для автономного Quest) → Build. Сцена в сборке: `Assets/Scenes/SovietCity.unity`. Работа платформ 2DOF/FutuRift и руля G29 возможна только в Windows-сборке.
 
+XR Plug-in Management на время сборки добавляет свои настройки в Preloaded Assets, и Unity записывает их в `ProjectSettings/ProjectSettings.asset`. Редакторный скрипт `PreloadedAssetsBuildGuard` (`Assets/Scripts/Editor`) после успешной сборки возвращает прежний список и сохраняет настройки, поэтому файл не остаётся изменённым. Если сборка упала, лишние строки в `preloadedAssets` откатываются через git. `Assets/Settings/UniversalRenderPipelineGlobalSettings.asset` Unity иногда пересохраняет после перекомпиляции скриптов: меняются только порядок записей и номера `rid`, такие правки можно откатывать.
+
 ## Тесты
 
 Автотестов в проекте нет (пакет `com.unity.test-framework` подключён, но тесты не написаны).
@@ -83,6 +85,7 @@ Assets/
     ShotEffects.cs             — общие эффекты выстрела (вспышка, попадание) для оружия игрока и врагов
     PooledEffect.cs            — экземпляр эффекта попадания в пуле ShotEffects
     GameConstants.cs           — теги и ID событий bHaptics
+    Editor/                    — только для редактора (RacingProject.Editor.asmdef): PreloadedAssetsBuildGuard
   Plugins/
     2DOF/                      — отправка телеметрии на платформу 2DOF (сборка TwoDOF)
     Futurift/                  — контроллер FutuRift, UDP 127.0.0.1:6065 или COM-порт (сборка Futurift)
