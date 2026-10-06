@@ -4,11 +4,11 @@ using LogitechG29.Sample.Input;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Photon.Pun;
+using RacingProject.Network;
 
 namespace RacingProject.Car
 {
-    public class CarControllerSample : MonoBehaviourPun
+    public class CarControllerSample : MonoBehaviour
     {
         [Header("Важное, не трогать!")]
         [SerializeField] private InputControllerReader inputControllerReader;
@@ -67,7 +67,8 @@ namespace RacingProject.Car
         public void FixedUpdate()
         {
             ApplyNetworkAuthority();
-            if (!photonView.IsMine) return;
+            // Управляет только водитель; до старта раунда машина стоит
+            if (LocalPlayerRole.Current != PlayerRole.Driver) return;
 
             // Газ
             throttleInput = inputControllerReader.Throttle;
@@ -175,11 +176,11 @@ namespace RacingProject.Car
             HandleHatSwitchImpulse();
 
         }
-        // Физику машины считает только владелец (водитель). У второго игрока машину двигает
-        // PhotonTransformView, а собственная физика и интерполяция Rigidbody спорили бы с сетью
+        // Физику машины считает только хост (водитель). У второго игрока машину двигает
+        // NetworkTransform, а собственная физика и интерполяция Rigidbody спорили бы с сетью
         private void ApplyNetworkAuthority()
         {
-            bool mine = photonView.IsMine;
+            bool mine = LocalPlayerRole.SimulatesPhysics;
             if (hasAuthority == mine) return;
             hasAuthority = mine;
 

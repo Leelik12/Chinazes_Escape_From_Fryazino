@@ -1,10 +1,9 @@
 ﻿using UnityEngine;
-using Photon.Pun;
 
 namespace RacingProject.PlayerBody
 {
     [DefaultExecutionOrder(400)]
-    public class VRArmIK : MonoBehaviourPun
+    public class VRArmIK : MonoBehaviour
     {
         [Header("Ссылки")]
         public Animator animator;

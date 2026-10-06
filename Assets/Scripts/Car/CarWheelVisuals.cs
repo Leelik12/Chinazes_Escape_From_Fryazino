@@ -1,14 +1,14 @@
 ﻿using System;
-using Photon.Pun;
 using UnityEngine;
+using RacingProject.Network;
 
 namespace RacingProject.Car
 {
     // Вращение мешей колёс машины игроков.
-    // У водителя поворот берётся из WheelCollider, у второго игрока машина кинематическая и коллайдеры
+    // У хоста (водителя) поворот берётся из WheelCollider, у второго игрока машина кинематическая и коллайдеры
     // не крутятся, поэтому вращение считается по пройденному пути, а угол руля приходит по сети.
     // Позиция мешей не меняется: пивоты стоят в центре колеса, подвеска на виде не отражается
-    public class CarWheelVisuals : MonoBehaviourPun, IPunObservable
+    public class CarWheelVisuals : RoleSyncedBehaviour
     {
         [Serializable]
         public class WheelVisual
@@ -32,7 +32,7 @@ namespace RacingProject.Car
         // После физики и сетевой интерполяции позиции машины
         private void LateUpdate()
         {
-            if (photonView.IsMine)
+            if (LocalPlayerRole.SimulatesPhysics)
                 UpdateFromColliders();
             else
                 UpdateFromMovement();
@@ -81,12 +81,11 @@ namespace RacingProject.Car
             return 0f;
         }
 
-        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        public override void Serialize(SyncStream stream)
         {
             if (stream.IsWriting)
-                stream.SendNext(CurrentSteerAngle());
-            else
-                networkSteerAngle = (float)stream.ReceiveNext();
+                networkSteerAngle = CurrentSteerAngle();
+            stream.Serialize(ref networkSteerAngle);
         }
     }
 }

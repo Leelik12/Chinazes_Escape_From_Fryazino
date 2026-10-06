@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
-using Photon.Pun;
+using RacingProject.Network;
 
 namespace RacingProject.PlayerBody
 {
     [DefaultExecutionOrder(100)]
-    public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
+    public class NetworkedTransformFollower : RoleSyncedBehaviour
     {
         [Header("Локальное следование")]
         public Transform target;           // То позицию чего надо повторить
@@ -24,11 +24,18 @@ namespace RacingProject.PlayerBody
         private Vector3 networkPosition;
         private Quaternion networkRotation;
 
+        // До первых данных из сети прокси стоит на месте, а не уезжает в начало координат родителя
+        void Awake()
+        {
+            networkPosition = transform.localPosition;
+            networkRotation = transform.localRotation;
+        }
+
         void LateUpdate()
         {
             if (!target) return;
 
-            if (photonView.IsMine)
+            if (HasAuthority)
             {
                 // === Локальное следование ===
                 if (followPosition)
@@ -66,18 +73,15 @@ namespace RacingProject.PlayerBody
             }
         }
 
-        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        public override void Serialize(SyncStream stream)
         {
             if (stream.IsWriting)
             {
-                stream.SendNext(transform.localPosition);
-                stream.SendNext(transform.localRotation);
+                networkPosition = transform.localPosition;
+                networkRotation = transform.localRotation;
             }
-            else
-            {
-                networkPosition = (Vector3)stream.ReceiveNext();
-                networkRotation = (Quaternion)stream.ReceiveNext();
-            }
+            stream.Serialize(ref networkPosition);
+            stream.Serialize(ref networkRotation);
         }
     }
 }

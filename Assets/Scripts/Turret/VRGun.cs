@@ -1,5 +1,4 @@
-﻿using Photon.Pun;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
@@ -7,10 +6,11 @@ using UnityEngine.UI;
 using RacingProject.Enemy;
 using RacingProject.Desktop;
 using RacingProject.Management;
+using RacingProject.Network;
 
 namespace RacingProject.Turret
 {
-    public class VRGun : MonoBehaviourPun, IPunObservable
+    public class VRGun : RoleSyncedBehaviour
     { 
         [SerializeField] private Transform carRoot; // родительский объект (машина, к которой прикрепляется пистолет)
 
@@ -65,6 +65,14 @@ namespace RacingProject.Turret
         private Vector3 networkLocalPos;
         private Quaternion networkLocalRot;
 
+        // Счётчик выстрелов: пакеты ненадёжные, поэтому передаётся число, а не событие,
+        // и потерянный пакет не съедает выстрел
+        private byte shotCount;
+        private byte remoteShotCount;
+        private bool hasRemoteShotCount;
+        // Больше выстрелов за пакет не проигрываем, иначе после паузы в сети они слились бы в очередь
+        private const int MaxReplayedShots = 3;
+
         private void Awake()
         {
             LeftGrip.action.Enable();
@@ -80,11 +88,14 @@ namespace RacingProject.Turret
 
             if (movablePart != null)
                 initialLocalPos = movablePart.localPosition;
+
+            networkLocalPos = transform.localPosition;
+            networkLocalRot = transform.localRotation;
         }
 
         private void Update()
         {
-            if (photonView.IsMine)
+            if (HasAuthority)
             {
                 HandleOverheat();
                 HandleFireInput();
@@ -136,8 +147,8 @@ namespace RacingProject.Turret
                 // локальный выстрел
                 ShootLocal(firePoint.position, direction);
 
-                // синхронизируем с другими
-                photonView.RPC(nameof(Shoot), RpcTarget.Others, firePoint.position, direction);
+                // напарник увидит выстрел по счётчику в Serialize
+                shotCount++;
 
                 currentHeat += heatPerShot;
                 if (currentHeat >= maxHeat)
@@ -169,11 +180,6 @@ namespace RacingProject.Turret
             }
         }
 
-        [PunRPC]
-        public void Shoot(Vector3 origin, Vector3 direction)
-        {
-            PlayShotFeedback();
-        }
 
         // Вспышка, звук и движение затвора — одинаково у стрелка и у второго игрока
         private void PlayShotFeedback()
@@ -212,31 +218,48 @@ namespace RacingProject.Turret
             isRecoiling = false;
         }
 
-        // --- СЕТЕВАЯ СИНХРОНИЗАЦИЯ ПОЗИЦИИ ---
-        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        // --- СЕТЕВАЯ СИНХРОНИЗАЦИЯ ПОЗИЦИИ И ВЫСТРЕЛОВ ---
+        public override void Serialize(SyncStream stream)
         {
             if (stream.IsWriting)
             {
                 // У владельца: отправляем позицию/вращение относительно машины
                 if (carRoot != null)
                 {
-                    Vector3 localPos = carRoot.InverseTransformPoint(transform.position);
-                    Quaternion localRot = Quaternion.Inverse(carRoot.rotation) * transform.rotation;
-                    stream.SendNext(localPos);
-                    stream.SendNext(localRot);
+                    networkLocalPos = carRoot.InverseTransformPoint(transform.position);
+                    networkLocalRot = Quaternion.Inverse(carRoot.rotation) * transform.rotation;
                 }
                 else
                 {
-                    stream.SendNext(transform.localPosition);
-                    stream.SendNext(transform.localRotation);
+                    networkLocalPos = transform.localPosition;
+                    networkLocalRot = transform.localRotation;
                 }
             }
-            else
+
+            // У других клиентов: получаем локальные координаты относительно машины
+            stream.Serialize(ref networkLocalPos);
+            stream.Serialize(ref networkLocalRot);
+
+            byte count = shotCount;
+            stream.Serialize(ref count);
+            if (!stream.IsWriting)
+                ReplayRemoteShots(count);
+        }
+
+        private void ReplayRemoteShots(byte count)
+        {
+            // Первый пакет только запоминает счётчик: старые выстрелы не проигрываются
+            if (!hasRemoteShotCount)
             {
-                // У других клиентов: получаем локальные координаты относительно машины
-                networkLocalPos = (Vector3)stream.ReceiveNext();
-                networkLocalRot = (Quaternion)stream.ReceiveNext();
+                hasRemoteShotCount = true;
+                remoteShotCount = count;
+                return;
             }
+
+            int newShots = (byte)(count - remoteShotCount);
+            remoteShotCount = count;
+            for (int i = 0; i < Mathf.Min(newShots, MaxReplayedShots); i++)
+                PlayShotFeedback();
         }
     }
 }

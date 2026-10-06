@@ -1,10 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Inputs.Readers;
-using Photon.Pun;
+using RacingProject.Network;
 
 namespace RacingProject
 {
-    public class HandAnimationSync : MonoBehaviourPun, IPunObservable
+    // Роль None — рука только локальная (руки рига меню): ввод читается всегда и никуда не отправляется
+    public class HandAnimationSync : RoleSyncedBehaviour
     {
         [Header("XR Input (только для локального игрока)")]
         [SerializeField] private XRInputValueReader<float> m_TriggerInput;
@@ -31,7 +32,7 @@ namespace RacingProject
         {
             if (animator == null) return;
 
-            if (photonView.IsMine)
+            if (Authority == PlayerRole.None || HasAuthority)
             {
                 // Считываем значения с контроллеров (только локально)
                 triggerValue = m_TriggerInput.ReadValue();
@@ -62,29 +63,16 @@ namespace RacingProject
         }
 
         // Синхронизация по сети
-        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        public override void Serialize(SyncStream stream)
         {
             if (stream.IsWriting)
             {
-                if (IsDriver)
-                {
-                    // Отправляем локальные значения другим игрокам
-                    stream.SendNext(0f);
-                    stream.SendNext(gripStatic);
-                }
-                else
-                {
-                    // Отправляем локальные значения другим игрокам
-                    stream.SendNext(triggerValue);
-                    stream.SendNext(gripValue);
-                }
+                // У водителя рука всегда сжата на руле
+                networkTrigger = IsDriver ? 0f : triggerValue;
+                networkGrip = IsDriver ? gripStatic : gripValue;
             }
-            else
-            {
-                // Получаем значения от сети
-                networkTrigger = (float)stream.ReceiveNext();
-                networkGrip = (float)stream.ReceiveNext();
-            }
+            stream.Serialize(ref networkTrigger);
+            stream.Serialize(ref networkGrip);
         }
     }
 }

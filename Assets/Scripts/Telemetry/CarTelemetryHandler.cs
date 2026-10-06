@@ -1,18 +1,16 @@
 ﻿using _2DOF;
-using Photon.Pun;
 using UnityEngine;
 using RacingProject.Network;
 
 namespace RacingProject.Telemetry
 {
     // Телеметрия машины для платформы водителя 2DOF.
-    // Наклоны считает владелец машины (водитель) и рассылает по сети; у стрелка по ним
+    // Наклоны считает хост, у которого идёт физика машины (водитель), и рассылает по сети; у стрелка по ним
     // поворачивается прокси-точка, которую читает FuturiftTelemetryHandler.
     // В платформу 2DOF данные уходят только с компьютера водителя.
     // Расчёт идёт в FixedUpdate: скорость Rigidbody меняется только на шаге физики,
     // а при опросе по кадрам ускорение зависело от FPS
-    [RequireComponent(typeof(PhotonView))]
-    public class CarTelemetryHandler : MonoBehaviour, IPunObservable
+    public class CarTelemetryHandler : RoleSyncedBehaviour
     {
         private ObjectTelemetryData telemetryDataData;
         private SendingData _sendingData;
@@ -38,14 +36,12 @@ namespace RacingProject.Telemetry
         private float lastLinearVelocity = 0f;
         private float currentAngularVelocity = 0f; // текущий наклон платформы 2DOF по z (учет угловой скорости)
 
-        private PhotonView photonView;
         private bool sending;
 
         private bool ShouldSendToPlatform => sendWithoutRole || LocalPlayerRole.Current == PlayerRole.Driver;
 
         private void Awake()
         {
-            photonView = GetComponent<PhotonView>();
             _sendingData = new SendingData();
             telemetryDataData = _sendingData.ObjectTelemetryData;
         }
@@ -59,7 +55,7 @@ namespace RacingProject.Telemetry
         private void FixedUpdate()
         {
             // У стрелка значения приходят по сети, локальный пересчёт сбивал бы прокси-точку
-            if (photonView.IsMine)
+            if (LocalPlayerRole.SimulatesPhysics)
             {
                 UpdatePlatformVelocity();
                 UpdatePlatformAngles();
@@ -136,22 +132,16 @@ namespace RacingProject.Telemetry
             telemetryDataData.Angles = resultAngles;
         }
 
-        public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+        // Водитель отправляет данные, стрелок получает и применяет
+        public override void Serialize(SyncStream stream)
         {
-            if (stream.IsWriting) // Владелец объекта отправляет данные
-            {
-                stream.SendNext(currentPitch);
-                stream.SendNext(currentRoll);
-                stream.SendNext(currentLinearAcceleration);
-                stream.SendNext(currentAngularVelocity);
-            }
-            else // Другие получают и применяют
-            {
-                currentPitch = (float)stream.ReceiveNext();
-                currentRoll = (float)stream.ReceiveNext();
-                currentLinearAcceleration = (float)stream.ReceiveNext();
-                currentAngularVelocity = (float)stream.ReceiveNext();
+            stream.Serialize(ref currentPitch);
+            stream.Serialize(ref currentRoll);
+            stream.Serialize(ref currentLinearAcceleration);
+            stream.Serialize(ref currentAngularVelocity);
 
+            if (!stream.IsWriting)
+            {
                 if (proxyTransform != null)
                     proxyTransform.localRotation = Quaternion.Euler(currentPitch*0.5f - currentLinearAcceleration, 0f, currentRoll);
             }

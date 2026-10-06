@@ -51,6 +51,12 @@ namespace RacingProject.Network
             else value = reader.ReadBoolean();
         }
 
+        public void Serialize(ref byte value)
+        {
+            if (IsWriting) writer.Write(value);
+            else value = reader.ReadByte();
+        }
+
         public void Serialize(ref Vector3 value)
         {
             Serialize(ref value.x);

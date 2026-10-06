@@ -1,15 +1,17 @@
 ﻿using UnityEngine;
-using Photon.Pun;
+using RacingProject.Network;
 
 namespace RacingProject.PlayerBody
 {
     [DefaultExecutionOrder(400)]
-    public class VRHeadIK : MonoBehaviourPun
+    public class VRHeadIK : MonoBehaviour
     {
         [Header("Ссылки")]
         public Animator animator;
         public Transform headProxy;      // Прокси-точка в машине, повторяет XR камеру
         public GameObject headVisualRoot; // Меш головы
+        [Tooltip("Чьё это тело: у этого игрока голова скрыта, чтобы не загораживать камеру")]
+        public PlayerRole bodyRole = PlayerRole.Driver;
 
         [Header("Смещение головы")]
         public Vector3 headOffset = Vector3.zero;
@@ -33,12 +35,12 @@ namespace RacingProject.PlayerBody
                 headRenderers = headVisualRoot.GetComponentsInChildren<Renderer>(true);
         }
 
-        // Владелец тела меняется при старте игры, поэтому видимость проверяется каждый кадр,
+        // Роль игрока задаётся при старте игры, поэтому видимость проверяется каждый кадр,
         // но рендеры переключаются только при изменении
         void Update()
         {
             // Скрываем голову локального игрока
-            SetHeadVisible(!photonView.IsMine);
+            SetHeadVisible(LocalPlayerRole.Current != bodyRole);
         }
 
         void OnAnimatorIK(int layerIndex)

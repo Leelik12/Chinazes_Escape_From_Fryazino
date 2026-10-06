@@ -1,4 +1,6 @@
-﻿namespace RacingProject.Network
+﻿using Unity.Netcode;
+
+namespace RacingProject.Network
 {
     // Роль локального игрока в текущем раунде
     public enum PlayerRole
@@ -17,6 +19,17 @@
         public static void Set(PlayerRole role)
         {
             Current = role;
+        }
+
+        // Физику машины считает хост (он же водитель), а без сети — сама игра.
+        // У клиента машину двигает NetworkTransform
+        public static bool SimulatesPhysics
+        {
+            get
+            {
+                NetworkManager manager = NetworkManager.Singleton;
+                return manager == null || !manager.IsListening || manager.IsServer;
+            }
         }
     }
 }
