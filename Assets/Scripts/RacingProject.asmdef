@@ -6,6 +6,7 @@
         "PhotonRealtime",
         "Bhaptics.SDK2",
         "Unity.XR.Interaction.Toolkit",
+        "Unity.XR.Management",
         "Unity.InputSystem",
         "Unity.TextMeshPro",
         "UnityEngine.UI",
