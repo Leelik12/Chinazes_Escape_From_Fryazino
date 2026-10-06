@@ -58,6 +58,8 @@ namespace RacingProject.Turret
         public GameObject hitEffectPrefabSparks;
         public float hitEffectLifetime = 2f;
         public float effectOffset = 0.01f;
+        [Tooltip("Отметка попадания по врагу (видит только стрелок)")]
+        [SerializeField] private GameObject hitMarkerPrefab;
 
         private float nextFireTime = 0f;
 
@@ -176,7 +178,11 @@ namespace RacingProject.Turret
 
                 EnemyHealth enemy = hit.collider.GetComponentInParent<EnemyHealth>();
                 if (enemy != null)
+                {
                     enemy.RequestDamage((int)damage);
+                    if (hitMarkerPrefab != null)
+                        Instantiate(hitMarkerPrefab, hit.point, Quaternion.identity);
+                }
             }
         }
 

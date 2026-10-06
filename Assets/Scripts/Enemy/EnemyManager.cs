@@ -44,6 +44,10 @@ namespace RacingProject.Enemy
         private readonly NetworkVariable<int> killedEnemies = new NetworkVariable<int>();
         private readonly NetworkVariable<int> wave = new NetworkVariable<int>();
 
+        // Итог раунда для экрана гибели
+        public int Wave => wave.Value;
+        public int Kills => killedEnemies.Value;
+
         private List<GameObject> activeEnemies = new List<GameObject>();
         private int pendingReinforcements;
         private bool gameStarted = false;

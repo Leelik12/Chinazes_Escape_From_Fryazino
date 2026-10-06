@@ -33,8 +33,8 @@ namespace RacingProject.Network
         public Color disconnectedColor = Color.red;
 
         [Header("Перезапуск")]
-        [Tooltip("Пауза между гибелью машины и перезапуском: за это время напарник получает последнее здоровье и отдачу гибели")]
-        [SerializeField] private float restartDelay = 1.5f;
+        [Tooltip("Пауза между гибелью машины и перезапуском: напарник получает последнее здоровье и отдачу гибели, оба видят взрыв и экран гибели")]
+        [SerializeField] private float restartDelay = 4f;
 
         // Пишет только сервер; клиент просит его через SetReadyRpc
         private readonly NetworkVariable<bool> hostReady = new NetworkVariable<bool>();
