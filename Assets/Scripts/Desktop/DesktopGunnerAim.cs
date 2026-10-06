@@ -26,7 +26,9 @@ namespace RacingProject.Desktop
         [SerializeField] private LayerMask aimMask = ~0;
 
         public Vector3 AimPoint { get; private set; }
-        public bool FirePressed => Mouse.current != null && Mouse.current.leftButton.isPressed;
+        // Пока курсор свободен (нажат Esc), клик возвращает захват, а не стреляет
+        public bool FirePressed => Mouse.current != null && Mouse.current.leftButton.isPressed
+                                   && Cursor.lockState == CursorLockMode.Locked;
 
         private void LateUpdate()
         {

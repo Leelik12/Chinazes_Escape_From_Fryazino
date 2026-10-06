@@ -50,7 +50,15 @@ namespace RacingProject.Desktop
         {
             Mouse mouse = Mouse.current;
             if (mouse == null) return;
-            if (requireRightButton && !mouse.rightButton.isPressed) return;
+
+            if (requireRightButton)
+            {
+                if (!mouse.rightButton.isPressed) return;
+            }
+            else if (!UpdateCursorLock(mouse))
+            {
+                return;
+            }
 
             Vector2 delta = mouse.delta.ReadValue() * sensitivity;
             yaw += delta.x;
@@ -59,6 +67,19 @@ namespace RacingProject.Desktop
             pitch = Mathf.Clamp(pitch - delta.y, minPitch, maxPitch);
 
             transform.localRotation = Quaternion.Euler(pitch, baseYaw + yaw, 0f);
+        }
+
+        // Esc освобождает курсор (переключиться на другое окно, выйти из игры), клик снова захватывает.
+        // Возвращает true, если курсор захвачен и мышь управляет камерой
+        private static bool UpdateCursorLock(Mouse mouse)
+        {
+            Keyboard keyboard = Keyboard.current;
+            if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
+                SetCursorLocked(false);
+            else if (Cursor.lockState != CursorLockMode.Locked && mouse.leftButton.wasPressedThisFrame)
+                SetCursorLocked(true);
+
+            return Cursor.lockState == CursorLockMode.Locked;
         }
 
         private static void SetCursorLocked(bool locked)
