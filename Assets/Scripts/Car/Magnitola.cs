@@ -12,11 +12,13 @@ public class Magnitola : MonoBehaviour
 
     private List<AudioClip> playlist;
     private int currentTrackIndex = 0;
+    // Эта магнитола запустила музыку и отвечает за сброс флага
+    private bool ownsMusic;
 
     void Start()
     {
-        // Если музыка уже играет — блокируем повторный запуск
-        if (MusicAlreadyStarted)
+        // Если музыка уже играет или треков нет — блокируем повторный запуск
+        if (MusicAlreadyStarted || fireTracks == null || fireTracks.Length == 0)
         {
             audioSource.enabled = false;
             return;
@@ -24,6 +26,7 @@ public class Magnitola : MonoBehaviour
 
         // Если здесь — значит запускаем музыку первый раз
         MusicAlreadyStarted = true;
+        ownsMusic = true;
         audioSource.enabled = true;
 
         playlist = fireTracks.ToList();
@@ -31,6 +34,13 @@ public class Magnitola : MonoBehaviour
             ShufflePlaylist();
 
         PlayNextTrack();
+    }
+
+    // Статический флаг переживает перезагрузку сцены: без сброса после рестарта музыки не было бы
+    void OnDestroy()
+    {
+        if (ownsMusic)
+            MusicAlreadyStarted = false;
     }
 
     void Update()

@@ -3,9 +3,15 @@ using Photon.Realtime;
 using UnityEngine;
 using ExitGames.Client.Photon;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class RoomController : MonoBehaviourPunCallbacks
 {
+    // Ключ свойства игрока «готов к старту»
+    public const string ReadyKey = "IsReady";
+    // Игра рассчитана ровно на двоих: водитель и стрелок
+    private const int RequiredPlayers = 2;
+
     [Header("Ссылки на XR Rigs")]
     public GameObject driverRig;       // XR Rig водителя (без рук)
     public GameObject gunnerRig;       // XR Rig пулемётчика (с руками)
@@ -30,8 +36,27 @@ public class RoomController : MonoBehaviourPunCallbacks
     public Color disconnectedColor = Color.red;
 
     private bool isLocalReady = false;
+    private bool gameStarted = false;
+    private PlayerHealth carHealth;
     private float connectionCheckTimer = 0f;
     private float connectionCheckInterval = 1f;
+
+    private void Start()
+    {
+        if (car != null)
+            carHealth = car.GetComponent<PlayerHealth>();
+        if (carHealth != null)
+            carHealth.OnDeath += OnCarDestroyed;
+
+        // После перезапуска раунда игроки уже в комнате
+        UpdateReadyUI();
+    }
+
+    private void OnDestroy()
+    {
+        if (carHealth != null)
+            carHealth.OnDeath -= OnCarDestroyed;
+    }
 
     private void Update()
     {
@@ -68,7 +93,7 @@ public class RoomController : MonoBehaviourPunCallbacks
         isLocalReady = true;
 
         // Устанавливаем CustomProperty "IsReady"
-        Hashtable props = new Hashtable { { "IsReady", true } };
+        Hashtable props = new Hashtable { { ReadyKey, true } };
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
         UpdateReadyUI();
@@ -77,9 +102,14 @@ public class RoomController : MonoBehaviourPunCallbacks
 
     private void CheckAllPlayersReady()
     {
+        if (gameStarted) return;
+
+        // Без второго игрока не стартуем
+        if (PhotonNetwork.PlayerList.Length < RequiredPlayers) return;
+
         foreach (var player in PhotonNetwork.PlayerList)
         {
-            if (!player.CustomProperties.ContainsKey("IsReady") || !(bool)player.CustomProperties["IsReady"])
+            if (!IsReady(player))
                 return;
         }
 
@@ -87,8 +117,17 @@ public class RoomController : MonoBehaviourPunCallbacks
         ActivatePlayerRigs();
     }
 
+    private static bool IsReady(Player player)
+    {
+        return player != null
+            && player.CustomProperties.TryGetValue(ReadyKey, out object value)
+            && value is bool ready && ready;
+    }
+
     private void ActivatePlayerRigs()
     {
+        gameStarted = true;
+
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonView carView = car.GetComponent<PhotonView>();
@@ -135,36 +174,69 @@ public class RoomController : MonoBehaviourPunCallbacks
             Menu.SetActive(false);
         }
 
-        EnemyManager enemyManager = FindObjectOfType<EnemyManager>();
+        EnemyManager enemyManager = FindFirstObjectByType<EnemyManager>();
         if (enemyManager != null)
         {
             enemyManager.StartGame();
         }
     }
 
+    private void OnCarDestroyed()
+    {
+        RestartRound();
+    }
+
+    // Перезапуск раунда: мастер сбрасывает готовность всех игроков и перезагружает сцену у всех.
+    // Сброс отправляется раньше загрузки, иначе после рестарта старые флаги сразу запустили бы игру
+    private void RestartRound()
+    {
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        foreach (var player in PhotonNetwork.PlayerList)
+            player.SetCustomProperties(new Hashtable { { ReadyKey, false } });
+
+        PhotonNetwork.LoadLevel(SceneManager.GetActiveScene().name);
+    }
+
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
-        if (changedProps.ContainsKey("IsReady"))
+        if (changedProps.ContainsKey(ReadyKey))
         {
             UpdateReadyUI();
             CheckAllPlayersReady();
         }
     }
 
+    public override void OnJoinedRoom()
+    {
+        UpdateReadyUI();
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        UpdateReadyUI();
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        UpdateReadyUI();
+
+        // Напарник вышел посреди игры — возвращаем оставшегося в меню
+        if (gameStarted)
+            RestartRound();
+    }
+
     private void UpdateReadyUI()
     {
-        if (PhotonNetwork.PlayerList.Length < 2) return;
+        Player[] players = PhotonNetwork.PlayerList;
+        SetReadyCircle(firstPlayerReadyCircle, players.Length > 0 ? players[0] : null);
+        SetReadyCircle(secondPlayerReadyCircle, players.Length > 1 ? players[1] : null);
+    }
 
-        Player first = PhotonNetwork.PlayerList[0];
-        firstPlayerReadyCircle.color = (first.CustomProperties.ContainsKey("IsReady") && (bool)first.CustomProperties["IsReady"])
-            ? readyColor : notReadyColor;
-
-        if (PhotonNetwork.PlayerList.Length > 1)
-        {
-            Player second = PhotonNetwork.PlayerList[1];
-            secondPlayerReadyCircle.color = (second.CustomProperties.ContainsKey("IsReady") && (bool)second.CustomProperties["IsReady"])
-                ? readyColor : notReadyColor;
-        }
+    private void SetReadyCircle(Image circle, Player player)
+    {
+        if (circle == null) return;
+        circle.color = IsReady(player) ? readyColor : notReadyColor;
     }
 
     public override void OnDisconnected(DisconnectCause cause)

@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
-using UnityEngine.SceneManagement;
 
 public class PlayerHealth : MonoBehaviourPun
 {
@@ -18,6 +17,9 @@ public class PlayerHealth : MonoBehaviourPun
 
     public int CurrentHealth => currentHealth;
     public int MaxHealth => maxHealth;
+    public bool IsDead => isDead;
+
+    private bool isDead;
 
     void Start()
     {
@@ -29,17 +31,11 @@ public class PlayerHealth : MonoBehaviourPun
             healthSlider.value = currentHealth;
         }
     }
-    private void Update()
-    {
-        if (currentHealth <= 0f)
-        {
-            Die();
-        }
-    }
+
     // Урон запрашивается кем угодно, но считается только у владельца
     public void RequestDamage(int damage)
     {
-        if (photonView.Owner == null) return;
+        if (isDead || photonView.Owner == null) return;
 
         if (photonView.IsMine)
         {
@@ -63,37 +59,40 @@ public class PlayerHealth : MonoBehaviourPun
     // Применяем урон только на своём клиенте, потом синхронизируем
     private void ApplyDamage(int damage)
     {
-        currentHealth -= damage;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        if (isDead) return;
 
-        photonView.RPC(nameof(RPC_SyncHealth), RpcTarget.All, currentHealth);
+        int newHealth = Mathf.Clamp(currentHealth - damage, 0, maxHealth);
 
-        Debug.Log($"{gameObject.name} получил {damage} урона. Текущее здоровье: {currentHealth}");
-
-        OnDamageTaken?.Invoke(damage);
-
-        if (currentHealth <= 0)
-        {
-            Die();
-        }
+        // RpcTarget.All выполняется локально сразу, поэтому здоровье владельца меняется здесь же
+        photonView.RPC(nameof(RPC_SyncHealth), RpcTarget.All, newHealth);
     }
 
-    //Рассылаем обновлённое здоровье
+    // Рассылаем обновлённое здоровье; события урона и смерти срабатывают на всех клиентах
     [PunRPC]
     private void RPC_SyncHealth(int newHealth)
     {
+        if (isDead) return;
+
+        int damage = currentHealth - newHealth;
         currentHealth = newHealth;
 
-        if (healthSlider != null)
-        {
+        if (HPBAR != null)
             HPBAR.SetHealth(currentHealth, maxHealth);
-        }
+        else if (healthSlider != null)
+            healthSlider.value = currentHealth;
+
+        if (damage > 0)
+            OnDamageTaken?.Invoke(damage);
+
+        if (currentHealth <= 0)
+            Die();
     }
 
+    // Перезапуск раунда выполняет RoomController по событию OnDeath
     private void Die()
     {
-        Debug.Log($"{gameObject.name} умер!");
+        isDead = true;
+        Debug.Log($"{gameObject.name} уничтожен");
         OnDeath?.Invoke();
-        PhotonNetwork.LoadLevel(SceneManager.GetActiveScene().name);
     }
 }

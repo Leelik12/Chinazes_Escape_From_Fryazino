@@ -16,6 +16,8 @@ public class CarControllerSample : MonoBehaviourPun
     [SerializeField] private float maxMotorTorque;
     [SerializeField] private float maxSteeringAngle;
     [SerializeField] private float maxBrakeTorque = 10000f;
+    [Tooltip("Сцепление выжато, если педаль нажата сильнее этого значения: можно переключать передачу, двигатель отсоединён от колёс")]
+    [SerializeField, Range(0f, 1f)] private float clutchThreshold = 0.5f;
     [SerializeField] private float[] gearRatios = { 0f, 3.8f, 2.2f, 1.5f, 1.2f, 1f, 0.8f, -0.5f };
 
     [Header("Ограничение скорости (км/ч)")]
@@ -70,7 +72,9 @@ public class CarControllerSample : MonoBehaviourPun
         steering = maxSteeringAngle * inputControllerReader.Steering;
         finalmotor = motor;
 
-        if (inputControllerReader.Clutch > 0.6f) // коробас отрабатывает только если сцепа выжата
+        bool clutchPressed = inputControllerReader.Clutch > clutchThreshold;
+
+        if (clutchPressed) // коробас отрабатывает только если сцепа выжата
         {
             if (inputControllerReader.Shifter1)
             {
@@ -144,11 +148,14 @@ public class CarControllerSample : MonoBehaviourPun
                 axleInfo.rightWheel.steerAngle = steering;
             }
 
-            if (axleInfo.motor && inputControllerReader.Clutch < 0.5f)
+            if (axleInfo.motor)
             {
-                axleInfo.leftWheel.motorTorque = finalmotor;
-                axleInfo.rightWheel.motorTorque = finalmotor;
+                // При выжатом сцеплении момент снимается, иначе на колёсах оставалось последнее значение
+                float wheelTorque = clutchPressed ? 0f : finalmotor;
+                axleInfo.leftWheel.motorTorque = wheelTorque;
+                axleInfo.rightWheel.motorTorque = wheelTorque;
 
+                // Тормоз работает независимо от сцепления
                 axleInfo.leftWheel.brakeTorque = brakeInput * maxBrakeTorque;
                 axleInfo.rightWheel.brakeTorque = brakeInput * maxBrakeTorque;
             }

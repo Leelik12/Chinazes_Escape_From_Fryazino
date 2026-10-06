@@ -71,7 +71,7 @@ Assets/
   Scripts/
     Car/                       — CarController, CarControllerSample (G29), CarHapticsController (bHaptics), Magnitola
     Enemy/                     — EnemyCarController (ИИ), EnemyGun (турель), EnemyHealth, EnemyManager (спавн)
-    Network/                   — PhotonLauncher (подключение), RoomController (роли), CarNetworkSync
+    Network/                   — PhotonLauncher (подключение), RoomController (роли, старт и перезапуск раунда), CarNetworkSync
     PlayerBody/                — IK головы и рук, синхронизация руля и рук водителя
     Turret/                    — VRGun (пистолет стрелка), захват и возврат оружия
     Management/                — MenuManager (меню, громкость), StaticHolder, расстановка препятствий на террейне
@@ -97,6 +97,7 @@ ProjectSettings/               — настройки проекта
 - **Photon**: `PhotonLauncher` — имя комнаты `Room1`, максимум 2 игрока, `SendRate` и `SerializationRate` = 120.
 - **FutuRift**: параметры подключения в `Assets/Plugins/Futurift/Options` (`UdpOptions`: `127.0.0.1:6065`, `ComPortOptions`: COM3).
 - **2DOF**: `CarTelemetryHandler` (`Assets/Scripts/Telemetry`) считает наклоны и ускорения машины и передаёт их через memory-mapped file `2DOFMemoryDataGrabber` с интервалом 20 мс (`Assets/Plugins/2DOF/SendingData.cs`); их забирает ПО платформы.
+- **Раунд**: игра стартует, когда в комнате два игрока и оба нажали «готов» (свойство игрока `IsReady`). При уничтожении машины или выходе напарника мастер-клиент сбрасывает готовность и перезагружает сцену у всех.
 - **Кодировка**: собственные скрипты хранятся в UTF-8 с BOM, правило задано в `.editorconfig`.
 - **Звук**: громкость двигателя и музыки — параметры `EngineVolume` и `MusikVolume` в AudioMixer, значения сохраняются в `StaticHolder` на время сессии.
 - **Рендер**: профили `PC_RPAsset` и `Mobile_RPAsset` в `Assets/Settings`.

@@ -1,6 +1,7 @@
 ﻿using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
+using ExitGames.Client.Photon;
 
 public class PhotonLauncher : MonoBehaviourPunCallbacks
 {
@@ -16,6 +17,22 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
     }
     void Start()
     {
+        // После перезапуска раунда сцена грузится заново, а соединение и комната остаются
+        if (PhotonNetwork.InRoom) return;
+
+        // Флаг готовности хранится у локального игрока и иначе уехал бы в новую комнату
+        PhotonNetwork.LocalPlayer.SetCustomProperties(new Hashtable { { RoomController.ReadyKey, false } });
+
+        if (PhotonNetwork.InLobby)
+        {
+            OnJoinedLobby();
+            return;
+        }
+        if (PhotonNetwork.IsConnectedAndReady)
+        {
+            OnConnectedToMaster();
+            return;
+        }
 
         // Подключаемся к серверу Photon
         Debug.Log("Connecting to Photon...");
@@ -44,6 +61,12 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined Room. Players in room: " + PhotonNetwork.CurrentRoom.PlayerCount);
+    }
+
+    // Например, комната уже заполнена двумя игроками
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        Debug.LogWarning($"Join room failed ({returnCode}): {message}");
     }
 
     // Вызывается, если подключение к серверу не удалось

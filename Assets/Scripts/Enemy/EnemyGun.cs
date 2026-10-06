@@ -72,47 +72,54 @@ public class EnemyGun : MonoBehaviourPun, IPunObservable
         if (Time.time >= nextFireTime)
         {
             nextFireTime = Time.time + fireRate;
-            photonView.RPC(nameof(ShootRPC), RpcTarget.All);
+            Fire();
         }
     }
 
-    [PunRPC]
-    private void ShootRPC()
+    // Попадание и урон считает только владелец, остальным рассылается результат для эффектов,
+    // иначе каждый клиент бросал свой разброс и наносил урон повторно
+    private void Fire()
     {
-        // Разброс
-        Vector3 direction = transform.forward;
-        direction = Quaternion.Euler(
+        // Разброс относительно направления ствола
+        Vector3 direction = transform.rotation * Quaternion.Euler(
             Random.Range(-spreadAngle, spreadAngle),
             Random.Range(-spreadAngle, spreadAngle),
-            0) * direction;
+            0) * Vector3.forward;
 
+        bool hasHit = Physics.Raycast(transform.position, direction, out RaycastHit hit, range, hitLayerMask, QueryTriggerInteraction.Ignore);
+        if (hasHit)
+        {
+            PlayerHealth player = hit.collider.GetComponentInParent<PlayerHealth>();
+            if (player != null)
+            {
+                player.RequestDamage((int)damage);
+            }
+        }
+
+        photonView.RPC(nameof(ShootRPC), RpcTarget.All, hasHit, hit.point, hit.normal);
+    }
+
+    [PunRPC]
+    private void ShootRPC(bool hasHit, Vector3 hitPoint, Vector3 hitNormal)
+    {
         // Muzzle flash и свет
         if (muzzleFlash != null)
             muzzleFlash.Play();
         if (muzzleLight != null)
             StartCoroutine(MuzzleLightFlash());
 
-        // Raycast для попаданий
-        if (Physics.Raycast(transform.position, direction, out RaycastHit hit, range, hitLayerMask, QueryTriggerInteraction.Ignore))
-        {
-            // Эффекты попадания
-            if (hitEffectPrefabDust != null)
-            {
-                GameObject fx1 = Instantiate(hitEffectPrefabDust, hit.point + hit.normal * 0.01f, Quaternion.LookRotation(hit.normal));
-                Destroy(fx1, hitEffectLifetime);
-            }
-            if (hitEffectPrefabSparks != null)
-            {
-                GameObject fx2 = Instantiate(hitEffectPrefabSparks, hit.point + hit.normal * 0.01f, Quaternion.LookRotation(hit.normal));
-                Destroy(fx2, hitEffectLifetime);
-            }
+        if (!hasHit) return;
 
-            // Наносим урон игроку
-            PlayerHealth player = hit.collider.GetComponentInParent<PlayerHealth>();
-            if (player != null)
-            {
-                player.RequestDamage((int)damage);
-            }
+        // Эффекты попадания
+        if (hitEffectPrefabDust != null)
+        {
+            GameObject fx1 = Instantiate(hitEffectPrefabDust, hitPoint + hitNormal * 0.01f, Quaternion.LookRotation(hitNormal));
+            Destroy(fx1, hitEffectLifetime);
+        }
+        if (hitEffectPrefabSparks != null)
+        {
+            GameObject fx2 = Instantiate(hitEffectPrefabSparks, hitPoint + hitNormal * 0.01f, Quaternion.LookRotation(hitNormal));
+            Destroy(fx2, hitEffectLifetime);
         }
     }
 
