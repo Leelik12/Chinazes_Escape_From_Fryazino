@@ -3,6 +3,8 @@ using UnityEngine;
 using Futurift;
 using Futurift.DataSenders;
 using Futurift.Options;
+using UnityEngine.InputSystem;
+using RacingProject.Hud;
 using RacingProject.Network;
 
 namespace RacingProject.Telemetry
@@ -28,9 +30,9 @@ namespace RacingProject.Telemetry
         [SerializeField] private float smoothingSpeed = 8f;
         // Чем больше — тем резче, 5–10 обычно оптимально
 
-        [Header("Debug GUI")]
+        [Header("HUD")]
+        [SerializeField] private Key hudToggleKey = Key.F3;
         [SerializeField] private bool showGUI = true;
-        [SerializeField] private int fontSize = 20;
 
         private FutuRiftController controller;
 
@@ -40,7 +42,7 @@ namespace RacingProject.Telemetry
         private float smoothedPitch;
         private float smoothedRoll;
 
-        private GUIStyle guiStyle;
+        private HudPanel hudPanel;
         private WaitForSeconds wait;
         private bool sending;
 
@@ -51,23 +53,25 @@ namespace RacingProject.Telemetry
             var udpOptions = new UdpOptions { ip = ipAddress, port = port };
             controller = new FutuRiftController(new UdpPortSender(udpOptions));
             wait = new WaitForSeconds(WAIT_TIME);
-
-            guiStyle = new GUIStyle
-            {
-                fontSize = fontSize,
-                normal = { textColor = Color.white }
-            };
+            hudPanel = new HudPanel("FUTURIFT TELEMETRY", hudToggleKey, HudCorner.TopRight, 0, 420f, showGUI);
         }
 
         private void OnEnable()
         {
             StartCoroutine(TelemetryLoop());
+            hudPanel.Show();
         }
 
         private void OnDisable()
         {
             StopAllCoroutines();
             StopSending();
+            hudPanel.Hide();
+        }
+
+        private void Update()
+        {
+            hudPanel.HandleInput();
         }
 
         private IEnumerator TelemetryLoop()
@@ -150,22 +154,13 @@ namespace RacingProject.Telemetry
             return angle;
         }
 
-        // Отладочная панель только в редакторе и development-сборках
-    #if UNITY_EDITOR || DEVELOPMENT_BUILD
+        // Панель телеметрии FutuRift; сворачивается клавишей hudToggleKey
         private void OnGUI()
         {
-            if (!showGUI) return;
-
-            GUILayout.BeginArea(new Rect(Screen.width - 420, 20, 400, 150));
-            GUILayout.Label("FUTURIFT TELEMETRY DEBUG", guiStyle);
-            GUILayout.Space(10);
-
-            GUILayout.Label($"Pitch: {currentPitch:F2}°", guiStyle);
-            GUILayout.Label($"Roll:  {currentRoll:F2}°", guiStyle);
-            GUILayout.Label($"Sending: {sending}", guiStyle);
-
-            GUILayout.EndArea();
+            hudPanel.Draw(
+                $"Pitch: {currentPitch:F2}°\n" +
+                $"Roll:  {currentRoll:F2}°\n" +
+                $"Sending: {sending}  ({ipAddress}:{port})");
         }
-    #endif
     }
 }

@@ -3696,6 +3696,7 @@ Transform:
   - {fileID: 320268593}
   - {fileID: 991070437}
   - {fileID: 1482922015}
+  - {fileID: 2132665033}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &51908488
@@ -154776,6 +154777,68 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
+--- !u!1 &2132665032
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2132665033}
+  - component: {fileID: 2132665035}
+  - component: {fileID: 2132665034}
+  m_Layer: 0
+  m_Name: Hud
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2132665033
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2132665032}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 50176001}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2132665034
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2132665032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7086176a262b1844a8a6366f5dad61c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  toggleKey: 97
+  expanded: 1
+  refreshInterval: 0.5
+--- !u!114 &2132665035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2132665032}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e18d583de5a45f84c8188ecdad5a4e39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  toggleKey: 94
+  expanded: 1
 --- !u!4 &2137172244 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4757314104929366, guid: 13e16b54a36630b47a45a61f063ef373, type: 3}
@@ -161256,8 +161319,8 @@ MonoBehaviour:
   sendWithoutRole: 0
   proxyTransform: {fileID: 828022160}
   smoothingSpeed: 7
+  hudToggleKey: 96
   showGUI: 1
-  fontSize: 20
 --- !u!146 &4375469430294705532
 WheelCollider:
   m_ObjectHideFlags: 0
@@ -165976,6 +166039,8 @@ MonoBehaviour:
   rb: {fileID: 7685947541911150316}
   sendWithoutRole: 0
   accelerationGain: 2
+  hudToggleKey: 95
+  showHud: 1
 --- !u!1 &7653956748581885503
 GameObject:
   m_ObjectHideFlags: 0

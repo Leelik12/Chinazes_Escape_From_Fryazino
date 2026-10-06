@@ -1,5 +1,7 @@
 ﻿using _2DOF;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using RacingProject.Hud;
 using RacingProject.Network;
 
 namespace RacingProject.Telemetry
@@ -28,6 +30,10 @@ namespace RacingProject.Telemetry
                  "значение 2 сохраняет прежнюю силу наклона")]
         [SerializeField] private float accelerationGain = 2f;
 
+        [Header("HUD")]
+        [SerializeField] private Key hudToggleKey = Key.F2;
+        [SerializeField] private bool showHud = true;
+
         private const float maxPlatformAngle = 15f; // Максимальные Angles платформы 2DOF (влияет на статичные наклоны, зависящие от поверхности)
         private const float maxPlatformVelocity = 100f; // Максимальная Velocity платформы 2DOF (влияет на наклоны в зависимости от линейного ускорения/угловой скорости)
         private float currentPitch = 0f; // текущий наклон платформы 2DOF по x (учет наклона поверхности)
@@ -37,6 +43,7 @@ namespace RacingProject.Telemetry
         private float currentAngularVelocity = 0f; // текущий наклон платформы 2DOF по z (учет угловой скорости)
 
         private bool sending;
+        private HudPanel hudPanel;
 
         private bool ShouldSendToPlatform => sendWithoutRole || LocalPlayerRole.Current == PlayerRole.Driver;
 
@@ -44,12 +51,37 @@ namespace RacingProject.Telemetry
         {
             _sendingData = new SendingData();
             telemetryDataData = _sendingData.ObjectTelemetryData;
+            hudPanel = new HudPanel("2DOF TELEMETRY", hudToggleKey, HudCorner.TopRight, 1, 420f, showHud);
         }
 
+        private void OnEnable()
+        {
+            hudPanel.Show();
+        }
 
         public void OnDisable()
         {
             StopSending();
+            hudPanel.Hide();
+        }
+
+        private void Update()
+        {
+            hudPanel.HandleInput();
+        }
+
+        // Панель 2DOF: что считается и что уходит в платформу. У стрелка в платформу ничего не уходит,
+        // а наклоны и ускорения приходят от водителя по сети
+        private void OnGUI()
+        {
+            string body =
+                $"Sending: {sending}\n" +
+                $"Скорость: {(rb != null ? rb.linearVelocity.magnitude * 3.6f : 0f):F0} км/ч\n" +
+                $"Pitch поверхности: {currentPitch:F2}°   Roll: {currentRoll:F2}°  (±{maxPlatformAngle:F0}°)\n" +
+                $"Ускорение: {currentLinearAcceleration:F2}   рыскание: {currentAngularVelocity:F3}  (±{maxPlatformVelocity:F0})\n" +
+                $"Angles → {telemetryDataData.Angles.x:F2}, {telemetryDataData.Angles.y:F2}\n" +
+                $"Velocity → {telemetryDataData.Velocity.x:F1}, {telemetryDataData.Velocity.y:F1}";
+            hudPanel.Draw(body);
         }
 
         private void FixedUpdate()
