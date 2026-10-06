@@ -97,8 +97,10 @@ ProjectSettings/               — настройки проекта
 ## Конфигурация
 
 - **Photon**: `PhotonLauncher` — имя комнаты `Room1`, максимум 2 игрока, `SendRate` и `SerializationRate` = 120.
-- **FutuRift**: параметры подключения в `Assets/Plugins/Futurift/Options` (`UdpOptions`: `127.0.0.1:6065`, `ComPortOptions`: COM3).
-- **2DOF**: `CarTelemetryHandler` (`Assets/Scripts/Telemetry`) считает наклоны и ускорения машины и передаёт их через memory-mapped file `2DOFMemoryDataGrabber` с интервалом 20 мс (`Assets/Plugins/2DOF/SendingData.cs`); их забирает ПО платформы.
+- **2DOF** (платформа водителя): `CarTelemetryHandler` (`Assets/Scripts/Telemetry`) на машине считает наклоны и ускорения у владельца машины, то есть у водителя, и передаёт их через memory-mapped file `2DOFMemoryDataGrabber` с интервалом 20 мс (`Assets/Plugins/2DOF/SendingData.cs`); их забирает ПО платформы. Те же значения рассылаются по сети и поворачивают прокси-точку `ProxyCapsula`.
+- **FutuRift** (платформа стрелка): `FuturiftTelemetryHandler` читает наклон `ProxyCapsula` и отправляет его по UDP на адрес из инспектора (по умолчанию `127.0.0.1:6065`).
+- **Роли и телеметрия**: роль локального игрока (`LocalPlayerRole`) задаётся при старте игры. Данные на 2DOF уходят только у водителя, на FutuRift — только у стрелка; в меню обе платформы не получают данных. Чтобы проверить платформу без второго игрока, включите `Send Without Role` у нужного обработчика на машине `VolgaCar`.
+- **Отладочные панели** (`Show GUI` у FutuRift, `Show Haptics GUI` у bHaptics) рисуются только в редакторе и development-сборках.
 - **Раунд**: игра стартует, когда в комнате два игрока и оба нажали «готов» (свойство игрока `IsReady`). При уничтожении машины или выходе напарника мастер-клиент сбрасывает готовность и перезагружает сцену у всех.
 - **Кодировка**: собственные скрипты хранятся в UTF-8 с BOM, правило задано в `.editorconfig`.
 - **Звук**: громкость двигателя и музыки — параметры `EngineVolume` и `MusikVolume` в AudioMixer, значения сохраняются в `StaticHolder` на время сессии.

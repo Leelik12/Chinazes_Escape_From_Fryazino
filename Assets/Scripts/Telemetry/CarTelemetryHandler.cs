@@ -1,8 +1,13 @@
-using _2DOF;
+﻿using _2DOF;
 using Photon.Pun;
 using System.Collections;
-using TMPro;
 using UnityEngine;
+
+// Телеметрия машины для платформы водителя 2DOF.
+// Наклоны считает владелец машины (водитель) и рассылает по сети; у стрелка по ним
+// поворачивается прокси-точка, которую читает FuturiftTelemetryHandler.
+// В платформу 2DOF данные уходят только с компьютера водителя
+[RequireComponent(typeof(PhotonView))]
 public class CarTelemetryHandler : MonoBehaviour, IPunObservable
 {
     private const float WAIT_TIME = SendingData.WAIT_TIME / 1000f;
@@ -16,6 +21,9 @@ public class CarTelemetryHandler : MonoBehaviour, IPunObservable
     [SerializeField] private Transform vehicleTransform;
     [SerializeField] private Rigidbody rb;
 
+    [Tooltip("Отправлять на 2DOF без роли водителя — для проверки платформы без второго игрока")]
+    [SerializeField] private bool sendWithoutRole = false;
+
     private const float maxPlatformAngle = 15f; // Максимальные Angles платформы 2DOF (влияет на статичные наклоны, зависящие от поверхности)
     private const float maxPlatformVelocity = 100f; // Максимальная Velocity платформы 2DOF (влияет на наклоны в зависимости от линейного ускорения/угловой скорости)
     private float currentPitch = 0f; // текущий наклон платформы 2DOF по x (учет наклона поверхности)
@@ -23,10 +31,18 @@ public class CarTelemetryHandler : MonoBehaviour, IPunObservable
     private float currentLinearAcceleration = 0f; // текущий наклон платформы 2DOF по x (учет линейного ускорения)
     private float lastLinearVelocity = 0f;
     private float currentAngularVelocity = 0f; // текущий наклон платформы 2DOF по z (учет угловой скорости)
-    private float abobaX;
-    private float abobaZ;
+
+    private PhotonView photonView;
+    private Coroutine telemetryLoop;
+    private WaitForSeconds wait;
+    private bool sending;
+
+    private bool ShouldSendToPlatform => sendWithoutRole || LocalPlayerRole.Current == PlayerRole.Driver;
+
     private void Awake()
     {
+        photonView = GetComponent<PhotonView>();
+        wait = new WaitForSeconds(WAIT_TIME);
         _sendingData = new SendingData();
         telemetryDataData = _sendingData.ObjectTelemetryData;
     }
@@ -34,32 +50,53 @@ public class CarTelemetryHandler : MonoBehaviour, IPunObservable
 
     public void OnEnable()
     {
-        StartCoroutine(TelemetryHandler());
-        _sendingData.SendingStart();
+        telemetryLoop = StartCoroutine(TelemetryHandler());
     }
 
+    // Выключение компонента не останавливает корутину, поэтому останавливаем по ссылке
     public void OnDisable()
     {
-        StopCoroutine(TelemetryHandler());
-        _sendingData.SendingStop();
+        if (telemetryLoop != null)
+            StopCoroutine(telemetryLoop);
+        telemetryLoop = null;
+        StopSending();
     }
 
     private IEnumerator TelemetryHandler()
     {
         while (true)
         {
-            if (telemetryDataData == null)
+            // У стрелка значения приходят по сети, локальный пересчёт сбивал бы прокси-точку
+            if (photonView.IsMine)
             {
-                yield return new WaitForSeconds(WAIT_TIME * 10f);
-                continue;
+                UpdatePlatformVelocity();
+                UpdatePlatformAngles();
             }
 
-            UpdatePlatformVelocity();
-            UpdatePlatformAngles();
+            if (ShouldSendToPlatform)
+                StartSending();
+            else
+                StopSending();
 
-            yield return new WaitForSeconds(WAIT_TIME);
+            yield return wait;
         }
     }
+
+    // Поток плагина пишет данные в memory-mapped file, который читает ПО платформы
+    private void StartSending()
+    {
+        if (sending) return;
+        _sendingData.SendingStart();
+        sending = true;
+    }
+
+    private void StopSending()
+    {
+        if (!sending) return;
+        _sendingData.SendingStop();
+        sending = false;
+    }
+
     private float NormalizeAngle(float angle) // нормализуем угол в диапазон -180 до 180
     {
         angle = angle > 180 ? angle - 360 : angle;
@@ -83,11 +120,10 @@ public class CarTelemetryHandler : MonoBehaviour, IPunObservable
         Vector3 localAngularVelocity = transform.InverseTransformVector(globalAngularVelocity); // считаем угловую скорость относительно локальных координат
 
         currentAngularVelocity = Mathf.Lerp(currentAngularVelocity, Mathf.Clamp(localAngularVelocity.y, -maxPlatformVelocity, maxPlatformVelocity), 0.03f);
-        
 
-        telemetryDataData.Angles = gameObject.transform.eulerAngles*1.2f;
+        // Углы здесь не пишем: поток плагина мог прочитать промежуточное значение до UpdatePlatformAngles
         telemetryDataData.Velocity = new Vector3(currentLinearAcceleration * 70, currentAngularVelocity * 300, 0);
-        Debug.Log(currentAngularVelocity);
+
         // Добавляем наклоны на прокси-точку
         if (proxyTransform != null)
         {
@@ -98,31 +134,19 @@ public class CarTelemetryHandler : MonoBehaviour, IPunObservable
 
     private void UpdatePlatformAngles()
     {
-        float targetPitch = 0;
-
-        targetPitch = NormalizeAngle(vehicleTransform.eulerAngles.x); // учет наклона поверхности
+        float targetPitch = NormalizeAngle(vehicleTransform.eulerAngles.x); // учет наклона поверхности
         targetPitch = Mathf.Clamp(targetPitch, -maxPlatformAngle, maxPlatformAngle);
-        abobaX = targetPitch;
         currentPitch = Mathf.Lerp(currentPitch, targetPitch, 0.04f);
 
         //---------------------------------------------------------------------------
-        float targetRoll = 0;
-        
-        targetRoll = NormalizeAngle(vehicleTransform.eulerAngles.z);
+        float targetRoll = NormalizeAngle(vehicleTransform.eulerAngles.z);
         targetRoll = Mathf.Clamp(targetRoll, -maxPlatformAngle, maxPlatformAngle);
-        abobaZ = targetRoll;
         currentRoll = Mathf.Lerp(currentRoll, targetRoll, 0.04f);
 
         Vector3 resultAngles = new Vector3(currentPitch, currentRoll, 0); // конечный возврат углов для передачи данных в платформу
         telemetryDataData.Angles = resultAngles;
     }
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        float CollisionIntensity = Mathf.Abs(lastLinearVelocity * 3.6f) / 100;
-
-        CollisionIntensity = Mathf.Clamp01(CollisionIntensity);
-    }
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting) // Владелец объекта отправляет данные

@@ -41,6 +41,12 @@ public class RoomController : MonoBehaviourPunCallbacks
     private float connectionCheckTimer = 0f;
     private float connectionCheckInterval = 1f;
 
+    private void Awake()
+    {
+        // Статическая роль переживает перезагрузку сцены, а новый раунд начинается в меню
+        LocalPlayerRole.Set(PlayerRole.None);
+    }
+
     private void Start()
     {
         if (car != null)
@@ -127,6 +133,7 @@ public class RoomController : MonoBehaviourPunCallbacks
     private void ActivatePlayerRigs()
     {
         gameStarted = true;
+        LocalPlayerRole.Set(PhotonNetwork.IsMasterClient ? PlayerRole.Driver : PlayerRole.Gunner);
 
         if (PhotonNetwork.IsMasterClient)
         {

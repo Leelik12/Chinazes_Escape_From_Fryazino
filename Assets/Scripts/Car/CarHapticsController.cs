@@ -86,42 +86,30 @@ public class CarHapticsController : MonoBehaviour
 
     private void CheckMovementHaptics()
     {
-        Vector3 localVel = transform.InverseTransformDirection(carRigidbody.linearVelocity);
         Vector3 accel = (carRigidbody.linearVelocity - lastVelocity) / Time.deltaTime;
         Vector3 localAccel = transform.InverseTransformDirection(accel);
 
         // Ускорение вперед в разгоне/торможении
         if (localAccel.z > accelThreshold)
-        {
-            BhapticsLibrary.Play(eventId: "razgon", startMillis: 0, intensity: intensityAccel, duration: 0.5f, angleX: 0, offsetY: 0);
-            hapticEventCounts["razgon"]++;
-            Debug.Log("razgon sigran");
-        }
+            PlayMovementEvent("razgon", intensityAccel);
         else if (localAccel.z < brakeThreshold)
-        {
-            BhapticsLibrary.Play(eventId: "remen_bezopasnosty", startMillis: 0, intensity: intensityBrake, duration: 0.5f, angleX: 0, offsetY: 0);
-            hapticEventCounts["remen_bezopasnosty"]++;
-            Debug.Log("remen_bezopasnosty");
-        }
+            PlayMovementEvent("remen_bezopasnosty", intensityBrake);
 
         // Боковое ускорение в поворотах
         if (Mathf.Abs(localAccel.x) > sideAccelThreshold)
-        {
-            if (localAccel.x > 0)
-            {
-                BhapticsLibrary.Play(eventId: "povorot_pravo", startMillis: 0, intensity: intensityTurn, duration: 0.5f, angleX: 0, offsetY: 0);
-                hapticEventCounts["povorot_pravo"]++;
-                Debug.Log("povorot_pravo");
-            }
-            else
-            {
-                BhapticsLibrary.Play(eventId: "povorot_levo", startMillis: 0, intensity: intensityTurn, duration: 0.5f, angleX: 0, offsetY: 0);
-                hapticEventCounts["povorot_levo"]++;
-                Debug.Log("povorot_levo");
-            }
-        }
+            PlayMovementEvent(localAccel.x > 0 ? "povorot_pravo" : "povorot_levo", intensityTurn);
 
         lastVelocity = carRigidbody.linearVelocity;
+    }
+
+    // Пока ускорение выше порога, условие верно каждый кадр: без проверки паттерн
+    // перезапускался бы с начала в каждом кадре и не доигрывал до конца
+    private void PlayMovementEvent(string eventId, float intensity)
+    {
+        if (BhapticsLibrary.IsPlayingByEventId(eventId)) return;
+
+        BhapticsLibrary.Play(eventId: eventId, startMillis: 0, intensity: intensity, duration: 0.5f, angleX: 0, offsetY: 0);
+        hapticEventCounts[eventId]++;
     }
 
     private void CheckHealth()
@@ -137,7 +125,6 @@ public class CarHapticsController : MonoBehaviour
             BhapticsLibrary.Play(eventId: "hand_low_hp", startMillis: 0, intensity: intensityLowHealth, duration: 0.3f, angleX: 0, offsetY: 0);
             hapticEventCounts["suit_low_hp"]++;
             hapticEventCounts["hand_low_hp"]++;
-            Debug.Log("hand_low_hp           suit_low_hp");
         }
         else if (healthPercent > 0.3f && lowHealthTriggered)
         {
@@ -149,7 +136,6 @@ public class CarHapticsController : MonoBehaviour
     {
         BhapticsLibrary.Play(eventId: "damage_hands", startMillis: 0, intensity: intensityDamage, duration: 0.3f, angleX: 0, offsetY: 0);
         hapticEventCounts["damage_hands"]++;
-        Debug.Log("damage_hands");
     }
 
     private void OnCarDeath()
@@ -158,9 +144,10 @@ public class CarHapticsController : MonoBehaviour
         BhapticsLibrary.Play(eventId: "hand_low_hp", startMillis: 0, intensity: intensityLowHealth, duration: 0.3f, angleX: 0, offsetY: 0);
         hapticEventCounts["suit_low_hp"]++;
         hapticEventCounts["hand_low_hp"]++;
-        Debug.Log("hand_low_hp          suit_low_hp");
     }
 
+    // Отладочная панель только в редакторе и development-сборках
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     private void OnGUI()
     {
         if (!showHapticsGUI) return;
@@ -201,6 +188,7 @@ public class CarHapticsController : MonoBehaviour
 
         GUILayout.EndArea();
     }
+#endif
 
     // Метод для сброса счетчиков из других скриптов
     public void ResetHapticCounters()

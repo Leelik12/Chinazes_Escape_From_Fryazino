@@ -4,6 +4,9 @@ using Futurift;
 using Futurift.DataSenders;
 using Futurift.Options;
 
+// Телеметрия для платформы стрелка FutuRift: наклоны берутся с прокси-точки,
+// которую поворачивает CarTelemetryHandler по данным водителя.
+// На платформу данные уходят только с компьютера стрелка
 public class FuturiftTelemetryHandler : MonoBehaviour
 {
     private const float WAIT_TIME = 0.016f; // 60 Hz
@@ -11,6 +14,9 @@ public class FuturiftTelemetryHandler : MonoBehaviour
     [Header("Connection Settings")]
     [SerializeField] private string ipAddress = "127.0.0.1";
     [SerializeField] private int port = 6065;
+
+    [Tooltip("Отправлять на FutuRift без роли стрелка — для проверки платформы без второго игрока")]
+    [SerializeField] private bool sendWithoutRole = false;
 
     [Header("References")]
     [SerializeField] private Transform proxyTransform;
@@ -32,11 +38,16 @@ public class FuturiftTelemetryHandler : MonoBehaviour
     private float smoothedRoll;
 
     private GUIStyle guiStyle;
+    private WaitForSeconds wait;
+    private bool sending;
+
+    private bool ShouldSendToPlatform => sendWithoutRole || LocalPlayerRole.Current == PlayerRole.Gunner;
 
     private void Awake()
     {
         var udpOptions = new UdpOptions { ip = ipAddress, port = port };
         controller = new FutuRiftController(new UdpPortSender(udpOptions));
+        wait = new WaitForSeconds(WAIT_TIME);
 
         guiStyle = new GUIStyle
         {
@@ -47,14 +58,13 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
     private void OnEnable()
     {
-        controller.Start();
         StartCoroutine(TelemetryLoop());
     }
 
     private void OnDisable()
     {
         StopAllCoroutines();
-        controller.Stop();
+        StopSending();
     }
 
     private IEnumerator TelemetryLoop()
@@ -62,8 +72,29 @@ public class FuturiftTelemetryHandler : MonoBehaviour
         while (true)
         {
             UpdateAngles();
-            yield return new WaitForSeconds(WAIT_TIME);
+
+            if (ShouldSendToPlatform)
+                StartSending();
+            else
+                StopSending();
+
+            yield return wait;
         }
+    }
+
+    // Контроллер сам отправляет последние Pitch/Roll по таймеру, пока запущен
+    private void StartSending()
+    {
+        if (sending) return;
+        controller.Start();
+        sending = true;
+    }
+
+    private void StopSending()
+    {
+        if (!sending) return;
+        controller.Stop();
+        sending = false;
     }
 
     private void UpdateAngles()
@@ -116,6 +147,8 @@ public class FuturiftTelemetryHandler : MonoBehaviour
         return angle;
     }
 
+    // Отладочная панель только в редакторе и development-сборках
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
     private void OnGUI()
     {
         if (!showGUI) return;
@@ -126,7 +159,9 @@ public class FuturiftTelemetryHandler : MonoBehaviour
 
         GUILayout.Label($"Pitch: {currentPitch:F2}°", guiStyle);
         GUILayout.Label($"Roll:  {currentRoll:F2}°", guiStyle);
+        GUILayout.Label($"Sending: {sending}", guiStyle);
 
         GUILayout.EndArea();
     }
+#endif
 }
