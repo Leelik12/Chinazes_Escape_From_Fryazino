@@ -20,6 +20,9 @@ namespace RacingProject.EditorTools
             public void OnPreprocessBuild(BuildReport report)
             {
                 savedAssets = PlayerSettings.GetPreloadedAssets();
+                // Упавшая сборка не вызывает обработчики после сборки — тогда вернём список
+                // при первом обновлении редактора после неё
+                EditorApplication.delayCall += RestoreSavedAssets;
             }
         }
 
@@ -29,16 +32,21 @@ namespace RacingProject.EditorTools
 
             public void OnPostprocessBuild(BuildReport report)
             {
-                if (savedAssets == null) return;
-
-                PlayerSettings.SetPreloadedAssets(savedAssets);
-                savedAssets = null;
-
-                PlayerSettings[] settings = Resources.FindObjectsOfTypeAll<PlayerSettings>();
-                if (settings.Length > 0)
-                    EditorUtility.SetDirty(settings[0]);
-                AssetDatabase.SaveAssets();
+                RestoreSavedAssets();
             }
+        }
+
+        private static void RestoreSavedAssets()
+        {
+            if (savedAssets == null) return;
+
+            PlayerSettings.SetPreloadedAssets(savedAssets);
+            savedAssets = null;
+
+            PlayerSettings[] settings = Resources.FindObjectsOfTypeAll<PlayerSettings>();
+            if (settings.Length > 0)
+                EditorUtility.SetDirty(settings[0]);
+            AssetDatabase.SaveAssets();
         }
     }
 }
