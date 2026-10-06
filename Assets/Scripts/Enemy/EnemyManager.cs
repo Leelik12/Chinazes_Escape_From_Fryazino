@@ -1,12 +1,17 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
+using ExitGames.Client.Photon;
 using TMPro;
 
 namespace RacingProject.Enemy
 {
-    public class EnemyManager : MonoBehaviourPun
+    public class EnemyManager : MonoBehaviourPunCallbacks
     {
+        // Свойство комнаты со счётом убийств: враги умирают только у мастера,
+        // а через свойство счёт видят оба игрока
+        private const string KillsKey = "Kills";
+
         [Header("Спавнпоинты")]
         [Tooltip("Все точки спавна врагов")]
         [SerializeField] private Transform[] spawnPoints;
@@ -38,9 +43,10 @@ namespace RacingProject.Enemy
             if (gameStarted) return;
             gameStarted = true;
 
-            // Только мастер-клиент отвечает за спавн врагов
+            // Только мастер-клиент отвечает за спавн врагов и счёт
             if (PhotonNetwork.IsMasterClient)
             {
+                PublishKills(0);
                 SpawnInitialEnemies();
             }
         }
@@ -70,6 +76,7 @@ namespace RacingProject.Enemy
         {
             killedEnemies++;
             UpdateUI();
+            PublishKills(killedEnemies);
 
             activeEnemies.Remove(enemy);
 
@@ -94,6 +101,21 @@ namespace RacingProject.Enemy
 
                 SpawnEnemyAt(chosen.position, chosen.rotation);
                 spawned++;
+            }
+        }
+
+        private void PublishKills(int kills)
+        {
+            if (PhotonNetwork.InRoom)
+                PhotonNetwork.CurrentRoom.SetCustomProperties(new Hashtable { { KillsKey, kills } });
+        }
+
+        public override void OnRoomPropertiesUpdate(Hashtable changedProps)
+        {
+            if (changedProps.TryGetValue(KillsKey, out object value) && value is int kills)
+            {
+                killedEnemies = kills;
+                UpdateUI();
             }
         }
 

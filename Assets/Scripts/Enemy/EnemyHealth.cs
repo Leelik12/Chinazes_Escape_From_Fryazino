@@ -9,7 +9,8 @@ namespace RacingProject.Enemy
         [SerializeField] private int maxHealth = 1000;
         private int currentHealth;
         public event Action<GameObject> OnDeath;
-        void Start()
+        // В Awake, чтобы здоровье было задано до первого RPC урона
+        void Awake()
         {
             currentHealth = maxHealth;
         }
@@ -25,7 +26,8 @@ namespace RacingProject.Enemy
         public void TakeDamage(int damage, PhotonMessageInfo info)
         {
             // Выполняется только на мастер-клиенте (или владельце врага)
-            if (!photonView.IsMine) return;
+            // Урон, пришедший после смерти, не должен повторно засчитывать убийство
+            if (!photonView.IsMine || currentHealth <= 0) return;
 
             currentHealth -= damage;
             Debug.Log($"Враг получил {damage} урона от {info.Sender} (осталось {currentHealth})");

@@ -41,7 +41,7 @@ namespace RacingProject.Turret
                 {
                     // моментально
                     transform.position = returnPoint.position;
-                    transform.rotation = new Quaternion(0f,0f,0f,0f);
+                    transform.rotation = returnPoint.rotation;
                 }
             }
         }

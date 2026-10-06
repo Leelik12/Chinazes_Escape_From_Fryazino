@@ -19,6 +19,8 @@ namespace RacingProject.Enemy
         public float maxSteerAngle = 30f;
         public float brakeForce = 3000f;
         public float stoppingDistance = 5f;
+        [Tooltip("Как часто пересчитывать путь до игрока, сек")]
+        public float repathInterval = 0.25f;
 
         [Header("Wheels")]
         public WheelCollider frontLeftWheel;
@@ -51,6 +53,13 @@ namespace RacingProject.Enemy
         private Quaternion networkRotation;
         private Vector3 lastReceivedPosition;
         private float syncLerpSpeed = 10f;
+        private float repathTimer;
+
+        // Колёса у не-владельца: машина кинематическая, WheelCollider не крутятся,
+        // поэтому вращение мешей считается по пройденному пути
+        private float networkSteerAngle;
+        private float remoteWheelSpin;
+        private Vector3 lastRemotePosition;
 
         void Start()
         {
@@ -81,6 +90,7 @@ namespace RacingProject.Enemy
 
             networkPosition = transform.position;
             networkRotation = transform.rotation;
+            lastRemotePosition = transform.position;
         }
 
         void FixedUpdate()
@@ -95,6 +105,7 @@ namespace RacingProject.Enemy
                 // У остальных клиентов — плавная интерполяция
                 transform.position = Vector3.Lerp(transform.position, networkPosition, Time.fixedDeltaTime * syncLerpSpeed);
                 transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.fixedDeltaTime * syncLerpSpeed);
+                AnimateRemoteWheels();
             }
         }
 
@@ -103,7 +114,13 @@ namespace RacingProject.Enemy
             if (target == null || navigatorAgent == null)
                 return;
 
-            navigatorAgent.SetDestination(target.position);
+            // Пересчёт пути каждый физический кадр слишком дорог, цель смещается медленно
+            repathTimer -= Time.fixedDeltaTime;
+            if (repathTimer <= 0f)
+            {
+                repathTimer = repathInterval;
+                navigatorAgent.SetDestination(target.position);
+            }
 
             Vector3 worldTarget = navigatorAgent.steeringTarget;
             Vector3 localTarget = transform.InverseTransformPoint(worldTarget);
@@ -220,6 +237,26 @@ namespace RacingProject.Enemy
             mesh.rotation = rot;
         }
 
+        private void AnimateRemoteWheels()
+        {
+            float distance = Vector3.Dot(transform.position - lastRemotePosition, transform.forward);
+            lastRemotePosition = transform.position;
+
+            float radius = rearLeftWheel != null ? rearLeftWheel.radius : 0.35f;
+            remoteWheelSpin = Mathf.Repeat(remoteWheelSpin + distance / radius * Mathf.Rad2Deg, 360f);
+
+            SetRemoteWheelRotation(frontLeftWheel, frontLeftMesh, networkSteerAngle);
+            SetRemoteWheelRotation(frontRightWheel, frontRightMesh, networkSteerAngle);
+            SetRemoteWheelRotation(rearLeftWheel, rearLeftMesh, 0f);
+            SetRemoteWheelRotation(rearRightWheel, rearRightMesh, 0f);
+        }
+
+        private void SetRemoteWheelRotation(WheelCollider col, Transform mesh, float steer)
+        {
+            if (col == null || mesh == null) return;
+            mesh.rotation = col.transform.rotation * Quaternion.Euler(remoteWheelSpin, steer, 0f);
+        }
+
         // --- Синхронизация через сеть ---
         public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {
@@ -228,12 +265,14 @@ namespace RacingProject.Enemy
                 // Только владелец (мастер) отправляет
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
+                stream.SendNext(frontLeftWheel.steerAngle);
             }
             else
             {
                 // Все остальные принимают
                 networkPosition = (Vector3)stream.ReceiveNext();
                 networkRotation = (Quaternion)stream.ReceiveNext();
+                networkSteerAngle = (float)stream.ReceiveNext();
             }
         }
     }

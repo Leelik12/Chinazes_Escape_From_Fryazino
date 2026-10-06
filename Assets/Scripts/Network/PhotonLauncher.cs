@@ -11,10 +11,16 @@ namespace RacingProject.Network
         public string roomName = "Room1";
         public byte maxPlayers = 2;
 
+        [Header("Частота сети")]
+        [Tooltip("Пакетов в секунду. 120 перегружало канал без заметной пользы, 60 хватает для машины и рук")]
+        [SerializeField] private int sendRate = 60;
+        [Tooltip("Вызовов OnPhotonSerializeView в секунду, не больше Send Rate")]
+        [SerializeField] private int serializationRate = 60;
+
         void Awake()
         {
-            PhotonNetwork.SendRate = 120;
-            PhotonNetwork.SerializationRate = 120;
+            PhotonNetwork.SendRate = sendRate;
+            PhotonNetwork.SerializationRate = Mathf.Min(serializationRate, sendRate);
             PhotonNetwork.AutomaticallySyncScene = true;
         }
         void Start()

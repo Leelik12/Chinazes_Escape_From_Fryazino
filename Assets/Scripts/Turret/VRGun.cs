@@ -16,6 +16,8 @@ namespace RacingProject.Turret
         public float fireRate = 0.1f;
         public float damage = 10f;
         public float range = 100f;
+        [Tooltip("Слои, в которые попадает выстрел. Триггеры (в том числе коллайдеры самого пистолета) игнорируются")]
+        public LayerMask hitLayerMask = ~0;
 
         [Header("Перегрев")]
         public float heatPerShot = 8f;
@@ -145,7 +147,7 @@ namespace RacingProject.Turret
         {
             PlayShotFeedback();
 
-            if (Physics.Raycast(origin, direction, out RaycastHit hit, range))
+            if (Physics.Raycast(origin, direction, out RaycastHit hit, range, hitLayerMask, QueryTriggerInteraction.Ignore))
             {
                 ShotEffects.SpawnImpact(hitEffectPrefabDust, hitEffectPrefabSparks, hit.point, hit.normal, effectOffset, hitEffectLifetime);
 
