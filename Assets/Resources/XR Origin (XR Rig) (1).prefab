@@ -2059,7 +2059,6 @@ GameObject:
   - component: {fileID: 6106952273457539563}
   - component: {fileID: 8972965798708362145}
   - component: {fileID: 3688116086326041013}
-  - component: {fileID: 6554637922318960778}
   m_Layer: 8
   m_Name: XR Origin (XR Rig) (1)
   m_TagString: Player
@@ -2171,28 +2170,6 @@ MonoBehaviour:
   m_AimAssistRequiredSpeed: 0.25
   m_AimAssistPercent: 0.8
   m_AimAssistMaxSpeedPercent: 10
---- !u!114 &6554637922318960778
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6383249457395168651}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ObservedComponentsFoldoutOpen: 1
-  Group: 0
-  prefixField: -1
-  Synchronization: 3
-  OwnershipTransfer: 0
-  observableSearch: 2
-  ObservedComponents: []
-  sceneViewId: 0
-  InstantiationId: 0
-  isRuntimeInstantiated: 0
 --- !u!1 &6459267719079298958
 GameObject:
   m_ObjectHideFlags: 0
@@ -4304,6 +4281,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bedd60261c01d9b478c0dcc4938b0dfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  authority: 1
   m_TriggerInput:
     m_InputSourceMode: 2
     m_InputAction:
@@ -4548,6 +4526,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bedd60261c01d9b478c0dcc4938b0dfe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  authority: 1
   m_TriggerInput:
     m_InputSourceMode: 2
     m_InputAction:

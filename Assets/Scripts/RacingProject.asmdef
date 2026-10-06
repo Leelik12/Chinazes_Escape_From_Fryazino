@@ -2,8 +2,6 @@
     "name": "RacingProject",
     "rootNamespace": "",
     "references": [
-        "PhotonUnityNetworking",
-        "PhotonRealtime",
         "Bhaptics.SDK2",
         "Unity.XR.Interaction.Toolkit",
         "Unity.XR.Management",
