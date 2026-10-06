@@ -1,4 +1,4 @@
-using Photon.Pun;
+п»їusing Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 using ExitGames.Client.Photon;
@@ -6,9 +6,9 @@ using UnityEngine.UI;
 
 public class RoomController : MonoBehaviourPunCallbacks
 {
-    [Header("Ссылки на XR Rigs")]
-    public GameObject driverRig;       // XR Rig водителя (без рук)
-    public GameObject gunnerRig;       // XR Rig пулемётчика (с руками)
+    [Header("РЎСЃС‹Р»РєРё РЅР° XR Rigs")]
+    public GameObject driverRig;       // XR Rig РІРѕРґРёС‚РµР»СЏ (Р±РµР· СЂСѓРє)
+    public GameObject gunnerRig;       // XR Rig РїСѓР»РµРјС‘С‚С‡РёРєР° (СЃ СЂСѓРєР°РјРё)
     public GameObject car;
     public GameObject Turret;
     public GameObject MachineGun;
@@ -18,13 +18,13 @@ public class RoomController : MonoBehaviourPunCallbacks
     public GameObject LeftProxyHand;
     public GameObject RightProxyHand;
     public Collider TouchColliderPistol;
-    [Header("UI Готовности")]
+    [Header("UI Р“РѕС‚РѕРІРЅРѕСЃС‚Рё")]
     public Image firstPlayerReadyCircle;
     public Image secondPlayerReadyCircle;
     public Color notReadyColor = Color.red;
     public Color readyColor = Color.green;
 
-    [Header("UI Состояния подключения")]
+    [Header("UI РЎРѕСЃС‚РѕСЏРЅРёСЏ РїРѕРґРєР»СЋС‡РµРЅРёСЏ")]
     public Image connectionStatusCircle;
     public Color connectedColor = Color.green;
     public Color disconnectedColor = Color.red;
@@ -35,7 +35,7 @@ public class RoomController : MonoBehaviourPunCallbacks
 
     private void Update()
     {
-        // Проверяем подключение раз в секунду
+        // РџСЂРѕРІРµСЂСЏРµРј РїРѕРґРєР»СЋС‡РµРЅРёРµ СЂР°Р· РІ СЃРµРєСѓРЅРґСѓ
         connectionCheckTimer += Time.deltaTime;
         if (connectionCheckTimer >= connectionCheckInterval)
         {
@@ -60,14 +60,14 @@ public class RoomController : MonoBehaviourPunCallbacks
 
     public void OnReadyButtonPressed()
     {
-        //Фикс легендарного теста RIP
+        //Р¤РёРєСЃ Р»РµРіРµРЅРґР°СЂРЅРѕРіРѕ С‚РµСЃС‚Р° RIP
         if (!PhotonNetwork.InRoom) return;
 
         if (isLocalReady) return;
-        Debug.Log("Кнопка готовности нажата");
+        Debug.Log("РљРЅРѕРїРєР° РіРѕС‚РѕРІРЅРѕСЃС‚Рё РЅР°Р¶Р°С‚Р°");
         isLocalReady = true;
 
-        // Устанавливаем CustomProperty "IsReady"
+        // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј CustomProperty "IsReady"
         Hashtable props = new Hashtable { { "IsReady", true } };
         PhotonNetwork.LocalPlayer.SetCustomProperties(props);
 
@@ -83,7 +83,7 @@ public class RoomController : MonoBehaviourPunCallbacks
                 return;
         }
 
-        // Все игроки готовы — активируем риги
+        // Р’СЃРµ РёРіСЂРѕРєРё РіРѕС‚РѕРІС‹ вЂ” Р°РєС‚РёРІРёСЂСѓРµРј СЂРёРіРё
         ActivatePlayerRigs();
     }
 
@@ -94,14 +94,14 @@ public class RoomController : MonoBehaviourPunCallbacks
             PhotonView carView = car.GetComponent<PhotonView>();
             PhotonView bodyView = DriverBody.GetComponent<PhotonView>();
             TouchColliderPistol.enabled = false;
-            // Мастер-клиент — водитель
+            // РњР°СЃС‚РµСЂ-РєР»РёРµРЅС‚ вЂ” РІРѕРґРёС‚РµР»СЊ
             if (driverRig != null)
             {
                 DriverBody.SetActive(true);
                 driverRig.SetActive(true);
                 carView.TransferOwnership(PhotonNetwork.LocalPlayer);
                 bodyView.TransferOwnership(PhotonNetwork.LocalPlayer);
-                Debug.Log("Права на машину выданы");
+                Debug.Log("РџСЂР°РІР° РЅР° РјР°С€РёРЅСѓ РІС‹РґР°РЅС‹");
             }
             if (gunnerRig != null)
             {
@@ -116,7 +116,7 @@ public class RoomController : MonoBehaviourPunCallbacks
             PhotonView GunnerView = GunnerBody.GetComponent<PhotonView>();
             PhotonView LeftHand = LeftProxyHand.GetComponent<PhotonView>();
             PhotonView RightHand = RightProxyHand.GetComponent<PhotonView>();
-            // Второй игрок — пулемётчик
+            // Р’С‚РѕСЂРѕР№ РёРіСЂРѕРє вЂ” РїСѓР»РµРјС‘С‚С‡РёРє
             if (driverRig != null)
             {
                 driverRig.SetActive(false);
@@ -130,7 +130,7 @@ public class RoomController : MonoBehaviourPunCallbacks
                 GunnerView.TransferOwnership(PhotonNetwork.LocalPlayer);
                 LeftHand.TransferOwnership(PhotonNetwork.LocalPlayer);
                 RightHand.TransferOwnership(PhotonNetwork.LocalPlayer);
-                Debug.Log("Права на туррель и пулемет выданы");
+                Debug.Log("РџСЂР°РІР° РЅР° С‚СѓСЂСЂРµР»СЊ Рё РїСѓР»РµРјРµС‚ РІС‹РґР°РЅС‹");
             }
             Menu.SetActive(false);
         }

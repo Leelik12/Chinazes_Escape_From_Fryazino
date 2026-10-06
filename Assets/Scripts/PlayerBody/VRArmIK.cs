@@ -1,25 +1,25 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using Photon.Pun;
 
 [DefaultExecutionOrder(400)]
 public class VRArmIK : MonoBehaviourPun
 {
-    [Header("Ссылки")]
+    [Header("РЎСЃС‹Р»РєРё")]
     public Animator animator;
 
-    [Header("Прокси точки")]
+    [Header("РџСЂРѕРєСЃРё С‚РѕС‡РєРё")]
     public Transform proxyLeft;
     public Transform proxyRight;
 
-    [Header("Настройки смещения IK")]
-    public Vector3 leftOffset = Vector3.zero;   // смещение относительно прокси для левой руки
-    public Vector3 rightOffset = Vector3.zero;  // смещение относительно прокси для правой руки
+    [Header("РќР°СЃС‚СЂРѕР№РєРё СЃРјРµС‰РµРЅРёСЏ IK")]
+    public Vector3 leftOffset = Vector3.zero;   // СЃРјРµС‰РµРЅРёРµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РїСЂРѕРєСЃРё РґР»СЏ Р»РµРІРѕР№ СЂСѓРєРё
+    public Vector3 rightOffset = Vector3.zero;  // СЃРјРµС‰РµРЅРёРµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РїСЂРѕРєСЃРё РґР»СЏ РїСЂР°РІРѕР№ СЂСѓРєРё
 
     void OnAnimatorIK(int layerIndex)
     {
         if (animator == null) return;
 
-        // Локальный игрок
+        // Р›РѕРєР°Р»СЊРЅС‹Р№ РёРіСЂРѕРє
         if (photonView.IsMine)
         {
             animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
@@ -34,7 +34,7 @@ public class VRArmIK : MonoBehaviourPun
         }
         else
         {
-            // Другие игроки — используем прокси точки без изменений
+            // Р”СЂСѓРіРёРµ РёРіСЂРѕРєРё вЂ” РёСЃРїРѕР»СЊР·СѓРµРј РїСЂРѕРєСЃРё С‚РѕС‡РєРё Р±РµР· РёР·РјРµРЅРµРЅРёР№
             animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
             animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
             animator.SetIKPosition(AvatarIKGoal.LeftHand, proxyLeft.TransformPoint(leftOffset));

@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using Photon.Pun;
 using System;
 
@@ -12,25 +12,25 @@ public class EnemyHealth : MonoBehaviourPun
         currentHealth = maxHealth;
     }
 
-    // Этот метод будет вызываться атакующими игроками
+    // Р­С‚РѕС‚ РјРµС‚РѕРґ Р±СѓРґРµС‚ РІС‹Р·С‹РІР°С‚СЊСЃСЏ Р°С‚Р°РєСѓСЋС‰РёРјРё РёРіСЂРѕРєР°РјРё
     public void RequestDamage(int damage)
     {
-        // Отправляем RPC хозяину врага
+        // РћС‚РїСЂР°РІР»СЏРµРј RPC С…РѕР·СЏРёРЅСѓ РІСЂР°РіР°
         photonView.RPC("TakeDamage", RpcTarget.MasterClient, damage);
     }
 
     [PunRPC]
     public void TakeDamage(int damage, PhotonMessageInfo info)
     {
-        // Выполняется только на мастер-клиенте (или владельце врага)
+        // Р’С‹РїРѕР»РЅСЏРµС‚СЃСЏ С‚РѕР»СЊРєРѕ РЅР° РјР°СЃС‚РµСЂ-РєР»РёРµРЅС‚Рµ (РёР»Рё РІР»Р°РґРµР»СЊС†Рµ РІСЂР°РіР°)
         if (!photonView.IsMine) return;
 
         currentHealth -= damage;
-        Debug.Log($"Враг получил {damage} урона от {info.Sender} (осталось {currentHealth})");
+        Debug.Log($"Р’СЂР°Рі РїРѕР»СѓС‡РёР» {damage} СѓСЂРѕРЅР° РѕС‚ {info.Sender} (РѕСЃС‚Р°Р»РѕСЃСЊ {currentHealth})");
 
         if (currentHealth <= 0)
         {
-            Debug.Log("Враг умер");
+            Debug.Log("Р’СЂР°Рі СѓРјРµСЂ");
             OnDeath?.Invoke(gameObject);
             PhotonNetwork.Destroy(gameObject);
         }

@@ -1,13 +1,13 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using Photon.Pun;
 
 public class DriverHandsNetwork : MonoBehaviourPun
 {
-    [Header("Руль")]
+    [Header("Р СѓР»СЊ")]
     [SerializeField] private Transform steeringWheel;
-    [SerializeField] private float maxSteeringAngle = 180f; // ±180°
+    [SerializeField] private float maxSteeringAngle = 180f; // В±180В°
 
-    [Header("Анкорные точки для рук")]
+    [Header("РђРЅРєРѕСЂРЅС‹Рµ С‚РѕС‡РєРё РґР»СЏ СЂСѓРє")]
     [SerializeField] private Transform leftTopAnchor;
     [SerializeField] private Transform leftBottomAnchor;
     [SerializeField] private Transform rightTopAnchor;
@@ -17,23 +17,23 @@ public class DriverHandsNetwork : MonoBehaviourPun
     [SerializeField] private Transform leftHandTarget;
     [SerializeField] private Transform rightHandTarget;
 
-    private float currentSteeringAngle; // локально вычисляемый угол
-    private float networkSteeringAngle; // угол для всех клиентов
+    private float currentSteeringAngle; // Р»РѕРєР°Р»СЊРЅРѕ РІС‹С‡РёСЃР»СЏРµРјС‹Р№ СѓРіРѕР»
+    private float networkSteeringAngle; // СѓРіРѕР» РґР»СЏ РІСЃРµС… РєР»РёРµРЅС‚РѕРІ
 
     void Update()
     {
         if (photonView.IsMine)
         {
-            // Вычисляем угол руля относительно локальной оси
+            // Р’С‹С‡РёСЃР»СЏРµРј СѓРіРѕР» СЂСѓР»СЏ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ Р»РѕРєР°Р»СЊРЅРѕР№ РѕСЃРё
             currentSteeringAngle = steeringWheel.localEulerAngles.y;
             if (currentSteeringAngle > 180f) currentSteeringAngle -= 360f;
 
-            // Отправляем угол по сети
+            // РћС‚РїСЂР°РІР»СЏРµРј СѓРіРѕР» РїРѕ СЃРµС‚Рё
             photonView.RPC(nameof(RPC_UpdateSteeringAngle), RpcTarget.Others, currentSteeringAngle);
         }
         else
         {
-            // Второй игрок: используем угол с сети
+            // Р’С‚РѕСЂРѕР№ РёРіСЂРѕРє: РёСЃРїРѕР»СЊР·СѓРµРј СѓРіРѕР» СЃ СЃРµС‚Рё
             currentSteeringAngle = Mathf.Lerp(currentSteeringAngle, networkSteeringAngle, Time.deltaTime * 10f);
         }
 
@@ -44,11 +44,11 @@ public class DriverHandsNetwork : MonoBehaviourPun
     {
         float t = (steeringAngle + maxSteeringAngle) / (2f * maxSteeringAngle); // 0..1
 
-        // Левая рука
+        // Р›РµРІР°СЏ СЂСѓРєР°
         leftHandTarget.position = Vector3.Lerp(leftTopAnchor.position, leftBottomAnchor.position, t);
         leftHandTarget.rotation = Quaternion.Slerp(leftTopAnchor.rotation, leftBottomAnchor.rotation, t);
 
-        // Правая рука
+        // РџСЂР°РІР°СЏ СЂСѓРєР°
         rightHandTarget.position = Vector3.Lerp(rightTopAnchor.position, rightBottomAnchor.position, t);
         rightHandTarget.rotation = Quaternion.Slerp(rightTopAnchor.rotation, rightBottomAnchor.rotation, t);
     }

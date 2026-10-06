@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 using UnityEngine.SceneManagement;
@@ -36,7 +36,7 @@ public class PlayerHealth : MonoBehaviourPun
             Die();
         }
     }
-    // Урон запрашивается кем угодно, но считается только у владельца
+    // РЈСЂРѕРЅ Р·Р°РїСЂР°С€РёРІР°РµС‚СЃСЏ РєРµРј СѓРіРѕРґРЅРѕ, РЅРѕ СЃС‡РёС‚Р°РµС‚СЃСЏ С‚РѕР»СЊРєРѕ Сѓ РІР»Р°РґРµР»СЊС†Р°
     public void RequestDamage(int damage)
     {
         if (photonView.Owner == null) return;
@@ -47,12 +47,12 @@ public class PlayerHealth : MonoBehaviourPun
         }
         else
         {
-            // просим владельца обработать урон
+            // РїСЂРѕСЃРёРј РІР»Р°РґРµР»СЊС†Р° РѕР±СЂР°Р±РѕС‚Р°С‚СЊ СѓСЂРѕРЅ
             photonView.RPC(nameof(RPC_RequestDamageFromOther), photonView.Owner, damage);
         }
     }
 
-    // Получено с другого клиента
+    // РџРѕР»СѓС‡РµРЅРѕ СЃ РґСЂСѓРіРѕРіРѕ РєР»РёРµРЅС‚Р°
     [PunRPC]
     private void RPC_RequestDamageFromOther(int damage)
     {
@@ -60,7 +60,7 @@ public class PlayerHealth : MonoBehaviourPun
         ApplyDamage(damage);
     }
 
-    // Применяем урон только на своём клиенте, потом синхронизируем
+    // РџСЂРёРјРµРЅСЏРµРј СѓСЂРѕРЅ С‚РѕР»СЊРєРѕ РЅР° СЃРІРѕС‘Рј РєР»РёРµРЅС‚Рµ, РїРѕС‚РѕРј СЃРёРЅС…СЂРѕРЅРёР·РёСЂСѓРµРј
     private void ApplyDamage(int damage)
     {
         currentHealth -= damage;
@@ -68,7 +68,7 @@ public class PlayerHealth : MonoBehaviourPun
 
         photonView.RPC(nameof(RPC_SyncHealth), RpcTarget.All, currentHealth);
 
-        Debug.Log($"{gameObject.name} получил {damage} урона. Текущее здоровье: {currentHealth}");
+        Debug.Log($"{gameObject.name} РїРѕР»СѓС‡РёР» {damage} СѓСЂРѕРЅР°. РўРµРєСѓС‰РµРµ Р·РґРѕСЂРѕРІСЊРµ: {currentHealth}");
 
         OnDamageTaken?.Invoke(damage);
 
@@ -78,7 +78,7 @@ public class PlayerHealth : MonoBehaviourPun
         }
     }
 
-    //Рассылаем обновлённое здоровье
+    //Р Р°СЃСЃС‹Р»Р°РµРј РѕР±РЅРѕРІР»С‘РЅРЅРѕРµ Р·РґРѕСЂРѕРІСЊРµ
     [PunRPC]
     private void RPC_SyncHealth(int newHealth)
     {
@@ -92,7 +92,7 @@ public class PlayerHealth : MonoBehaviourPun
 
     private void Die()
     {
-        Debug.Log($"{gameObject.name} умер!");
+        Debug.Log($"{gameObject.name} СѓРјРµСЂ!");
         OnDeath?.Invoke();
         PhotonNetwork.LoadLevel(SceneManager.GetActiveScene().name);
     }

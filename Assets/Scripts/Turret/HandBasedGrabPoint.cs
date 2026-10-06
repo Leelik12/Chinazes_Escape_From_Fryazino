@@ -1,16 +1,16 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using System.Collections;
 
 public class HandBasedGrabPoint : XRGrabInteractable
 {
-    [Header("Настройки хватов")]
+    [Header("РќР°СЃС‚СЂРѕР№РєРё С…РІР°С‚РѕРІ")]
     [SerializeField] private Transform rightHandAttachTransform;
     [SerializeField] private Transform leftHandAttachTransform;
     [SerializeField] private Collider TouchCollider;
-    [Header("Настройки кинематики")]
-    [Tooltip("Задержка перед возвратом isKinematic = true после подбора, чтобы оружие успело притянуться к руке.")]
+    [Header("РќР°СЃС‚СЂРѕР№РєРё РєРёРЅРµРјР°С‚РёРєРё")]
+    [Tooltip("Р—Р°РґРµСЂР¶РєР° РїРµСЂРµРґ РІРѕР·РІСЂР°С‚РѕРј isKinematic = true РїРѕСЃР»Рµ РїРѕРґР±РѕСЂР°, С‡С‚РѕР±С‹ РѕСЂСѓР¶РёРµ СѓСЃРїРµР»Рѕ РїСЂРёС‚СЏРЅСѓС‚СЊСЃСЏ Рє СЂСѓРєРµ.")]
     [SerializeField] private float reenableKinematicDelay = 0.1f;
 
     private bool savedHasRigidbody = false;
@@ -26,12 +26,12 @@ public class HandBasedGrabPoint : XRGrabInteractable
             savedIsKinematic = rb.isKinematic;
             savedUseGravity = rb.useGravity;
             TouchCollider.enabled = false;
-            // временно делаем не кинематическим, чтобы XR смог корректно прижать объект к руке
+            // РІСЂРµРјРµРЅРЅРѕ РґРµР»Р°РµРј РЅРµ РєРёРЅРµРјР°С‚РёС‡РµСЃРєРёРј, С‡С‚РѕР±С‹ XR СЃРјРѕРі РєРѕСЂСЂРµРєС‚РЅРѕ РїСЂРёР¶Р°С‚СЊ РѕР±СЉРµРєС‚ Рє СЂСѓРєРµ
             rb.isKinematic = false;
         }
         else savedHasRigidbody = false;
 
-        // выбираем правильный attachTransform в зависимости от руки
+        // РІС‹Р±РёСЂР°РµРј РїСЂР°РІРёР»СЊРЅС‹Р№ attachTransform РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СЂСѓРєРё
         if (args.interactorObject != null)
         {
             var interactorTransform = args.interactorObject.transform;
@@ -44,7 +44,7 @@ public class HandBasedGrabPoint : XRGrabInteractable
         base.OnSelectEntering(args);
         SetLayerRecursively(gameObject, 7);
 
-        // включаем возврат кинематики с задержкой
+        // РІРєР»СЋС‡Р°РµРј РІРѕР·РІСЂР°С‚ РєРёРЅРµРјР°С‚РёРєРё СЃ Р·Р°РґРµСЂР¶РєРѕР№
         if (rb != null)
             StartCoroutine(ReenableKinematicAfterDelay(rb, reenableKinematicDelay));
     }

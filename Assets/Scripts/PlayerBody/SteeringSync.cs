@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using Photon.Pun;
 
 public class SteeringSync : MonoBehaviourPun, IPunObservable
@@ -11,13 +11,13 @@ public class SteeringSync : MonoBehaviourPun, IPunObservable
     {
         if (photonView.IsMine)
         {
-            // локальный игрок управляет углом руля
+            // Р»РѕРєР°Р»СЊРЅС‹Р№ РёРіСЂРѕРє СѓРїСЂР°РІР»СЏРµС‚ СѓРіР»РѕРј СЂСѓР»СЏ
             steeringAngle = Mathf.Lerp(steeringAngle, Input.GetAxis("Horizontal") * 45f, Time.deltaTime * 5f);
             transform.localRotation = Quaternion.Euler(0, 0, -steeringAngle);
         }
         else
         {
-            // плавно обновляем поворот с сети
+            // РїР»Р°РІРЅРѕ РѕР±РЅРѕРІР»СЏРµРј РїРѕРІРѕСЂРѕС‚ СЃ СЃРµС‚Рё
             transform.localRotation = Quaternion.Lerp(
                 transform.localRotation,
                 Quaternion.Euler(0, 0, -networkAngle),

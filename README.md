@@ -70,13 +70,13 @@ Assets/
   Scenes/SovietCity.unity      — основная сцена (меню + игровая локация)
   Scripts/
     Car/                       — CarController, CarControllerSample (G29), CarHapticsController (bHaptics), Magnitola
-    Enemy/                     — EnemyCarController (ИИ), EnemyGun (турель), EnemyHeaths, EnemyManager (спавн)
+    Enemy/                     — EnemyCarController (ИИ), EnemyGun (турель), EnemyHealth, EnemyManager (спавн)
     Network/                   — PhotonLauncher (подключение), RoomController (роли), CarNetworkSync
     PlayerBody/                — IK головы и рук, синхронизация руля и рук водителя
     Turret/                    — VRGun (пистолет стрелка), захват и возврат оружия
-    managment/                 — MenuManager (меню, громкость), StaticHolder, расстановка препятствий на террейне
-    PlayerHealth.cs, BarGradient.cs, HandAnimation.cs
-    SimpleController.cs        — FuturiftTelemetryHandler (телеметрия на FutuRift)
+    Management/                — MenuManager (меню, громкость), StaticHolder, расстановка препятствий на террейне
+    Telemetry/                 — CarTelemetryHandler (2DOF), FuturiftTelemetryHandler (FutuRift)
+    PlayerHealth.cs, BarGradient.cs, HandAnimationSync.cs
   Plugins/
     2DOF/                      — отправка телеметрии на платформу 2DOF
     Futurift/                  — контроллер FutuRift (UDP 127.0.0.1:6065 или COM-порт)
@@ -96,6 +96,7 @@ ProjectSettings/               — настройки проекта
 
 - **Photon**: `PhotonLauncher` — имя комнаты `Room1`, максимум 2 игрока, `SendRate` и `SerializationRate` = 120.
 - **FutuRift**: параметры подключения в `Assets/Plugins/Futurift/Options` (`UdpOptions`: `127.0.0.1:6065`, `ComPortOptions`: COM3).
-- **2DOF**: данные передаются через memory-mapped file `2DOFMemoryDataGrabber` с интервалом 20 мс (`Assets/Plugins/2DOF/SendingData.cs`); их забирает ПО платформы.
+- **2DOF**: `CarTelemetryHandler` (`Assets/Scripts/Telemetry`) считает наклоны и ускорения машины и передаёт их через memory-mapped file `2DOFMemoryDataGrabber` с интервалом 20 мс (`Assets/Plugins/2DOF/SendingData.cs`); их забирает ПО платформы.
+- **Кодировка**: собственные скрипты хранятся в UTF-8 с BOM, правило задано в `.editorconfig`.
 - **Звук**: громкость двигателя и музыки — параметры `EngineVolume` и `MusikVolume` в AudioMixer, значения сохраняются в `StaticHolder` на время сессии.
 - **Рендер**: профили `PC_RPAsset` и `Mobile_RPAsset` в `Assets/Settings`.

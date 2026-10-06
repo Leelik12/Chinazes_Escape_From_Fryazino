@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+п»їusing System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,23 +27,23 @@ public class MenuManager : MonoBehaviour
     void OnVolumeChangedMusik(float volume)
     {
         SetVolumeMusik(volume);
-        StaticHolder.MusikVolume = volume; // Сохраняем значение
+        StaticHolder.MusikVolume = volume; // РЎРѕС…СЂР°РЅСЏРµРј Р·РЅР°С‡РµРЅРёРµ
     }
     void OnVolumeChangedEngine(float volume)
     {
         SetVolumeEngine(volume);
-        StaticHolder.EngineVolume = volume; // Сохраняем значение
+        StaticHolder.EngineVolume = volume; // РЎРѕС…СЂР°РЅСЏРµРј Р·РЅР°С‡РµРЅРёРµ
     }
     public void SetVolumeMusik(float volume)
     {
-        float dB = Mathf.Lerp(-20f, 20f, volume); // volume от 0 до 1
+        float dB = Mathf.Lerp(-20f, 20f, volume); // volume РѕС‚ 0 РґРѕ 1
         MusikMixer.SetFloat("MusikVolume", dB);
         StaticHolder.MusikVolume = volume;
     }
 
     public void SetVolumeEngine(float volume)
     {
-        float dB = Mathf.Lerp(-20f, 20f, volume); // volume от 0 до 1
+        float dB = Mathf.Lerp(-20f, 20f, volume); // volume РѕС‚ 0 РґРѕ 1
         audioMixer.SetFloat("EngineVolume", dB);
         StaticHolder.EngineVolume = volume;
     }

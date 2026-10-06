@@ -1,4 +1,4 @@
-using Photon.Pun;
+п»їusing Photon.Pun;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -7,14 +7,14 @@ using UnityEngine.UI;
 
 public class VRGun : MonoBehaviourPun, IPunObservable
 { 
-    [SerializeField] private Transform carRoot; // родительский объект (машина, к которой прикрепляется пистолет)
+    [SerializeField] private Transform carRoot; // СЂРѕРґРёС‚РµР»СЊСЃРєРёР№ РѕР±СЉРµРєС‚ (РјР°С€РёРЅР°, Рє РєРѕС‚РѕСЂРѕР№ РїСЂРёРєСЂРµРїР»СЏРµС‚СЃСЏ РїРёСЃС‚РѕР»РµС‚)
 
-    [Header("Настройки стрельбы")]
+    [Header("РќР°СЃС‚СЂРѕР№РєРё СЃС‚СЂРµР»СЊР±С‹")]
     public float fireRate = 0.1f;
     public float damage = 10f;
     public float range = 100f;
 
-    [Header("Перегрев")]
+    [Header("РџРµСЂРµРіСЂРµРІ")]
     public float heatPerShot = 8f;
     public float heatCooldownRate = 5f;
     public float maxHeat = 100f;
@@ -23,7 +23,7 @@ public class VRGun : MonoBehaviourPun, IPunObservable
     private float currentHeat = 0f;
     private bool isOverheated = false;
 
-    [Header("Подвижные части")]
+    [Header("РџРѕРґРІРёР¶РЅС‹Рµ С‡Р°СЃС‚Рё")]
     [SerializeField] private Transform movablePart;
     [SerializeField] private float recoilDistance = 0.2f;
     [SerializeField] private float recoilDuration = 0.1f;
@@ -37,7 +37,7 @@ public class VRGun : MonoBehaviourPun, IPunObservable
     public InputActionProperty RightGrip;
     public Transform firePoint;
 
-    [Header("Эффекты")]
+    [Header("Р­С„С„РµРєС‚С‹")]
     public ParticleSystem muzzleFlash;
     public Light muzzleLight;
     public float lightDuration = 0.05f;
@@ -51,7 +51,7 @@ public class VRGun : MonoBehaviourPun, IPunObservable
     private float nextFireTime = 0f;
     private string ap = null;
 
-    // --- Данные для синхронизации позиции ---
+    // --- Р”Р°РЅРЅС‹Рµ РґР»СЏ СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё РїРѕР·РёС†РёРё ---
     private Vector3 networkLocalPos;
     private Quaternion networkLocalRot;
 
@@ -81,13 +81,13 @@ public class VRGun : MonoBehaviourPun, IPunObservable
         }
         else
         {
-            // Интерполяция позиции/вращения у других игроков
+            // РРЅС‚РµСЂРїРѕР»СЏС†РёСЏ РїРѕР·РёС†РёРё/РІСЂР°С‰РµРЅРёСЏ Сѓ РґСЂСѓРіРёС… РёРіСЂРѕРєРѕРІ
             transform.localPosition = Vector3.Lerp(transform.localPosition, networkLocalPos, Time.deltaTime * 10f);
             transform.localRotation = Quaternion.Slerp(transform.localRotation, networkLocalRot, Time.deltaTime * 10f);
         }
     }
 
-    // --- Перегрев ---
+    // --- РџРµСЂРµРіСЂРµРІ ---
     private void HandleOverheat()
     {
         if (currentHeat > 0f)
@@ -106,7 +106,7 @@ public class VRGun : MonoBehaviourPun, IPunObservable
             isOverheated = false;
     }
 
-    // --- Стрельба ---
+    // --- РЎС‚СЂРµР»СЊР±Р° ---
     private void HandleFireInput()
     {
 
@@ -117,10 +117,10 @@ public class VRGun : MonoBehaviourPun, IPunObservable
         {
             nextFireTime = Time.time + fireRate;
 
-            // локальный выстрел
+            // Р»РѕРєР°Р»СЊРЅС‹Р№ РІС‹СЃС‚СЂРµР»
             ShootLocal(firePoint.position, firePoint.forward);
 
-            // синхронизируем с другими
+            // СЃРёРЅС…СЂРѕРЅРёР·РёСЂСѓРµРј СЃ РґСЂСѓРіРёРјРё
             photonView.RPC(nameof(Shoot), RpcTarget.Others, firePoint.position, firePoint.forward);
 
             currentHeat += heatPerShot;
@@ -128,7 +128,7 @@ public class VRGun : MonoBehaviourPun, IPunObservable
             {
                 currentHeat = maxHeat;
                 isOverheated = true;
-                Debug.Log("Оружие перегрелось!");
+                Debug.Log("РћСЂСѓР¶РёРµ РїРµСЂРµРіСЂРµР»РѕСЃСЊ!");
             }
 
             if (heatSlider != null)
@@ -210,12 +210,12 @@ public class VRGun : MonoBehaviourPun, IPunObservable
         isRecoiling = false;
     }
 
-    // --- СЕТЕВАЯ СИНХРОНИЗАЦИЯ ПОЗИЦИИ ---
+    // --- РЎР•РўР•Р’РђРЇ РЎРРќРҐР РћРќРР—РђР¦РРЇ РџРћР—РР¦РР ---
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
-            // У владельца: отправляем позицию/вращение относительно машины
+            // РЈ РІР»Р°РґРµР»СЊС†Р°: РѕС‚РїСЂР°РІР»СЏРµРј РїРѕР·РёС†РёСЋ/РІСЂР°С‰РµРЅРёРµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РјР°С€РёРЅС‹
             if (carRoot != null)
             {
                 Vector3 localPos = carRoot.InverseTransformPoint(transform.position);
@@ -231,7 +231,7 @@ public class VRGun : MonoBehaviourPun, IPunObservable
         }
         else
         {
-            // У других клиентов: получаем локальные координаты относительно машины
+            // РЈ РґСЂСѓРіРёС… РєР»РёРµРЅС‚РѕРІ: РїРѕР»СѓС‡Р°РµРј Р»РѕРєР°Р»СЊРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РјР°С€РёРЅС‹
             networkLocalPos = (Vector3)stream.ReceiveNext();
             networkLocalRot = (Quaternion)stream.ReceiveNext();
         }

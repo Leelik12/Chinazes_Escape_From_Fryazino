@@ -1,30 +1,30 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using Photon.Pun;
 
 [DefaultExecutionOrder(400)]
 public class VRHeadIK : MonoBehaviourPun
 {
-    [Header("Ссылки")]
+    [Header("РЎСЃС‹Р»РєРё")]
     public Animator animator;
-    public Transform headProxy;      // Прокси-точка в машине, повторяет XR камеру
-    public GameObject headVisualRoot; // Меш головы
+    public Transform headProxy;      // РџСЂРѕРєСЃРё-С‚РѕС‡РєР° РІ РјР°С€РёРЅРµ, РїРѕРІС‚РѕСЂСЏРµС‚ XR РєР°РјРµСЂСѓ
+    public GameObject headVisualRoot; // РњРµС€ РіРѕР»РѕРІС‹
 
-    [Header("Смещение головы")]
+    [Header("РЎРјРµС‰РµРЅРёРµ РіРѕР»РѕРІС‹")]
     public Vector3 headOffset = Vector3.zero;
 
-    [Header("Настройки")]
+    [Header("РќР°СЃС‚СЂРѕР№РєРё")]
     [Range(0f, 1f)]
-    public float headWeight = 1f;    // влияние на голову
+    public float headWeight = 1f;    // РІР»РёСЏРЅРёРµ РЅР° РіРѕР»РѕРІСѓ
     [Range(0f, 1f)]
-    public float bodyWeight = 0f;    // влияние на тело (0 = только голова)
+    public float bodyWeight = 0f;    // РІР»РёСЏРЅРёРµ РЅР° С‚РµР»Рѕ (0 = С‚РѕР»СЊРєРѕ РіРѕР»РѕРІР°)
     [Range(0f, 1f)]
-    public float eyesWeight = 0.3f;  // глаза/шея
+    public float eyesWeight = 0.3f;  // РіР»Р°Р·Р°/С€РµСЏ
     [Range(0f, 1f)]
-    public float clampWeight = 0.7f; // ограничение угла поворота головы
+    public float clampWeight = 0.7f; // РѕРіСЂР°РЅРёС‡РµРЅРёРµ СѓРіР»Р° РїРѕРІРѕСЂРѕС‚Р° РіРѕР»РѕРІС‹
 
     void Start()
     {
-        // Скрываем голову локального игрока
+        // РЎРєСЂС‹РІР°РµРј РіРѕР»РѕРІСѓ Р»РѕРєР°Р»СЊРЅРѕРіРѕ РёРіСЂРѕРєР°
         if (photonView.IsMine && headVisualRoot != null)
             SetHeadVisible(false);
     }
@@ -43,13 +43,13 @@ public class VRHeadIK : MonoBehaviourPun
 
         Vector3 lookPos = headProxy.position + headOffset + headProxy.forward * 10f;
 
-        // Настройка IK
+        // РќР°СЃС‚СЂРѕР№РєР° IK
         animator.SetLookAtWeight(
             headWeight,
             bodyWeight,
             eyesWeight,
             clampWeight,
-            0.5f // плавность
+            0.5f // РїР»Р°РІРЅРѕСЃС‚СЊ
         );
 
         animator.SetLookAtPosition(lookPos);
@@ -62,7 +62,7 @@ public class VRHeadIK : MonoBehaviourPun
             r.enabled = visible;
     }
 
-    // Синхронизация прокси по сети, если нужно
+    // РЎРёРЅС…СЂРѕРЅРёР·Р°С†РёСЏ РїСЂРѕРєСЃРё РїРѕ СЃРµС‚Рё, РµСЃР»Рё РЅСѓР¶РЅРѕ
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)

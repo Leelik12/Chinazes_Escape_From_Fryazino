@@ -1,10 +1,10 @@
-using Photon.Pun;
+п»їusing Photon.Pun;
 using Photon.Realtime;
 using UnityEngine;
 
 public class PhotonLauncher : MonoBehaviourPunCallbacks
 {
-    [Header("Настройки комнаты")]
+    [Header("РќР°СЃС‚СЂРѕР№РєРё РєРѕРјРЅР°С‚С‹")]
     public string roomName = "Room1";
     public byte maxPlayers = 2;
 
@@ -17,36 +17,36 @@ public class PhotonLauncher : MonoBehaviourPunCallbacks
     void Start()
     {
 
-        // Подключаемся к серверу Photon
+        // РџРѕРґРєР»СЋС‡Р°РµРјСЃСЏ Рє СЃРµСЂРІРµСЂСѓ Photon
         Debug.Log("Connecting to Photon...");
         PhotonNetwork.ConnectUsingSettings();
     }
 
-    // Вызывается при успешном соединении с Photon Master Server
+    // Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё СѓСЃРїРµС€РЅРѕРј СЃРѕРµРґРёРЅРµРЅРёРё СЃ Photon Master Server
     public override void OnConnectedToMaster()
     {
         Debug.Log("Connected to Photon Master");
-        PhotonNetwork.JoinLobby(); // присоединяемся к лобби
+        PhotonNetwork.JoinLobby(); // РїСЂРёСЃРѕРµРґРёРЅСЏРµРјСЃСЏ Рє Р»РѕР±Р±Рё
     }
 
-    // Вызывается при присоединении к лобби
+    // Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё РїСЂРёСЃРѕРµРґРёРЅРµРЅРёРё Рє Р»РѕР±Р±Рё
     public override void OnJoinedLobby()
     {
         Debug.Log("Joined Lobby, creating or joining room...");
 
-        // Пытаемся подключиться к комнате, если нет — создаем
+        // РџС‹С‚Р°РµРјСЃСЏ РїРѕРґРєР»СЋС‡РёС‚СЊСЃСЏ Рє РєРѕРјРЅР°С‚Рµ, РµСЃР»Рё РЅРµС‚ вЂ” СЃРѕР·РґР°РµРј
         PhotonNetwork.JoinOrCreateRoom(roomName,
             new RoomOptions { MaxPlayers = maxPlayers },
             TypedLobby.Default);
     }
 
-    // Вызывается после успешного присоединения к комнате
+    // Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїРѕСЃР»Рµ СѓСЃРїРµС€РЅРѕРіРѕ РїСЂРёСЃРѕРµРґРёРЅРµРЅРёСЏ Рє РєРѕРјРЅР°С‚Рµ
     public override void OnJoinedRoom()
     {
         Debug.Log("Joined Room. Players in room: " + PhotonNetwork.CurrentRoom.PlayerCount);
     }
 
-    // Вызывается, если подключение к серверу не удалось
+    // Р’С‹Р·С‹РІР°РµС‚СЃСЏ, РµСЃР»Рё РїРѕРґРєР»СЋС‡РµРЅРёРµ Рє СЃРµСЂРІРµСЂСѓ РЅРµ СѓРґР°Р»РѕСЃСЊ
     public override void OnDisconnected(DisconnectCause cause)
     {
         Debug.LogWarning("Disconnected from Photon: " + cause);

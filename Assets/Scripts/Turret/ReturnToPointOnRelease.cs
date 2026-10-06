@@ -1,16 +1,16 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 [RequireComponent(typeof(XRGrabInteractable))]
 public class ReturnToPointOnRelease : MonoBehaviour
 {
-    [Header("Точка возврата")]
-    public Transform returnPoint; // куда возвращать
+    [Header("РўРѕС‡РєР° РІРѕР·РІСЂР°С‚Р°")]
+    public Transform returnPoint; // РєСѓРґР° РІРѕР·РІСЂР°С‰Р°С‚СЊ
 
-    [Header("Параметры возврата")]
-    public bool smoothReturn = true; // если true — возвращаем плавно
-    public float returnSpeed = 5f;   // скорость возврата при smoothReturn
+    [Header("РџР°СЂР°РјРµС‚СЂС‹ РІРѕР·РІСЂР°С‚Р°")]
+    public bool smoothReturn = true; // РµСЃР»Рё true вЂ” РІРѕР·РІСЂР°С‰Р°РµРј РїР»Р°РІРЅРѕ
+    public float returnSpeed = 5f;   // СЃРєРѕСЂРѕСЃС‚СЊ РІРѕР·РІСЂР°С‚Р° РїСЂРё smoothReturn
 
     private XRGrabInteractable grab;
     private bool isReturning = false;
@@ -37,7 +37,7 @@ public class ReturnToPointOnRelease : MonoBehaviour
             }
             else
             {
-                // моментально
+                // РјРѕРјРµРЅС‚Р°Р»СЊРЅРѕ
                 transform.position = returnPoint.position;
                 transform.rotation = new Quaternion(0f,0f,0f,0f);
             }
@@ -48,11 +48,11 @@ public class ReturnToPointOnRelease : MonoBehaviour
     {
         if (isReturning && returnPoint != null)
         {
-            // Плавно возвращаем
+            // РџР»Р°РІРЅРѕ РІРѕР·РІСЂР°С‰Р°РµРј
             transform.position = Vector3.Lerp(transform.position, returnPoint.position, Time.deltaTime * returnSpeed);
             transform.rotation = Quaternion.Slerp(transform.rotation, returnPoint.rotation, Time.deltaTime * returnSpeed);
 
-            // Останавливаем, если достаточно близко
+            // РћСЃС‚Р°РЅР°РІР»РёРІР°РµРј, РµСЃР»Рё РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ Р±Р»РёР·РєРѕ
             if (Vector3.Distance(transform.position, returnPoint.position) < 0.01f &&
                 Quaternion.Angle(transform.rotation, returnPoint.rotation) < 1f)
             {

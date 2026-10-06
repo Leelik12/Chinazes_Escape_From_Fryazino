@@ -1,0 +1,10 @@
+root = true
+
+# Собственные скрипты проекта: UTF-8 с BOM, чтобы Visual Studio
+# на русской Windows не пересохранял их в CP1251
+[Assets/{Scripts,Sample}/**.cs]
+charset = utf-8-bom
+end_of_line = crlf
+indent_style = space
+indent_size = 4
+insert_final_newline = true

@@ -1,20 +1,20 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit.Inputs.Readers;
 using Photon.Pun;
 
 public class HandAnimationSync : MonoBehaviourPun, IPunObservable
 {
-    [Header("XR Input (только для локального игрока)")]
+    [Header("XR Input (С‚РѕР»СЊРєРѕ РґР»СЏ Р»РѕРєР°Р»СЊРЅРѕРіРѕ РёРіСЂРѕРєР°)")]
     [SerializeField] private XRInputValueReader<float> m_TriggerInput;
     [SerializeField] private XRInputValueReader<float> m_GripInput;
     [SerializeField] private bool RightHand = false;
-    [Header("Аниматор руки")]
+    [Header("РђРЅРёРјР°С‚РѕСЂ СЂСѓРєРё")]
     [SerializeField] private Animator animator;
 
-    [Header("Настройки интерполяции")]
+    [Header("РќР°СЃС‚СЂРѕР№РєРё РёРЅС‚РµСЂРїРѕР»СЏС†РёРё")]
     [Range(5f, 30f)] public float smoothSpeed = 12f;
 
-    [Header("Настройки водителя")]
+    [Header("РќР°СЃС‚СЂРѕР№РєРё РІРѕРґРёС‚РµР»СЏ")]
     [SerializeField] private float gripStatic = 1f;
     [SerializeField] private bool IsDriver = false;
     private float triggerValue;
@@ -28,17 +28,17 @@ public class HandAnimationSync : MonoBehaviourPun, IPunObservable
 
         if (photonView.IsMine)
         {
-            // Считываем значения с контроллеров (только локально)
+            // РЎС‡РёС‚С‹РІР°РµРј Р·РЅР°С‡РµРЅРёСЏ СЃ РєРѕРЅС‚СЂРѕР»Р»РµСЂРѕРІ (С‚РѕР»СЊРєРѕ Р»РѕРєР°Р»СЊРЅРѕ)
             triggerValue = m_TriggerInput.ReadValue();
             gripValue = m_GripInput.ReadValue();
 
-            // Применяем на своём аниматоре
+            // РџСЂРёРјРµРЅСЏРµРј РЅР° СЃРІРѕС‘Рј Р°РЅРёРјР°С‚РѕСЂРµ
             animator.SetFloat("Trigger", triggerValue);
             animator.SetFloat("Grip", gripValue);
         }
         else
         {
-            // Плавная интерполяция значений с сети
+            // РџР»Р°РІРЅР°СЏ РёРЅС‚РµСЂРїРѕР»СЏС†РёСЏ Р·РЅР°С‡РµРЅРёР№ СЃ СЃРµС‚Рё
             triggerValue = Mathf.Lerp(triggerValue, networkTrigger, Time.deltaTime * smoothSpeed);
             gripValue = Mathf.Lerp(gripValue, networkGrip, Time.deltaTime * smoothSpeed);
 
@@ -56,27 +56,27 @@ public class HandAnimationSync : MonoBehaviourPun, IPunObservable
         }
     }
 
-    // Синхронизация по сети
+    // РЎРёРЅС…СЂРѕРЅРёР·Р°С†РёСЏ РїРѕ СЃРµС‚Рё
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
             if (IsDriver)
             {
-                // Отправляем локальные значения другим игрокам
+                // РћС‚РїСЂР°РІР»СЏРµРј Р»РѕРєР°Р»СЊРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РґСЂСѓРіРёРј РёРіСЂРѕРєР°Рј
                 stream.SendNext(0f);
                 stream.SendNext(gripStatic);
             }
             else
             {
-                // Отправляем локальные значения другим игрокам
+                // РћС‚РїСЂР°РІР»СЏРµРј Р»РѕРєР°Р»СЊРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РґСЂСѓРіРёРј РёРіСЂРѕРєР°Рј
                 stream.SendNext(triggerValue);
                 stream.SendNext(gripValue);
             }
         }
         else
         {
-            // Получаем значения от сети
+            // РџРѕР»СѓС‡Р°РµРј Р·РЅР°С‡РµРЅРёСЏ РѕС‚ СЃРµС‚Рё
             networkTrigger = (float)stream.ReceiveNext();
             networkGrip = (float)stream.ReceiveNext();
         }

@@ -1,10 +1,10 @@
-using System.Collections.Generic;
+п»їusing System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class Magnitola : MonoBehaviour
 {
-    public static bool MusicAlreadyStarted = false;   //  добавлено
+    public static bool MusicAlreadyStarted = false;   //  РґРѕР±Р°РІР»РµРЅРѕ
 
     public AudioSource audioSource;
     public AudioClip[] fireTracks;
@@ -15,14 +15,14 @@ public class Magnitola : MonoBehaviour
 
     void Start()
     {
-        // Если музыка уже играет — блокируем повторный запуск
+        // Р•СЃР»Рё РјСѓР·С‹РєР° СѓР¶Рµ РёРіСЂР°РµС‚ вЂ” Р±Р»РѕРєРёСЂСѓРµРј РїРѕРІС‚РѕСЂРЅС‹Р№ Р·Р°РїСѓСЃРє
         if (MusicAlreadyStarted)
         {
             audioSource.enabled = false;
             return;
         }
 
-        // Если здесь — значит запускаем музыку первый раз
+        // Р•СЃР»Рё Р·РґРµСЃСЊ вЂ” Р·РЅР°С‡РёС‚ Р·Р°РїСѓСЃРєР°РµРј РјСѓР·С‹РєСѓ РїРµСЂРІС‹Р№ СЂР°Р·
         MusicAlreadyStarted = true;
         audioSource.enabled = true;
 

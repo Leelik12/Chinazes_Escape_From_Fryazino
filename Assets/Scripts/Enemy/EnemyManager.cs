@@ -1,24 +1,24 @@
-using System.Collections.Generic;
+п»їusing System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
 using TMPro;
 
 public class EnemyManager : MonoBehaviourPun
 {
-    [Header("Спавнпоинты")]
-    [Tooltip("Все точки спавна врагов")]
+    [Header("РЎРїР°РІРЅРїРѕРёРЅС‚С‹")]
+    [Tooltip("Р’СЃРµ С‚РѕС‡РєРё СЃРїР°РІРЅР° РІСЂР°РіРѕРІ")]
     [SerializeField] private Transform[] spawnPoints;
 
-    [Tooltip("Начальные точки спавна (2 врага)")]
+    [Tooltip("РќР°С‡Р°Р»СЊРЅС‹Рµ С‚РѕС‡РєРё СЃРїР°РІРЅР° (2 РІСЂР°РіР°)")]
     [SerializeField] private Transform[] initialSpawnPoints;
 
-    [Header("Префаб врага")]
+    [Header("РџСЂРµС„Р°Р± РІСЂР°РіР°")]
     [SerializeField] private GameObject enemyPrefab;
 
     [Header("UI")]
     [SerializeField] private TMP_Text killedTextUI;
 
-    [Header("Настройки")]
+    [Header("РќР°СЃС‚СЂРѕР№РєРё")]
     [SerializeField] private int enemiesPerWave = 2;
 
     private List<GameObject> activeEnemies = new List<GameObject>();
@@ -30,13 +30,13 @@ public class EnemyManager : MonoBehaviourPun
         UpdateUI();
     }
 
-    // Вызывается при старте игры из RoomController
+    // Р’С‹Р·С‹РІР°РµС‚СЃСЏ РїСЂРё СЃС‚Р°СЂС‚Рµ РёРіСЂС‹ РёР· RoomController
     public void StartGame()
     {
         if (gameStarted) return;
         gameStarted = true;
 
-        // Только мастер-клиент отвечает за спавн врагов
+        // РўРѕР»СЊРєРѕ РјР°СЃС‚РµСЂ-РєР»РёРµРЅС‚ РѕС‚РІРµС‡Р°РµС‚ Р·Р° СЃРїР°РІРЅ РІСЂР°РіРѕРІ
         if (PhotonNetwork.IsMasterClient)
         {
             SpawnInitialEnemies();
@@ -47,7 +47,7 @@ public class EnemyManager : MonoBehaviourPun
     {
         foreach (var spawn in initialSpawnPoints)
         {
-            Debug.Log($"[EnemyManager] Мастер спавнит врага в {spawn.name}");
+            Debug.Log($"[EnemyManager] РњР°СЃС‚РµСЂ СЃРїР°РІРЅРёС‚ РІСЂР°РіР° РІ {spawn.name}");
             SpawnEnemyAt(spawn.position, spawn.rotation);
         }
     }
@@ -71,7 +71,7 @@ public class EnemyManager : MonoBehaviourPun
 
         activeEnemies.Remove(enemy);
 
-        // Только мастер решает, когда начинать новую волну
+        // РўРѕР»СЊРєРѕ РјР°СЃС‚РµСЂ СЂРµС€Р°РµС‚, РєРѕРіРґР° РЅР°С‡РёРЅР°С‚СЊ РЅРѕРІСѓСЋ РІРѕР»РЅСѓ
         if (PhotonNetwork.IsMasterClient && activeEnemies.Count == 0)
         {
             SpawnRandomWave();
@@ -99,7 +99,7 @@ public class EnemyManager : MonoBehaviourPun
     {
         if (killedTextUI != null)
         {
-            killedTextUI.text = $"Убито: {killedEnemies}";
+            killedTextUI.text = $"РЈР±РёС‚Рѕ: {killedEnemies}";
         }
     }
 }

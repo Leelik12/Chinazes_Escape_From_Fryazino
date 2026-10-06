@@ -1,23 +1,23 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using Photon.Pun;
 
 [DefaultExecutionOrder(100)]
 public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
 {
-    [Header("Локальное следование")]
-    public Transform target;           // То позицию чего надо повторить
+    [Header("Р›РѕРєР°Р»СЊРЅРѕРµ СЃР»РµРґРѕРІР°РЅРёРµ")]
+    public Transform target;           // РўРѕ РїРѕР·РёС†РёСЋ С‡РµРіРѕ РЅР°РґРѕ РїРѕРІС‚РѕСЂРёС‚СЊ
     public bool followPosition = true;
     public bool followRotation = true;
 
-    [Header("Сетевая интерполяция")]
+    [Header("РЎРµС‚РµРІР°СЏ РёРЅС‚РµСЂРїРѕР»СЏС†РёСЏ")]
     [Range(1f, 60f)] public float lerpSpeed = 20f;
 
-    [Header("Настройки синхронизации")]
-    public bool useLocal = true; // Локальные координаты относительно родителя или мировые
+    [Header("РќР°СЃС‚СЂРѕР№РєРё СЃРёРЅС…СЂРѕРЅРёР·Р°С†РёРё")]
+    public bool useLocal = true; // Р›РѕРєР°Р»СЊРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЂРѕРґРёС‚РµР»СЏ РёР»Рё РјРёСЂРѕРІС‹Рµ
 
-    [Header("Специальные настройки")]
-    public bool isHandProxy = false;           // руки это или нет
-    public Vector3 handRotationOffsetEuler = Vector3.zero; // Оффсет для рук (Euler)
+    [Header("РЎРїРµС†РёР°Р»СЊРЅС‹Рµ РЅР°СЃС‚СЂРѕР№РєРё")]
+    public bool isHandProxy = false;           // СЂСѓРєРё СЌС‚Рѕ РёР»Рё РЅРµС‚
+    public Vector3 handRotationOffsetEuler = Vector3.zero; // РћС„С„СЃРµС‚ РґР»СЏ СЂСѓРє (Euler)
 
     private Vector3 networkPosition;
     private Quaternion networkRotation;
@@ -28,7 +28,7 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
 
         if (photonView.IsMine)
         {
-            // === Локальное следование ===
+            // === Р›РѕРєР°Р»СЊРЅРѕРµ СЃР»РµРґРѕРІР°РЅРёРµ ===
             if (followPosition)
             {
                 if (useLocal)
@@ -43,7 +43,7 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
                     ? Quaternion.Inverse(transform.parent.rotation) * target.rotation
                     : target.rotation;
 
-                // Оффсет применяем ТОЛЬКО у локального владельца
+                // РћС„С„СЃРµС‚ РїСЂРёРјРµРЅСЏРµРј РўРћР›Р¬РљРћ Сѓ Р»РѕРєР°Р»СЊРЅРѕРіРѕ РІР»Р°РґРµР»СЊС†Р°
                 if (isHandProxy)
                     targetRot *= Quaternion.Euler(handRotationOffsetEuler);
 
@@ -52,13 +52,13 @@ public class NetworkedTransformFollower : MonoBehaviourPun, IPunObservable
         }
         else
         {
-            // === Сетевая интерполяция ===
+            // === РЎРµС‚РµРІР°СЏ РёРЅС‚РµСЂРїРѕР»СЏС†РёСЏ ===
             if (followPosition)
                 transform.localPosition = Vector3.Lerp(transform.localPosition, networkPosition, Time.deltaTime * lerpSpeed);
 
             if (followRotation)
             {
-                // Оффсет НЕ применяем здесь!
+                // РћС„С„СЃРµС‚ РќР• РїСЂРёРјРµРЅСЏРµРј Р·РґРµСЃСЊ!
                 transform.localRotation = Quaternion.Slerp(transform.localRotation, networkRotation, Time.deltaTime * lerpSpeed);
             }
         }

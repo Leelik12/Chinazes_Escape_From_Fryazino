@@ -1,7 +1,7 @@
-using UnityEngine;
+п»їusing UnityEngine;
 
 public static class StaticHolder
-{ // значит обнулять при старте игры
+{ // Р·РЅР°С‡РёС‚ РѕР±РЅСѓР»СЏС‚СЊ РїСЂРё СЃС‚Р°СЂС‚Рµ РёРіСЂС‹
     public static bool PlayerWin; //
     public static bool PlayerLose; //
     public static string LastTime;
@@ -10,7 +10,7 @@ public static class StaticHolder
     public static float BestTimeFloat;
     public static bool Record; //
 
-    //настройки и звук
+    //РЅР°СЃС‚СЂРѕР№РєРё Рё Р·РІСѓРє
     public static float MusikVolume = 0f;
     public static float EngineVolume = 0f;
 }

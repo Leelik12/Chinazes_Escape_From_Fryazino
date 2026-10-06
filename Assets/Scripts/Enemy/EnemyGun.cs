@@ -1,4 +1,4 @@
-using UnityEngine;
+п»їusing UnityEngine;
 using Photon.Pun;
 using System.Collections;
 
@@ -11,7 +11,7 @@ public class EnemyGun : MonoBehaviourPun, IPunObservable
     public float fireRate = 0.3f;
     public float damage = 10f;
     public float range = 50f;
-    [Tooltip("Максимальный угол разброса в градусах")]
+    [Tooltip("РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СѓРіРѕР» СЂР°Р·Р±СЂРѕСЃР° РІ РіСЂР°РґСѓСЃР°С…")]
     public float spreadAngle = 5f;
 
     [Header("Rotation")]
@@ -30,7 +30,7 @@ public class EnemyGun : MonoBehaviourPun, IPunObservable
 
     private float nextFireTime = 0f;
 
-    // Для сетевой интерполяции
+    // Р”Р»СЏ СЃРµС‚РµРІРѕР№ РёРЅС‚РµСЂРїРѕР»СЏС†РёРё
     private Quaternion networkRotation;
     private float syncLerpSpeed = 10f;
 
@@ -54,7 +54,7 @@ public class EnemyGun : MonoBehaviourPun, IPunObservable
         }
         else
         {
-            // плавная интерполяция поворота
+            // РїР»Р°РІРЅР°СЏ РёРЅС‚РµСЂРїРѕР»СЏС†РёСЏ РїРѕРІРѕСЂРѕС‚Р°
             transform.rotation = Quaternion.Slerp(transform.rotation, networkRotation, Time.deltaTime * syncLerpSpeed);
         }
     }
@@ -63,12 +63,12 @@ public class EnemyGun : MonoBehaviourPun, IPunObservable
     {
         if (target == null) return;
 
-        // Плавное наведение пулемета на игрока
+        // РџР»Р°РІРЅРѕРµ РЅР°РІРµРґРµРЅРёРµ РїСѓР»РµРјРµС‚Р° РЅР° РёРіСЂРѕРєР°
         Vector3 targetDir = (target.position - transform.position).normalized;
         Quaternion lookRot = Quaternion.LookRotation(targetDir);
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRot, rotationSpeed * Time.deltaTime);
 
-        // Стрельба
+        // РЎС‚СЂРµР»СЊР±Р°
         if (Time.time >= nextFireTime)
         {
             nextFireTime = Time.time + fireRate;
@@ -79,23 +79,23 @@ public class EnemyGun : MonoBehaviourPun, IPunObservable
     [PunRPC]
     private void ShootRPC()
     {
-        // Разброс
+        // Р Р°Р·Р±СЂРѕСЃ
         Vector3 direction = transform.forward;
         direction = Quaternion.Euler(
             Random.Range(-spreadAngle, spreadAngle),
             Random.Range(-spreadAngle, spreadAngle),
             0) * direction;
 
-        // Muzzle flash и свет
+        // Muzzle flash Рё СЃРІРµС‚
         if (muzzleFlash != null)
             muzzleFlash.Play();
         if (muzzleLight != null)
             StartCoroutine(MuzzleLightFlash());
 
-        // Raycast для попаданий
+        // Raycast РґР»СЏ РїРѕРїР°РґР°РЅРёР№
         if (Physics.Raycast(transform.position, direction, out RaycastHit hit, range, hitLayerMask, QueryTriggerInteraction.Ignore))
         {
-            // Эффекты попадания
+            // Р­С„С„РµРєС‚С‹ РїРѕРїР°РґР°РЅРёСЏ
             if (hitEffectPrefabDust != null)
             {
                 GameObject fx1 = Instantiate(hitEffectPrefabDust, hit.point + hit.normal * 0.01f, Quaternion.LookRotation(hit.normal));
@@ -107,7 +107,7 @@ public class EnemyGun : MonoBehaviourPun, IPunObservable
                 Destroy(fx2, hitEffectLifetime);
             }
 
-            // Наносим урон игроку
+            // РќР°РЅРѕСЃРёРј СѓСЂРѕРЅ РёРіСЂРѕРєСѓ
             PlayerHealth player = hit.collider.GetComponentInParent<PlayerHealth>();
             if (player != null)
             {
@@ -123,17 +123,17 @@ public class EnemyGun : MonoBehaviourPun, IPunObservable
         muzzleLight.enabled = false;
     }
 
-    // --- Сетевая передача вращения ---
+    // --- РЎРµС‚РµРІР°СЏ РїРµСЂРµРґР°С‡Р° РІСЂР°С‰РµРЅРёСЏ ---
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
-            // только мастер (владелец) передаёт своё направление
+            // С‚РѕР»СЊРєРѕ РјР°СЃС‚РµСЂ (РІР»Р°РґРµР»РµС†) РїРµСЂРµРґР°С‘С‚ СЃРІРѕС‘ РЅР°РїСЂР°РІР»РµРЅРёРµ
             stream.SendNext(transform.rotation);
         }
         else
         {
-            // клиенты принимают и плавно интерполируют
+            // РєР»РёРµРЅС‚С‹ РїСЂРёРЅРёРјР°СЋС‚ Рё РїР»Р°РІРЅРѕ РёРЅС‚РµСЂРїРѕР»РёСЂСѓСЋС‚
             networkRotation = (Quaternion)stream.ReceiveNext();
         }
     }
