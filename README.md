@@ -85,13 +85,15 @@ Assets/
     2DOF/                      — отправка телеметрии на платформу 2DOF (сборка TwoDOF)
     Futurift/                  — контроллер FutuRift, UDP 127.0.0.1:6065 или COM-порт (сборка Futurift)
     LogitechG29/               — поддержка руля Logitech G29 (Sample/ — сборка LogitechG29.Sample)
-  Resources/                   — префабы для Photon: машина игроков, враги, турель, пистолет, эффекты, XR Origin
+  Resources/                   — EnemySedan (создаётся через PhotonNetwork.Instantiate), пистолет стрелка,
+                                 эффекты попаданий Dust/Sparks, XR Origin
   Photon/                      — Photon PUN 2
   Bhaptics/                    — bHaptics SDK2
   Content/                     — сторонние ассеты (здания, машины, деревья, оружие, текстуры)
   RoadArchitect/               — инструмент построения дорог
   Settings/                    — ассеты URP (PC и Mobile)
   XR/, XRI/                    — настройки XR и XR Interaction Toolkit
+GSD/                           — история террейна Road Architect для дорог SovietCity
 Packages/                      — манифест пакетов Unity
 ProjectSettings/               — настройки проекта
 ```

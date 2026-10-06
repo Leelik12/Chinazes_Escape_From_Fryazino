@@ -256,19 +256,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6202324061324241678}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: PlayerHealth, Assembly-CSharp
-        m_MethodName: back2Main
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &812624265283118969
 GameObject:
   m_ObjectHideFlags: 0
@@ -4344,7 +4332,11 @@ MonoBehaviour:
     m_InputActionReference: {fileID: 6558622148059887818, guid: c348712bda248c246b8c49b3db54643f, type: 3}
     m_ObjectReferenceObject: {fileID: 0}
     m_ManualValue: 0
+  RightHand: 0
   animator: {fileID: 5865648923455963039}
+  smoothSpeed: 12
+  gripStatic: 1
+  IsDriver: 0
 --- !u!95 &5865648923455963039 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 109434732388006827, guid: 65847589f926b734d9eaed6e25f0046b, type: 3}
@@ -4584,7 +4576,11 @@ MonoBehaviour:
     m_InputActionReference: {fileID: -1758520528963094988, guid: c348712bda248c246b8c49b3db54643f, type: 3}
     m_ObjectReferenceObject: {fileID: 0}
     m_ManualValue: 0
+  RightHand: 0
   animator: {fileID: 2272610753421253173}
+  smoothSpeed: 12
+  gripStatic: 1
+  IsDriver: 0
 --- !u!4 &2272610753431139811 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5686134208185136530, guid: 1fd3a7c43c8190f4d8c167ebde694364, type: 3}
