@@ -50,6 +50,10 @@ namespace RacingProject.Car
         private int currentGear;
         private float brakeInput;
 
+        // Для приборов: передача (0 — нейтраль, 7 — задняя) и скорость по Rigidbody
+        public int CurrentGear => currentGear;
+        public float SpeedKmh => rb != null ? rb.linearVelocity.magnitude * 3.6f : 0f;
+
         [Header("Импульс для освобождения")]
         public float impulseForce = 5000f;      // сила импульса
         public float impulseCooldown = 5f;      // задержка между импульсами (в секундах)

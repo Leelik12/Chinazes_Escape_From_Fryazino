@@ -30,6 +30,10 @@ namespace RacingProject.Turret
         private float currentHeat = 0f;
         private bool isOverheated = false;
 
+        // Нагрев 0–1 и признак перегрева для приборов: у напарника приходят по сети
+        public float Heat01 => maxHeat > 0f ? currentHeat / maxHeat : 0f;
+        public bool IsOverheated => isOverheated;
+
         [Header("Подвижные части")]
         [SerializeField] private Transform movablePart;
         [SerializeField] private float recoilDistance = 0.2f;
@@ -253,6 +257,21 @@ namespace RacingProject.Turret
             stream.Serialize(ref count);
             if (!stream.IsWriting)
                 ReplayRemoteShots(count);
+
+            // Нагрев — для приборов водителя; байта хватает для шкалы
+            byte heat = (byte)Mathf.RoundToInt(Mathf.Clamp01(Heat01) * 255f);
+            bool overheated = isOverheated;
+            stream.Serialize(ref heat);
+            stream.Serialize(ref overheated);
+            if (!stream.IsWriting)
+            {
+                currentHeat = heat / 255f * maxHeat;
+                isOverheated = overheated;
+                if (heatSlider != null)
+                    heatSlider.value = currentHeat;
+                if (uiGradient != null)
+                    uiGradient.SetOverheat(currentHeat, maxHeat);
+            }
         }
 
         private void ReplayRemoteShots(byte count)

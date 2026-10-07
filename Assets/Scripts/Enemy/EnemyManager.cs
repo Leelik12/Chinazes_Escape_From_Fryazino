@@ -69,6 +69,9 @@ namespace RacingProject.Enemy
         public int Wave => wave.Value;
         public int Kills => killedEnemies.Value;
         public int Score => score.Value;
+        // Для приборов: множитель комбо и прочность босса 0–1 (меньше нуля — босса нет)
+        public int Combo => combo.Value;
+        public float BossHealth01 => bossHealth.Value;
 
         private List<GameObject> activeEnemies = new List<GameObject>();
         private int pendingReinforcements;

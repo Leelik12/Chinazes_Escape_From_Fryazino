@@ -1,7 +1,12 @@
 {
     "name": "RacingProject.Editor",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "RacingProject",
+        "Unity.Netcode.Runtime",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
+    ],
     "includePlatforms": [
         "Editor"
     ],

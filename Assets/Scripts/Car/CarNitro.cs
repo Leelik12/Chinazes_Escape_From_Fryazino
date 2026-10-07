@@ -47,6 +47,10 @@ namespace RacingProject.Car
 
         private float charge = 1f;
         private bool active;
+
+        // Для приборов: одинаково у хоста и клиента
+        public float Charge01 => IsSpawned ? networkCharge.Value : 1f;
+        public bool Boosting => IsSpawned && boosting.Value;
         private bool shownBoosting;
         private int shownPercent = -1;
 
