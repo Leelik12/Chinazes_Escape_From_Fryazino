@@ -53,6 +53,8 @@ namespace RacingProject.Car
         // Для приборов: передача (0 — нейтраль, 7 — задняя) и скорость по Rigidbody
         public int CurrentGear => currentGear;
         public float SpeedKmh => rb != null ? rb.linearVelocity.magnitude * 3.6f : 0f;
+        // Угол поворота модели руля, градусы (может быть больше 360)
+        public float SteeringWheelAngle => currentVisualAngle;
 
         [Header("Импульс для освобождения")]
         public float impulseForce = 5000f;      // сила импульса
