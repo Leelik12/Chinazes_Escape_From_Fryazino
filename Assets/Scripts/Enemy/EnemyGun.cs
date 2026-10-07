@@ -33,8 +33,13 @@ namespace RacingProject.Enemy
         public GameObject hitEffectPrefabSparks;
         public float hitEffectLifetime = 2f;
         public LayerMask hitLayerMask = ~0;
+        [Tooltip("Трассер — каждая такая пуля (0 — без трассеров)")]
+        public int tracerEvery = 2;
+        [Tooltip("Цвет трассера, HDR: зелёный, чтобы встречный огонь отличался от своего")]
+        [ColorUsage(false, true)] public Color tracerColor = new Color(0.8f, 5f, 0.9f);
 
         private float nextFireTime = 0f;
+        private int shotsSinceTracer;
 
         // Для сетевой интерполяции: поворот пулемёта задаёт сервер
         private readonly NetworkVariable<Quaternion> networkRotation = new NetworkVariable<Quaternion>(Quaternion.identity);
@@ -115,18 +120,32 @@ namespace RacingProject.Enemy
                 }
             }
 
-            ShootRpc(hasHit, hit.point, hit.normal);
+            // Без попадания трассер летит на дальность выстрела
+            Vector3 endPoint = hasHit ? hit.point : transform.position + direction * range;
+            ShootRpc(hasHit, endPoint, hit.normal);
         }
 
         [Rpc(SendTo.Everyone)]
-        private void ShootRpc(bool hasHit, Vector3 hitPoint, Vector3 hitNormal)
+        private void ShootRpc(bool hasHit, Vector3 endPoint, Vector3 hitNormal)
         {
             ShotEffects.PlayMuzzle(this, muzzleFlash, muzzleLight, lightDuration);
             if (shotAudio != null && shotSound != null)
                 shotAudio.PlayOneShot(shotSound);
 
+            if (tracerEvery > 0 && ++shotsSinceTracer >= tracerEvery)
+            {
+                shotsSinceTracer = 0;
+                Vector3 muzzle = muzzleFlash != null ? muzzleFlash.transform.position : transform.position;
+                ShotEffects.SpawnTracer(muzzle, endPoint, tracerColor);
+            }
+
             if (hasHit)
-                ShotEffects.SpawnImpact(hitEffectPrefabDust, hitEffectPrefabSparks, hitPoint, hitNormal, 0.01f, hitEffectLifetime);
+            {
+                ShotEffects.SpawnImpact(hitEffectPrefabDust, hitEffectPrefabSparks, endPoint, hitNormal, 0.01f, hitEffectLifetime);
+                // След ставим по лучу в точку попадания: в RPC приходит только точка и нормаль
+                if (Physics.Raycast(endPoint + hitNormal * 0.05f, -hitNormal, out RaycastHit surface, 0.1f, hitLayerMask, QueryTriggerInteraction.Ignore))
+                    ShotEffects.SpawnBulletHole(surface);
+            }
         }
     }
 }

@@ -66,8 +66,13 @@ namespace RacingProject.Turret
         public float effectOffset = 0.01f;
         [Tooltip("Отметка попадания по врагу (видит только стрелок)")]
         [SerializeField] private GameObject hitMarkerPrefab;
+        [Tooltip("Трассер — каждая такая пуля (0 — без трассеров)")]
+        [SerializeField] private int tracerEvery = 3;
+        [Tooltip("Цвет трассера, HDR: яркость больше 1 даёт свечение")]
+        [SerializeField, ColorUsage(false, true)] private Color tracerColor = new Color(6f, 1.6f, 0.4f);
 
         private float nextFireTime = 0f;
+        private int shotsSinceTracer;
 
         // --- Данные для синхронизации позиции ---
         private Vector3 networkLocalPos;
@@ -178,10 +183,8 @@ namespace RacingProject.Turret
         {
             PlayShotFeedback();
 
-            if (Physics.Raycast(origin, direction, out RaycastHit hit, range, hitLayerMask, QueryTriggerInteraction.Ignore))
+            if (CastShot(origin, direction, out RaycastHit hit))
             {
-                ShotEffects.SpawnImpact(hitEffectPrefabDust, hitEffectPrefabSparks, hit.point, hit.normal, effectOffset, hitEffectLifetime);
-
                 EnemyHealth enemy = hit.collider.GetComponentInParent<EnemyHealth>();
                 if (enemy != null)
                 {
@@ -192,6 +195,26 @@ namespace RacingProject.Turret
             }
         }
 
+
+        // Полёт пули без урона: трассер, искры и след. У напарника луч идёт из ствола по позе пулемёта из сети,
+        // поэтому он видит те же попадания, что и стрелок
+        private bool CastShot(Vector3 origin, Vector3 direction, out RaycastHit hit)
+        {
+            bool hasHit = Physics.Raycast(origin, direction, out hit, range, hitLayerMask, QueryTriggerInteraction.Ignore);
+
+            if (tracerEvery > 0 && ++shotsSinceTracer >= tracerEvery)
+            {
+                shotsSinceTracer = 0;
+                ShotEffects.SpawnTracer(origin, hasHit ? hit.point : origin + direction * range, tracerColor);
+            }
+
+            if (hasHit)
+            {
+                ShotEffects.SpawnImpact(hitEffectPrefabDust, hitEffectPrefabSparks, hit.point, hit.normal, effectOffset, hitEffectLifetime);
+                ShotEffects.SpawnBulletHole(hit);
+            }
+            return hasHit;
+        }
 
         // Вспышка, звук и движение затвора — одинаково у стрелка и у второго игрока
         private void PlayShotFeedback()
@@ -287,7 +310,11 @@ namespace RacingProject.Turret
             int newShots = (byte)(count - remoteShotCount);
             remoteShotCount = count;
             for (int i = 0; i < Mathf.Min(newShots, MaxReplayedShots); i++)
+            {
                 PlayShotFeedback();
+                if (firePoint != null)
+                    CastShot(firePoint.position, firePoint.forward, out _);
+            }
         }
     }
 }
