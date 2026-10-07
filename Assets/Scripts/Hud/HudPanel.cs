@@ -71,8 +71,20 @@ namespace RacingProject.Hud
                 Expanded = !Expanded;
         }
 
-        // Вызывать из OnGUI владельца; body — текст с rich text, строки через \n
-        public void Draw(string body)
+        // Стиль текста панелей, чтобы дополнительный блок подписывал элементы так же
+        public static GUIStyle TextStyle
+        {
+            get
+            {
+                EnsureStyles();
+                return textStyle;
+            }
+        }
+
+        // Вызывать из OnGUI владельца; body — текст с rich text, строки через \n.
+        // В развёрнутой панели под текстом выделяется место extraHeight, в нём рисует drawExtra
+        // (координаты — в пикселях экрана высотой 1080)
+        public void Draw(string body, float extraHeight = 0f, System.Action<Rect> drawExtra = null)
         {
             EnsureStyles();
 
@@ -87,7 +99,9 @@ namespace RacingProject.Hud
 
             GUIContent content = new GUIContent(text);
             float textWidth = width - Padding * 2f;
-            height = textStyle.CalcHeight(content, textWidth) + Padding * 2f;
+            float textHeight = textStyle.CalcHeight(content, textWidth);
+            bool hasExtra = Expanded && drawExtra != null && extraHeight > 0f;
+            height = textHeight + Padding * 2f + (hasExtra ? Spacing + extraHeight : 0f);
 
             float screenWidth = Screen.width / scale;
             float offset = Margin + OffsetBefore();
@@ -96,7 +110,9 @@ namespace RacingProject.Hud
 
             Rect rect = new Rect(x, y, width, height);
             GUI.DrawTexture(rect, background);
-            GUI.Label(new Rect(x + Padding, y + Padding, textWidth, height - Padding * 2f), content, textStyle);
+            GUI.Label(new Rect(x + Padding, y + Padding, textWidth, textHeight), content, textStyle);
+            if (hasExtra)
+                drawExtra(new Rect(x + Padding, y + Padding + textHeight + Spacing, textWidth, extraHeight));
 
             GUI.matrix = previousMatrix;
         }
