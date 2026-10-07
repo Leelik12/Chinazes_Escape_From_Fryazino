@@ -28,6 +28,10 @@ namespace RacingProject.Turret
         [Tooltip("Прицел мышью в режиме монитора")]
         [SerializeField] private DesktopGunnerAim desktopAim;
 
+        [Header("Станок")]
+        [Tooltip("Поворотная часть станка со щитами: следует за пулемётом только по рысканью")]
+        [SerializeField] private Transform yawPivot;
+
         private float yaw;
         private float pitch;
 
@@ -52,6 +56,14 @@ namespace RacingProject.Turret
             yaw = Mathf.MoveTowards(yaw, targetYaw, step);
             pitch = Mathf.MoveTowards(pitch, targetPitch, step);
             ApplyPose();
+        }
+
+        // У напарника позу пулемёта выставляет VRGun по сети, поэтому рысканье станка берём из неё у обоих игроков
+        private void LateUpdate()
+        {
+            if (yawPivot == null) return;
+            float currentYaw = transform.localEulerAngles.y;
+            yawPivot.localRotation = Quaternion.Euler(0f, currentYaw, 0f);
         }
 
         private bool TryGetAimDirection(out Vector3 direction)
