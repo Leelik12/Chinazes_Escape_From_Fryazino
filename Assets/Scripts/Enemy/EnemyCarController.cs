@@ -34,6 +34,21 @@ namespace RacingProject.Enemy
         public Transform rearLeftMesh;
         public Transform rearRightMesh;
 
+        [Header("Extra Wheels (middle axles)")]
+        [Tooltip("Колёса средних осей у многоосных машин; ведущие и тормозят вместе с остальными")]
+        public WheelCollider[] extraWheels = new WheelCollider[0];
+        public Transform[] extraWheelMeshes = new Transform[0];
+        [Tooltip("Крутящий момент на все колёса, а не только на передние")]
+        public bool driveAllWheels;
+
+        [Header("Ramming")]
+        [Tooltip("Таран: машина не держит дистанцию, а вблизи едет прямо в упреждённую точку игрока")]
+        public bool ramTarget;
+        [Tooltip("С этого расстояния таран перестаёт ехать по навигации и бьёт напрямую")]
+        public float ramDistance = 45f;
+        [Tooltip("Упреждение по скорости игрока, сек")]
+        public float ramLeadTime = 0.5f;
+
         [Header("Reverse Logic")]
         public float reverseDuration = 1.6f;
         public float stuckSpeedThreshold = 0.4f;
@@ -50,6 +65,7 @@ namespace RacingProject.Enemy
         private float chosenReverseSteer;
 
         private float repathTimer;
+        private Rigidbody targetBody;
 
         // Колёса у клиента: машина кинематическая, WheelCollider не крутятся,
         // поэтому вращение мешей считается по пройденному пути, а угол руля задаёт сервер
@@ -84,6 +100,8 @@ namespace RacingProject.Enemy
                 GameObject playerCar = GameObject.FindWithTag(Tags.Car);
                 if (playerCar != null) target = playerCar.transform;
             }
+            if (target != null)
+                targetBody = target.GetComponentInParent<Rigidbody>();
 
             lastRemotePosition = transform.position;
         }
@@ -118,8 +136,15 @@ namespace RacingProject.Enemy
             }
 
             Vector3 worldTarget = navigatorAgent.steeringTarget;
-            Vector3 localTarget = transform.InverseTransformPoint(worldTarget);
             float distanceToPlayer = Vector3.Distance(transform.position, target.position);
+            // Вблизи таран едет не по пути навигации, а прямо в точку, где игрок будет через ramLeadTime
+            if (ramTarget && distanceToPlayer < ramDistance)
+            {
+                worldTarget = target.position;
+                if (targetBody != null)
+                    worldTarget += targetBody.linearVelocity * ramLeadTime;
+            }
+            Vector3 localTarget = transform.InverseTransformPoint(worldTarget);
 
             float forwardSpeed = Vector3.Dot(rb.linearVelocity, transform.forward);
             if (Mathf.Abs(forwardSpeed) < stuckSpeedThreshold)
@@ -134,8 +159,7 @@ namespace RacingProject.Enemy
                 reverseTimer -= Time.fixedDeltaTime;
                 frontLeftWheel.steerAngle = chosenReverseSteer;
                 frontRightWheel.steerAngle = chosenReverseSteer;
-                frontLeftWheel.motorTorque = -reverseForce;
-                frontRightWheel.motorTorque = -reverseForce;
+                SetMotorTorque(-reverseForce);
                 ApplyBrake(0f);
 
                 if (reverseTimer <= 0f && !frontVeryClose)
@@ -160,16 +184,14 @@ namespace RacingProject.Enemy
                         frontLeftWheel.steerAngle = steerAngle;
                         frontRightWheel.steerAngle = steerAngle;
 
-                        frontLeftWheel.motorTorque = motorForce;
-                        frontRightWheel.motorTorque = motorForce;
+                        SetMotorTorque(motorForce);
                         ApplyBrake(0f);
                     }
                     else
                     {
                         frontLeftWheel.steerAngle = 0f;
                         frontRightWheel.steerAngle = 0f;
-                        frontLeftWheel.motorTorque = 0f;
-                        frontRightWheel.motorTorque = 0f;
+                        SetMotorTorque(0f);
                         ApplyBrake(brakeForce);
                     }
                 }
@@ -209,12 +231,25 @@ namespace RacingProject.Enemy
                 chosenReverseSteer = (Random.value > 0.5f ? maxSteerAngle : -maxSteerAngle);
         }
 
+        private void SetMotorTorque(float torque)
+        {
+            frontLeftWheel.motorTorque = torque;
+            frontRightWheel.motorTorque = torque;
+            if (!driveAllWheels) return;
+            rearLeftWheel.motorTorque = torque;
+            rearRightWheel.motorTorque = torque;
+            foreach (WheelCollider wheel in extraWheels)
+                wheel.motorTorque = torque;
+        }
+
         private void ApplyBrake(float brake)
         {
             frontLeftWheel.brakeTorque = brake;
             frontRightWheel.brakeTorque = brake;
             rearLeftWheel.brakeTorque = brake;
             rearRightWheel.brakeTorque = brake;
+            foreach (WheelCollider wheel in extraWheels)
+                wheel.brakeTorque = brake;
         }
 
         private void UpdateWheelPoses()
@@ -223,6 +258,8 @@ namespace RacingProject.Enemy
             UpdateWheelPose(frontRightWheel, frontRightMesh);
             UpdateWheelPose(rearLeftWheel, rearLeftMesh);
             UpdateWheelPose(rearRightWheel, rearRightMesh);
+            for (int i = 0; i < extraWheels.Length && i < extraWheelMeshes.Length; i++)
+                UpdateWheelPose(extraWheels[i], extraWheelMeshes[i]);
         }
 
         private void UpdateWheelPose(WheelCollider col, Transform mesh)
@@ -244,6 +281,8 @@ namespace RacingProject.Enemy
             SetRemoteWheelRotation(frontRightWheel, frontRightMesh, networkSteerAngle.Value);
             SetRemoteWheelRotation(rearLeftWheel, rearLeftMesh, 0f);
             SetRemoteWheelRotation(rearRightWheel, rearRightMesh, 0f);
+            for (int i = 0; i < extraWheels.Length && i < extraWheelMeshes.Length; i++)
+                SetRemoteWheelRotation(extraWheels[i], extraWheelMeshes[i], 0f);
         }
 
         private void SetRemoteWheelRotation(WheelCollider col, Transform mesh, float steer)

@@ -25,6 +25,10 @@ namespace RacingProject.Enemy
         [Tooltip("Босс выезжает в каждой такой волне (0 — без босса)")]
         [SerializeField] private int bossEveryWaves = 5;
 
+        [Header("Особые враги")]
+        [Tooltip("Таран, гранатомётчик и т. п.: в волнах после стартовой могут выехать вместо обычного врага")]
+        [SerializeField] private SpecialEnemy[] specialEnemies = new SpecialEnemy[0];
+
         [Header("Очки")]
         [Tooltip("Машина игроков: очки за выживание идут, пока она цела")]
         [SerializeField] private PlayerHealth carHealth;
@@ -73,7 +77,21 @@ namespace RacingProject.Enemy
         public int Combo => combo.Value;
         public float BossHealth01 => bossHealth.Value;
 
+        [System.Serializable]
+        private class SpecialEnemy
+        {
+            [Tooltip("Префаб с NetworkObject, зарегистрированный в списке сетевых префабов")]
+            public GameObject prefab;
+            [Tooltip("Начиная с этой волны")]
+            public int fromWave = 3;
+            [Tooltip("Шанс, что очередной враг волны окажется этим")]
+            [Range(0f, 1f)] public float chance = 0.3f;
+            [Tooltip("Больше стольких в одной волне не бывает")]
+            public int maxPerWave = 1;
+        }
+
         private List<GameObject> activeEnemies = new List<GameObject>();
+        private readonly Dictionary<GameObject, int> specialsThisWave = new Dictionary<GameObject, int>();
         private int pendingReinforcements;
         private bool gameStarted = false;
         private EnemyHealth boss;
@@ -184,6 +202,8 @@ namespace RacingProject.Enemy
             float damageMultiplier = GetMultiplier(damageGrowthPerWave, wavesPassed);
             foreach (EnemyGun gun in enemy.GetComponentsInChildren<EnemyGun>(true))
                 gun.damage *= damageMultiplier;
+            foreach (EnemyRocketLauncher launcher in enemy.GetComponentsInChildren<EnemyRocketLauncher>(true))
+                launcher.damage *= damageMultiplier;
         }
 
         private float GetMultiplier(float growthPerWave, int wavesPassed)
@@ -216,6 +236,7 @@ namespace RacingProject.Enemy
         private void SpawnRandomWave()
         {
             wave.Value++;
+            specialsThisWave.Clear();
 
             List<Transform> wavePoints = GetWaveSpawnPoints();
             if (wavePoints.Count == 0) return;
@@ -244,7 +265,7 @@ namespace RacingProject.Enemy
                 Transform chosen = availablePoints[index];
                 availablePoints.RemoveAt(index);
 
-                SpawnEnemyAt(chosen.position, chosen.rotation);
+                SpawnEnemyAt(PickWavePrefab(), chosen.position, chosen.rotation);
                 spawned++;
             }
 
@@ -262,8 +283,26 @@ namespace RacingProject.Enemy
 
                 Transform chosen = wavePoints[Random.Range(0, wavePoints.Count)];
                 pendingReinforcements--;
-                SpawnEnemyAt(chosen.position, chosen.rotation);
+                SpawnEnemyAt(PickWavePrefab(), chosen.position, chosen.rotation);
             }
+        }
+
+        // Обычный враг или, с заданным шансом, один из особых, которым уже пора и которых в волне ещё мало
+        private GameObject PickWavePrefab()
+        {
+            int start = Random.Range(0, Mathf.Max(1, specialEnemies.Length));
+            for (int i = 0; i < specialEnemies.Length; i++)
+            {
+                SpecialEnemy special = specialEnemies[(start + i) % specialEnemies.Length];
+                if (special.prefab == null || wave.Value < special.fromWave) continue;
+
+                specialsThisWave.TryGetValue(special.prefab, out int already);
+                if (already >= special.maxPerWave || Random.value >= special.chance) continue;
+
+                specialsThisWave[special.prefab] = already + 1;
+                return special.prefab;
+            }
+            return enemyPrefab;
         }
 
         // Стартовые точки рядом с машиной игроков, в волнах после первой их не используем
