@@ -22,6 +22,7 @@ namespace RacingProject.EditorTools
             WriteWav(Path.Combine(OutputFolder, "EnemyEngine.wav"), SynthesizeEngine(new System.Random(31)));
             WriteWav(Path.Combine(OutputFolder, "Nitro.wav"), SynthesizeNitro(new System.Random(41)));
             WriteWav(Path.Combine(OutputFolder, "Pickup.wav"), SynthesizePickup());
+            WriteWav(Path.Combine(OutputFolder, "HeavyShot.wav"), SynthesizeHeavyShot(new System.Random(53)));
             AssetDatabase.Refresh();
             Debug.Log("Звуки сгенерированы в " + OutputFolder);
         }
@@ -110,6 +111,63 @@ namespace RacingProject.EditorTools
             FadeOut(samples, 0.1f);
             Normalize(samples, 0.9f, softClip: true);
             return samples;
+        }
+
+        // Выстрел крупнокалиберного пулемёта игроков: тяжелее выстрела врага — ниже и дольше удар,
+        // лязг затвора через 25 мс и два отражения от домов, приглушённые фильтром
+        private static float[] SynthesizeHeavyShot(System.Random random)
+        {
+            float duration = 0.7f;
+            int length = (int)(duration * SampleRate);
+            var dry = new float[length];
+
+            float body = 0f, phase = 0f, clackLow = 0f, clackHigh = 0f;
+            for (int i = 0; i < length; i++)
+            {
+                float t = (float)i / SampleRate;
+                float noise = (float)(random.NextDouble() * 2.0 - 1.0);
+
+                float crack = noise * Mathf.Exp(-t / 0.004f);
+                body += OnePoleCoefficient(Mathf.Lerp(250f, 2500f, Mathf.Exp(-t / 0.04f))) * (noise - body);
+                float bodyEnvelope = (1f - Mathf.Exp(-t / 0.001f)) * Mathf.Exp(-t / 0.09f);
+
+                float frequency = Mathf.Lerp(45f, 110f, Mathf.Exp(-t / 0.04f));
+                phase += 2f * Mathf.PI * frequency / SampleRate;
+                float thump = Mathf.Sin(phase) * Mathf.Exp(-t / 0.1f);
+
+                // Лязг затвора: полоса шума около 2–4 кГц
+                float clackTime = t - 0.025f;
+                float clack = 0f;
+                if (clackTime > 0f)
+                {
+                    clackLow += OnePoleCoefficient(4000f) * (noise - clackLow);
+                    clackHigh += OnePoleCoefficient(2000f) * (clackLow - clackHigh);
+                    clack = (clackLow - clackHigh) * Mathf.Exp(-clackTime / 0.012f);
+                }
+
+                dry[i] = crack * 0.7f + body * bodyEnvelope * 3f + thump * 1.1f + clack * 1.5f;
+            }
+
+            // Эхо: задержанные копии через фильтр низких частот
+            var samples = (float[])dry.Clone();
+            AddEcho(samples, dry, 0.07f, 0.35f, 900f);
+            AddEcho(samples, dry, 0.16f, 0.2f, 600f);
+
+            FadeOut(samples, 0.2f);
+            Normalize(samples, 0.9f, softClip: true);
+            return samples;
+        }
+
+        private static void AddEcho(float[] target, float[] source, float delay, float gain, float cutoff)
+        {
+            int offset = (int)(delay * SampleRate);
+            float coefficient = OnePoleCoefficient(cutoff);
+            float filtered = 0f;
+            for (int i = offset; i < target.Length; i++)
+            {
+                filtered += coefficient * (source[i - offset] - filtered);
+                target[i] += filtered * gain;
+            }
         }
 
         // Двигатель врага, бесшовная петля: вспышки в цилиндрах с частотой 40 Гц (ровно 40 периодов

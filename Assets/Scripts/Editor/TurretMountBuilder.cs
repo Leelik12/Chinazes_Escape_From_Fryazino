@@ -32,6 +32,7 @@ namespace RacingProject.EditorTools
             SaveMesh(BuildMount(), "TurretMount");
             SaveMesh(BuildGunWithoutScope(), "MachineGun_NoScope");
             EnsureArmorMaterial();
+            EnsureBrassMaterial();
             AssetDatabase.SaveAssets();
             Debug.Log("Пулемётная позиция собрана в " + OutputFolder);
         }
@@ -136,6 +137,20 @@ namespace RacingProject.EditorTools
             AssetDatabase.CreateAsset(material, path);
         }
 
+        // Латунь гильз: материал частиц, потому что гильзы — частицы-меши выбрасывателя у MachineGunRecoil
+        private static void EnsureBrassMaterial()
+        {
+            string path = OutputFolder + "/BrassCasing.mat";
+            if (AssetDatabase.LoadAssetAtPath<Material>(path) != null) return;
+
+            var material = new Material(Shader.Find("Universal Render Pipeline/Particles/Lit"));
+            material.SetColor("_BaseColor", new Color(0.85f, 0.62f, 0.25f));
+            material.SetFloat("_Metallic", 1f);
+            material.SetFloat("_Smoothness", 0.7f);
+            material.enableInstancing = true;
+            AssetDatabase.CreateAsset(material, path);
+        }
+
         private static void SaveMesh(Mesh mesh, string name)
         {
             string path = OutputFolder + "/" + name + ".asset";
@@ -150,6 +165,8 @@ namespace RacingProject.EditorTools
                 existing.SetNormals(mesh.normals);
                 existing.SetTangents(mesh.tangents);
                 existing.SetUVs(0, mesh.uv);
+                if (mesh.uv2.Length > 0) existing.SetUVs(1, mesh.uv2);
+                if (mesh.colors32.Length > 0) existing.SetColors(mesh.colors32);
                 existing.subMeshCount = mesh.subMeshCount;
                 for (int i = 0; i < mesh.subMeshCount; i++)
                     existing.SetTriangles(mesh.GetTriangles(i), i);

@@ -34,6 +34,8 @@ namespace RacingProject.Turret
         [SerializeField] private Transform movablePart;
         [SerializeField] private float recoilDistance = 0.2f;
         [SerializeField] private float recoilDuration = 0.1f;
+        [Tooltip("Отдача и гильзы пулемёта на крыше (необязательно)")]
+        [SerializeField] private MachineGunRecoil gunRecoil;
         private bool isRecoiling = false;
         private Vector3 initialLocalPos;
 
@@ -192,6 +194,7 @@ namespace RacingProject.Turret
         {
             ShotEffects.PlayMuzzle(this, muzzleFlash, muzzleLight, lightDuration);
             if (audioSource != null && shotSound != null) audioSource.PlayOneShot(shotSound);
+            if (gunRecoil != null) gunRecoil.Kick();
             StartCoroutine(MoveRecoil());
         }
 
