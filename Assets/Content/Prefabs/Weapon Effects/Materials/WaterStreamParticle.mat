@@ -27,7 +27,6 @@ Material:
   m_ValidKeywords:
   - _ALPHAPREMULTIPLY_ON
   - _EMISSION
-  - _NORMALMAP
   - _SPECULAR_SETUP
   - _SURFACE_TYPE_TRANSPARENT
   m_InvalidKeywords:
@@ -104,6 +103,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
     - _Blend: 0
