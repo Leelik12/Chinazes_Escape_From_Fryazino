@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace RacingProject.Enemy
 {
-    // Осевые линии дорог для ИИ врагов: точки через несколько метров вдоль каждой дороги.
-    // Заполняется в редакторе по сплайнам Road Architect (Tools/Unity/BakeRoadNetwork.cs): сборка RacingProject
-    // не видит код Road Architect, поэтому линии хранятся в сцене готовыми.
+    // Осевые линии дорог: точки через 2 м вдоль каждой дороги. Единственный источник трассы: по ним ездит ИИ врагов,
+    // строятся меши дорог (Tools/Unity/BuildRoads.cs), придорожные объекты и засады.
+    // Когда-то сняты со сплайнов Road Architect (Tools/Unity/BakeRoadNetwork.cs), теперь правятся прямо в сцене.
     // EnemyCarController притягивает к оси точки своего пути, чтобы машины ехали по полосам, а не по кромке.
     public class RoadNetwork : MonoBehaviour
     {
@@ -23,6 +23,9 @@ namespace RacingProject.Enemy
         [SerializeField] private float cellSize = 25f;
 
         public static RoadNetwork Instance { get; private set; }
+
+        // Оси дорог для инструментов редактора (постройка дорог, придорожных объектов, засад)
+        public Road[] Roads => roads;
 
         // Ячейка сетки → отрезки дорог (номер дороги, номер точки начала отрезка)
         private readonly Dictionary<Vector2Int, List<Vector2Int>> grid = new Dictionary<Vector2Int, List<Vector2Int>>();
