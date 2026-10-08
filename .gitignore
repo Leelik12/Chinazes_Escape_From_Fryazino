@@ -76,3 +76,6 @@ crashlytics-build.properties
 
 # Описание проекта (курсовая работа)
 /Описание.pdf
+
+# Кэш Python скриптов Tools/
+__pycache__/
