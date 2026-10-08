@@ -18,21 +18,34 @@ var root = new GameObject("Roadside").transform; root.SetParent(env, false);
 var navMod = root.gameObject.AddComponent<Unity.AI.Navigation.NavMeshModifier>(); navMod.overrideArea = true; navMod.area = 1;
 System.Func<string, Transform> group = n => { var g = new GameObject(n).transform; g.SetParent(root, false); return g; };
 var placed = new System.Collections.Generic.List<Bounds>();
+var roadsRoot = env.Find("Roads");
+var net = env.Find("RoadNetwork").GetComponent<RacingProject.Enemy.RoadNetwork>();
+net.SetRoads(net.Roads); // в редакторе Awake не вызывался: строим сетку поиска для Nearest
+// Высота опоры: верх покрытия дороги (тротуар, обочина), если оно есть под точкой, иначе террейн
+System.Func<Vector3, float> groundY = p => {
+    float y = terrain.SampleHeight(p) + terrain.transform.position.y;
+    foreach (var h in Physics.RaycastAll(new Vector3(p.x, y + 5f, p.z), Vector3.down, 10f, ~0, QueryTriggerInteraction.Ignore))
+        if (h.collider.transform.IsChildOf(roadsRoot) && h.point.y > y) y = h.point.y;
+    return y; };
+// Точка не ближе minDist к оси любой дороги: объект не встанет на проезжую часть соседней дороги
+System.Func<Vector3, float, bool> clearOfRoads = (p, minDist) => {
+    Vector3 c, d; float hw;
+    if (!net.Nearest(p, minDist, out c, out d, out hw)) return true;
+    var off = p - c; off.y = 0f; return off.magnitude >= minDist; };
 
 System.Func<string, Vector3, Quaternion, Transform, Transform> put = (name, pos, rot, parent) => {
     var src = AssetDatabase.LoadAssetAtPath<GameObject>(RS + name + ".prefab");
     var go = (GameObject)PrefabUtility.InstantiatePrefab(src, parent);
-    pos.y = terrain.SampleHeight(pos) + terrain.transform.position.y;
+    pos.y = groundY(pos);
     go.transform.SetPositionAndRotation(pos, rot);
     foreach (var r in go.GetComponentsInChildren<Renderer>()) placed.Add(r.bounds);
     return go.transform;
 };
-// Свободно ли место: никаких коллайдеров, кроме террейна и дорог (деревья террейна потом убираются)
+// Свободно ли место: никаких коллайдеров, кроме террейна и дорог Environment/Roads (деревья террейна потом убираются)
 System.Func<Vector3, Vector3, Quaternion, bool> free = (pos, ext, rot) => {
-    pos.y = terrain.SampleHeight(pos) + ext.y + 0.3f;
+    pos.y = groundY(pos) + ext.y + 0.3f;
     foreach (var c in Physics.OverlapBox(pos, ext, rot, ~0, QueryTriggerInteraction.Ignore)) {
-        if (c is TerrainCollider) continue;
-        var n = c.name; if (n.StartsWith("Road") || n.StartsWith("SCut") || n.StartsWith("Inter")) continue;
+        if (c is TerrainCollider || c.transform.IsChildOf(roadsRoot)) continue;
         return false;
     }
     return true;
@@ -42,13 +55,15 @@ System.Func<Vector3, Vector3, Quaternion, bool> free = (pos, ext, rot) => {
 var garages = group("Garages");
 float gx0 = 812f, gx1 = 884f, gz0 = 362f, gz1 = 468f, gh = 62f, gblend = 12f;
 int hr = td.heightmapResolution; var hm = td.GetHeights(0, 0, hr, hr);
-for (int iz = 0; iz < hr; iz++) for (int ix = 0; ix < hr; ix++) {
+// Повторный запуск не выравнивает заново: смешивание на краю площадки при каждом проходе сдвигало бы рельеф
+bool flat = Mathf.Abs(terrain.SampleHeight(new Vector3((gx0 + gx1) / 2f, 0f, (gz0 + gz1) / 2f)) - gh) < 0.05f;
+for (int iz = 0; iz < hr && !flat; iz++) for (int ix = 0; ix < hr; ix++) {
     float wx = ix / (float)(hr - 1) * td.size.x, wz = iz / (float)(hr - 1) * td.size.z;
     float dx = Mathf.Max(0f, Mathf.Max(gx0 - wx, wx - gx1)), dz = Mathf.Max(0f, Mathf.Max(gz0 - wz, wz - gz1));
     float d = Mathf.Sqrt(dx * dx + dz * dz); if (d >= gblend) continue;
     hm[iz, ix] = Mathf.Lerp(hm[iz, ix], gh / td.size.y, 1f - Mathf.SmoothStep(0f, 1f, d / gblend));
 }
-td.SetHeights(0, 0, hm);
+if (!flat) td.SetHeights(0, 0, hm);
 // Ряд A смотрит на восток, ряд B — на запад; модели ряда длиной 43.6 м и 29.2 м вдоль локального X
 var rowA = Quaternion.Euler(0, 90, 0); var rowB = Quaternion.Euler(0, -90, 0);
 put("GarageRow_6", new Vector3(836f, 0, 387f), rowA, garages);
@@ -63,7 +78,7 @@ foreach (var g in oldBarrels) UnityEngine.Object.DestroyImmediate(g);
 System.Func<string, Vector3, float, float, Transform, Transform> putAny = (path, pos, yaw, s, parent) => {
     var src = AssetDatabase.LoadAssetAtPath<GameObject>(path);
     var go = (GameObject)PrefabUtility.InstantiatePrefab(src, parent);
-    pos.y = terrain.SampleHeight(pos) + terrain.transform.position.y;
+    pos.y = groundY(pos);
     go.transform.SetPositionAndRotation(pos, Quaternion.Euler(0, yaw, 0));
     go.transform.localScale = src.transform.localScale * s;
     return go.transform;
@@ -75,7 +90,6 @@ Physics.SyncTransforms(); // иначе OverlapBox в free() не видит т�
 
 // --- 2. Дороги: опоры с проводами, фонари, остановки, ларьки, блокпост ---
 var poles = group("PowerPoles"); var lamps = group("StreetLamps"); var stops = group("BusStops"); var post = group("Checkpoint");
-var net = env.Find("RoadNetwork").GetComponent<RacingProject.Enemy.RoadNetwork>();
 // Перекрёстки: места, где ось одной дороги подходит к оси другой ближе 3 м. Стык конца одной дороги с началом другой
 // (Road3 переходит в Road1) — продолжение той же трассы, не перекрёсток
 var interPos = new System.Collections.Generic.List<Vector3>();
@@ -113,13 +127,14 @@ foreach (var road in net.Roads) {
         return Vector3.Lerp(pts[i - 1], pts[i], Mathf.InverseLerp(arc[i - 1], arc[i], dist)); };
     System.Func<float, Vector3> dirAt = dist => { var a = at(dist - 2f); var b = at(dist + 2f); var dd = b - a; dd.y = 0; return dd.normalized; };
 
-    // Опоры ЛЭП: справа по ходу сплайна; провода только между соседними поставленными опорами
+    // Опоры ЛЭП: справа по ходу оси; провода только между соседними поставленными опорами
     var verts = new System.Collections.Generic.List<Vector3>(); var tris = new System.Collections.Generic.List<int>();
+    var norms = new System.Collections.Generic.List<Vector3>();
     Transform prev = null; int nPoles = 0;
     for (float d = 20f; d < len - 20f; d += 45f) {
         var c = at(d); var f = dirAt(d); var right = Vector3.Cross(Vector3.up, f);
         var p = c + right * (half + 4f);
-        bool ok = !nearInter(c) && !inCity(p) && terrain.SampleHeight(p) > 11f && free(p, new Vector3(0.6f, 3f, 0.6f), Quaternion.identity);
+        bool ok = !nearInter(c) && !inCity(p) && terrain.SampleHeight(p) > 11f && clearOfRoads(p, half + 1f) && free(p, new Vector3(0.6f, 3f, 0.6f), Quaternion.identity);
         if (!ok) { prev = null; continue; }
         var pole = put("PowerPole", p, Quaternion.LookRotation(f), poles); nPoles++;
         if (prev != null) {
@@ -134,6 +149,10 @@ foreach (var road in net.Roads) {
                     int bi = verts.Count;
                     verts.Add(p0 + u); verts.Add(p0 - u); verts.Add(p1 + u); verts.Add(p1 - u);
                     verts.Add(p0 + v); verts.Add(p0 - v); verts.Add(p1 + v); verts.Add(p1 - v);
+                    // Нормали задаём сами: у двусторонней ленты RecalculateNormals даёт нулевые
+                    var nu = Vector3.Cross(ax, u).normalized; var nv = Vector3.Cross(ax, v).normalized;
+                    for (int k = 0; k < 4; k++) norms.Add(nu);
+                    for (int k = 0; k < 4; k++) norms.Add(nv);
                     // Две перекрещенные ленты с треугольниками в обе стороны: провод виден с любого ракурса без двустороннего материала
                     foreach (var q in new[] { 0, 4 }) {
                         tris.AddRange(new[] { bi + q, bi + q + 2, bi + q + 1, bi + q + 1, bi + q + 2, bi + q + 3 });
@@ -146,7 +165,9 @@ foreach (var road in net.Roads) {
     }
     if (verts.Count > 0) {
         var mesh = new Mesh(); mesh.name = "Wires_" + rn; mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-        mesh.SetVertices(verts); mesh.SetTriangles(tris, 0); mesh.RecalculateNormals(); mesh.RecalculateBounds();
+        mesh.SetVertices(verts); mesh.SetTriangles(tris, 0); mesh.SetNormals(norms);
+        // Без UV шейдер Lit получает NaN, и пост-обработка растягивает NaN-пиксели на весь кадр (белая засветка)
+        mesh.SetUVs(0, new Vector2[verts.Count]); mesh.RecalculateBounds();
         string mp = "Assets/Models/Roadside/Wires_" + rn + ".asset";
         var oldMesh = AssetDatabase.LoadAssetAtPath<Mesh>(mp);
         if (oldMesh != null) { EditorUtility.CopySerialized(mesh, oldMesh); mesh = oldMesh; } else AssetDatabase.CreateAsset(mesh, mp);
@@ -157,13 +178,13 @@ foreach (var road in net.Roads) {
         GameObjectUtility.SetStaticEditorFlags(wgo, (StaticEditorFlags)~0);
     }
 
-    // Фонари в городе: слева, рукой к дороге
+    // Фонари в городе: слева на тротуаре (он от 10,3 до 13 м от оси), ближе к его внешнему краю, рукой к дороге
     int nLamps = 0;
     for (float d = 10f; d < len - 10f; d += 40f) {
         var c = at(d); if (!inCity(c) || nearInter(c)) continue;
         var f = dirAt(d); var left = -Vector3.Cross(Vector3.up, f);
-        var p = c + left * (half + 4f);
-        if (!free(p, new Vector3(1.5f, 3f, 1.5f), Quaternion.identity)) continue; // с запасом: фонарь не должен сужать проезды между домами
+        var p = c + left * (road.halfWidth + 2.4f);
+        if (!clearOfRoads(p, road.halfWidth + 1.5f) || !free(p, new Vector3(1.5f, 3f, 1.5f), Quaternion.identity)) continue; // с запасом: фонарь не должен сужать проезды между домами
         put("StreetLamp", p, Quaternion.LookRotation(-left), lamps); nLamps++;
     }
     log.AppendLine(rn + ": poles " + nPoles + ", lamps " + nLamps);
@@ -177,6 +198,7 @@ foreach (var road in net.Roads) {
             var f = dirAt(d); var right = Vector3.Cross(Vector3.up, f);
             var p = c + right * (half + 2.2f); var pk = c + right * (half + 2.8f) + f * 9f;
             var rot = Quaternion.LookRotation(-right);
+            if (!clearOfRoads(p, half + 1f) || !clearOfRoads(pk, half + 1f)) continue; // у перекрёстка — на проезжей части другой дороги
             if (!free(p, new Vector3(6f, 3f, 3f), rot) || !free(pk, new Vector3(4f, 3f, 3f), rot) || terrain.SampleHeight(p) < 11f) continue;
             put("BusStop", p, rot, stops);
             put(rnd.Next(2) == 0 ? "Kiosk" : "Kiosk_Yellow", pk, rot, stops);
