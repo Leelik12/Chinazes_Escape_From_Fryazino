@@ -38,6 +38,10 @@ class Builder:
         return self.mats.index(name)
 
     def face(self, pts, mat):
+        # Точки задаются в правой системе координат; зеркальная матрица (at() — левая тройка) вывернула бы грань
+        # внутрь, поэтому обход вершин в ней разворачивается
+        if self.m.to_3x3().determinant() < 0:
+            pts = list(reversed(pts))
         vs = [self.bm.verts.new(self.m @ Vector(p)) for p in pts]
         f = self.bm.faces.new(vs)
         f.material_index = self.mat(mat)
@@ -85,15 +89,16 @@ class Builder:
     def cylinder(self, c, axis, r, length, mat, segs=8):
         # Цилиндр (торец бревна, столб) вдоль оси 'x' или 'y' с центром основания в c
         c = Vector(c)
+        # Базис правый (u × v = w), иначе бока или торцы смотрели бы внутрь
         if axis == "x":
             u, v, w = Vector((0, 1, 0)), Vector((0, 0, 1)), Vector((1, 0, 0))
         else:
-            u, v, w = Vector((1, 0, 0)), Vector((0, 0, 1)), Vector((0, 1, 0))
+            u, v, w = Vector((0, 0, 1)), Vector((1, 0, 0)), Vector((0, 1, 0))
         ring0 = [c + (u * math.cos(2 * math.pi * i / segs) + v * math.sin(2 * math.pi * i / segs)) * r for i in range(segs)]
         ring1 = [p + w * length for p in ring0]
         for i in range(segs):
             j = (i + 1) % segs
-            self.face([ring0[j], ring0[i], ring1[i], ring1[j]], mat)
+            self.face([ring0[i], ring0[j], ring1[j], ring1[i]], mat)
         self.face(ring1, mat)
         self.face(list(reversed(ring0)), mat)
 
@@ -147,7 +152,7 @@ def window(b, origin, normal, w=0.9, h=1.25, shutters=None, carved=True):
     # Окно с рамой, крестовиной, наличником (с «кокошником» сверху) и подоконным отливом; shutters — материал ставен
     b.at(origin, normal)
     hw, hh = w / 2, h / 2
-    b.face([(-hw, 0.01, -hh), (hw, 0.01, -hh), (hw, 0.01, hh), (-hw, 0.01, hh)], "PS_Glass")
+    b.face([(-hw, 0.01, hh), (hw, 0.01, hh), (hw, 0.01, -hh), (-hw, 0.01, -hh)], "PS_Glass")
     f = 0.06
     b.box((-hw - f, 0, -hh - f), (-hw, 0.07, hh + f), "PS_Trim", skip=("-y",))
     b.box((hw, 0, -hh - f), (hw + f, 0.07, hh + f), "PS_Trim", skip=("-y",))
