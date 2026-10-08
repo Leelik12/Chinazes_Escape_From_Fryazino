@@ -43,6 +43,9 @@ namespace RacingProject.Network
         private bool wasConnected;
         private bool reloading;
 
+        // Идёт поиск игры в сети (для индикаторов меню)
+        public bool Searching => discovery.IsListening;
+
         private void Awake()
         {
             room = GetComponent<RoomController>();

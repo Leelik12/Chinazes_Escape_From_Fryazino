@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using RacingProject.Enemy;
 
@@ -21,16 +20,6 @@ namespace RacingProject.Network
         public GameObject DriverBody;
         public GameObject GunnerBody;
         public Collider TouchColliderPistol;
-        [Header("UI Готовности")]
-        public Image firstPlayerReadyCircle;
-        public Image secondPlayerReadyCircle;
-        public Color notReadyColor = Color.red;
-        public Color readyColor = Color.green;
-
-        [Header("UI Состояния подключения")]
-        public Image connectionStatusCircle;
-        public Color connectedColor = Color.green;
-        public Color disconnectedColor = Color.red;
 
         [Header("Перезапуск")]
         [Tooltip("Пауза между гибелью машины и перезапуском: напарник получает последнее здоровье и отдачу гибели, оба видят взрыв и экран гибели")]
@@ -51,6 +40,9 @@ namespace RacingProject.Network
         // Для статуса в лобби: нажал ли «Готов» этот игрок и его напарник
         public bool LocalReady => isLocalReady;
         public bool PartnerReady => IsSpawned && (IsServer ? clientReady.Value : hostReady.Value);
+        // Готовность водителя (хоста) и стрелка (клиента) для индикаторов меню и пульта
+        public bool HostReady => IsSpawned && hostReady.Value;
+        public bool ClientReady => IsSpawned && clientReady.Value;
 
         private void Awake()
         {
@@ -83,21 +75,6 @@ namespace RacingProject.Network
             if (carHealth != null)
                 carHealth.OnDeath -= OnCarDestroyed;
             base.OnDestroy();
-        }
-
-        private void Update()
-        {
-            UpdateConnectionStatus();
-            UpdateReadyUI();
-        }
-
-        private void UpdateConnectionStatus()
-        {
-            if (connectionStatusCircle == null) return;
-
-            NetworkManager manager = NetworkManager.Singleton;
-            bool connected = manager != null && (manager.IsServer ? manager.IsListening : manager.IsConnectedClient);
-            connectionStatusCircle.color = connected ? connectedColor : disconnectedColor;
         }
 
         public void OnReadyButtonPressed()
@@ -216,18 +193,6 @@ namespace RacingProject.Network
                 RestartRound();
             else
                 clientReady.Value = false;
-        }
-
-        private void UpdateReadyUI()
-        {
-            SetReadyCircle(firstPlayerReadyCircle, IsSpawned && hostReady.Value);
-            SetReadyCircle(secondPlayerReadyCircle, IsSpawned && clientReady.Value);
-        }
-
-        private void SetReadyCircle(Image circle, bool ready)
-        {
-            if (circle == null) return;
-            circle.color = ready ? readyColor : notReadyColor;
         }
     }
 }
