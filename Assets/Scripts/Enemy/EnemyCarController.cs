@@ -182,6 +182,9 @@ namespace RacingProject.Enemy
         private const float MinProgress = 8f;
         private bool turningAround;
         private float turnForwardTimer;
+        // Угол поворота передних колёс: у сервера — сами колёса, у клиента — присланный сервером
+        public float SteerAngle => IsSpawned && !IsServer ? networkSteerAngle.Value : frontLeftWheel.steerAngle;
+
         // Подбитая машина слабеет: доля мощности и предельной скорости по прочности
         private float DamagePower => health == null || powerLossBelow <= 0f ? 1f
             : Mathf.Lerp(minPower, 1f, Mathf.Clamp01(health.HealthFraction / powerLossBelow));
