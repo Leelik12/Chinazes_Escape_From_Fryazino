@@ -11200,6 +11200,11 @@ MonoBehaviour:
   brakeForce: 4000
   stoppingDistance: 35
   repathInterval: 0.25
+  maxSpeed: 26
+  cornerSpeed: 9
+  brakingDecel: 9
+  lookaheadBase: 6
+  lookaheadPerSpeed: 0.45
   frontLeftWheel: {fileID: 8243812068000680173}
   frontRightWheel: {fileID: 6288082672994149601}
   rearLeftWheel: {fileID: 4691988370467722512}
@@ -11215,12 +11220,17 @@ MonoBehaviour:
   ramDistance: 45
   ramLeadTime: 0.5
   reverseDuration: 2
-  stuckSpeedThreshold: 0.4
-  stuckTimeThreshold: 0.8
-  frontCheckDistance: 4.5
+  stuckSpeedThreshold: 1
+  stuckTimeThreshold: 1.2
+  maxUnstuckAttempts: 4
+  hiddenRecoveryDistance: 70
+  frontCheckDistance: 4
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  pushableMass: 300
+  waitInAmbush: 0
+  ambushTriggerDistance: 90
 --- !u!114 &573513718781638955
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11237,6 +11247,7 @@ MonoBehaviour:
   maxHealth: 800
   explosionPrefab: {fileID: 9181475436193262199, guid: 47271c1abe6f6e046b5ceaa6aebd96a2, type: 3}
   scoreValue: 200
+  deathIgniteRadius: 7
 --- !u!114 &544593748375119061
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11249,7 +11260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 775733587
+  GlobalObjectIdHash: 3628544938
   InScenePlacedSourceGlobalObjectIdHash: 3593328833
   m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0

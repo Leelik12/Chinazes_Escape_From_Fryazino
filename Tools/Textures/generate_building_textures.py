@@ -185,6 +185,31 @@ def glass():
     save("PS_Glass", color, np.zeros((S, S)), 0.9 - 0.6 * np.clip(dust, 0, 1), strength=1.0)
 
 
+def concrete():
+    # Бетон опор, плит и павильонов: поры, швы опалубки через 0.5 м, сколы и потёки; плитка 2 м
+    base = mix(rgb(128, 126, 120), rgb(160, 157, 150), np.clip(0.5 + fbm(6, 2.0) * 0.3, 0, 1))
+    pores = fbm(200, 0.6)
+    seams = smoothstep(0.985, 1.0, np.cos(2 * np.pi * 4 * yy) * 0.5 + 0.5)
+    chips = smoothstep(1.6, 2.0, fbm(20, 2.2))
+    color = base * (0.9 + 0.1 * pores)[..., None]
+    color = mix(color, color * 0.7, np.clip(seams + chips * 0.6, 0, 1))
+    color = grime(color, 0.4)
+    save("PS_Concrete", color, pores * 0.04 - seams * 0.1 - chips * 0.15, 0.1, strength=4.0)
+
+
+def painted_metal(name, paint, rust=1.0):
+    # Гладкий листовой металл (ларьки, остановки, ворота) под краской: сколы, ржавчина от краёв пятнами; плитка 2 м
+    # rust — порог в сигмах шума: чем больше, тем меньше ржавчины
+    rust_mask = smoothstep(rust, rust + 0.6, fbm(5, 2.3) + smoothstep(0.3, 2.0, fbm(4, 2.0, aniso=(1.0, 0.1))) * 0.7)
+    chips = smoothstep(1.9, 2.2, fbm(18, 2.4)) * (1 - rust_mask)
+    coat = np.array(paint) * (0.88 + 0.12 * np.clip(fbm(8, 2.0) * 0.4 + 0.5, 0, 1))[..., None]
+    rusty = mix(rgb(105, 52, 28), rgb(150, 86, 46), np.clip(0.5 + fbm(60, 1.2) * 0.4, 0, 1))
+    color = mix(mix(coat, rgb(120, 122, 120), chips), rusty, rust_mask)
+    color = grime(color, 0.25)
+    height = rust_mask * fbm(120, 1.0) * 0.06 - chips * 0.03
+    save(name, color, height, 0.4 * (1 - rust_mask) + 0.06, strength=3.0)
+
+
 if __name__ == "__main__":
     logs()
     planks("PS_Planks_Green", rgb(70, 112, 78), peel=0.8)
@@ -198,3 +223,7 @@ if __name__ == "__main__":
     plaster()
     trim()
     glass()
+    concrete()
+    painted_metal("PS_PaintBlue", rgb(60, 98, 140), rust=1.1)
+    painted_metal("PS_PaintYellow", rgb(196, 160, 62), rust=1.2)
+    painted_metal("PS_Rust", rgb(90, 80, 70), rust=-0.6)

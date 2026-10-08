@@ -6028,6 +6028,11 @@ MonoBehaviour:
   brakeForce: 18000
   stoppingDistance: 20
   repathInterval: 0.25
+  maxSpeed: 30
+  cornerSpeed: 9
+  brakingDecel: 9
+  lookaheadBase: 6
+  lookaheadPerSpeed: 0.45
   frontLeftWheel: {fileID: 6045715257144834362}
   frontRightWheel: {fileID: 2917502288810888140}
   rearLeftWheel: {fileID: 58327596043950313}
@@ -6036,13 +6041,24 @@ MonoBehaviour:
   frontRightMesh: {fileID: 3138593146235754992}
   rearLeftMesh: {fileID: 5164110506995753556}
   rearRightMesh: {fileID: 2685692386304443146}
+  extraWheels: []
+  extraWheelMeshes: []
+  driveAllWheels: 0
+  ramTarget: 0
+  ramDistance: 45
+  ramLeadTime: 0.5
   reverseDuration: 2
-  stuckSpeedThreshold: 0.4
-  stuckTimeThreshold: 0.8
-  frontCheckDistance: 1.2
+  stuckSpeedThreshold: 1
+  stuckTimeThreshold: 1.2
+  maxUnstuckAttempts: 4
+  hiddenRecoveryDistance: 70
+  frontCheckDistance: 4
   obstacleMask:
     serializedVersion: 2
     m_Bits: 4294967295
+  pushableMass: 300
+  waitInAmbush: 0
+  ambushTriggerDistance: 90
 --- !u!114 &3383208808950930546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6059,6 +6075,7 @@ MonoBehaviour:
   maxHealth: 1000
   explosionPrefab: {fileID: 9181475436193262199, guid: 47271c1abe6f6e046b5ceaa6aebd96a2, type: 3}
   scoreValue: 100
+  deathIgniteRadius: 7
 --- !u!114 &1662663028800305276
 MonoBehaviour:
   m_ObjectHideFlags: 0

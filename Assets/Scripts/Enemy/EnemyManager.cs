@@ -29,6 +29,18 @@ namespace RacingProject.Enemy
         [Tooltip("Таран, гранатомётчик и т. п.: в волнах после стартовой могут выехать вместо обычного врага")]
         [SerializeField] private SpecialEnemy[] specialEnemies = new SpecialEnemy[0];
 
+        [Header("Засады")]
+        [Tooltip("Точки во дворах, частном секторе и промзоне, где враг может поджидать машину игроков")]
+        [SerializeField] private Transform[] ambushPoints = new Transform[0];
+        [Tooltip("С этой волны часть врагов ждёт в засаде")]
+        [SerializeField] private int ambushFromWave = 2;
+        [Tooltip("Шанс, что очередной враг волны будет ждать в засаде, а не выедет с точки спавна")]
+        [Range(0f, 1f)] [SerializeField] private float ambushChance = 0.35f;
+        [Tooltip("Засада не ближе этого к машине игроков, чтобы её появление не было видно, м")]
+        [SerializeField] private float ambushMinDistance = 140f;
+        [Tooltip("И не дальше этого, иначе игрок до неё не доедет, м")]
+        [SerializeField] private float ambushMaxDistance = 450f;
+
         [Header("Очки")]
         [Tooltip("Машина игроков: очки за выживание идут, пока она цела")]
         [SerializeField] private PlayerHealth carHealth;
@@ -259,8 +271,21 @@ namespace RacingProject.Enemy
                 spawned++;
             }
 
-            while (spawned < count && availablePoints.Count > 0)
+            List<Transform> freeAmbushes = new List<Transform>(ambushPoints);
+            while (spawned < count)
             {
+                // Засада: враг ждёт впереди по ходу машины игроков и выезжает, когда она подъедет
+                if (wave.Value >= ambushFromWave && Random.value < ambushChance && TryPickAmbushPoint(freeAmbushes, out Transform ambush))
+                {
+                    GameObject ambusher = SpawnEnemyAt(PickWavePrefab(), ambush.position, ambush.rotation);
+                    EnemyCarController controller = ambusher.GetComponent<EnemyCarController>();
+                    if (controller != null)
+                        controller.waitInAmbush = true;
+                    spawned++;
+                    continue;
+                }
+                if (availablePoints.Count == 0) break;
+
                 int index = Random.Range(0, availablePoints.Count);
                 Transform chosen = availablePoints[index];
                 availablePoints.RemoveAt(index);
@@ -285,6 +310,36 @@ namespace RacingProject.Enemy
                 pendingReinforcements--;
                 SpawnEnemyAt(PickWavePrefab(), chosen.position, chosen.rotation);
             }
+        }
+
+        // Точка засады на нужном расстоянии от машины игроков; если машина едет — впереди по ходу
+        private bool TryPickAmbushPoint(List<Transform> free, out Transform point)
+        {
+            point = null;
+            Transform car = carHealth != null ? carHealth.transform : null;
+            if (car == null || free.Count == 0) return false;
+
+            Rigidbody carBody = car.GetComponentInParent<Rigidbody>();
+            Vector3 heading = carBody != null ? carBody.linearVelocity : Vector3.zero;
+            heading.y = 0f;
+            bool moving = heading.sqrMagnitude > 25f;
+
+            List<Transform> fits = new List<Transform>();
+            foreach (Transform candidate in free)
+            {
+                if (candidate == null) continue;
+                Vector3 offset = candidate.position - car.position;
+                offset.y = 0f;
+                float distance = offset.magnitude;
+                if (distance < ambushMinDistance || distance > ambushMaxDistance) continue;
+                if (moving && Vector3.Dot(heading.normalized, offset / distance) < 0.3f) continue;
+                fits.Add(candidate);
+            }
+            if (fits.Count == 0) return false;
+
+            point = fits[Random.Range(0, fits.Count)];
+            free.Remove(point);
+            return true;
         }
 
         // Обычный враг или, с заданным шансом, один из особых, которым уже пора и которых в волне ещё мало
