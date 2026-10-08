@@ -284,7 +284,8 @@ namespace RacingProject.Enemy
                 return;
 
             repathTimer -= dt;
-            if (repathTimer <= 0f)
+            // Пути ещё нет (первые кадры после спавна) — считаем сразу, не дожидаясь своей очереди
+            if (repathTimer <= 0f || corners.Count == 0)
             {
                 repathTimer = repathInterval;
                 destination = ChooseDestination(targetVelocity);
