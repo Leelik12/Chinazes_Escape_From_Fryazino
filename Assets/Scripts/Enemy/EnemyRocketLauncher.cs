@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using RacingProject.Props;
 
 namespace RacingProject.Enemy
 {
@@ -229,6 +230,9 @@ namespace RacingProject.Enemy
                     body.AddExplosionForce(explosionPush * falloff, point, splashRadius * 1.5f, 0.6f, ForceMode.Impulse);
             }
 
+            if (PropNetwork.Instance != null)
+                PropNetwork.Instance.IgniteInRadius(point, splashRadius);
+
             // Убираем гранату сразу: RPC себе приходит только в следующем кадре, и граната успела бы попасть ещё раз
             rockets.Remove(rocket.Id);
             rocket.Remove();
@@ -244,6 +248,7 @@ namespace RacingProject.Enemy
                 if (rocket != null)
                     rocket.Remove();
             }
+            LooseProp.Blast(point, splashRadius * 1.5f, 12f);
             if (explosionPrefab != null)
                 Instantiate(explosionPrefab, point, normal.sqrMagnitude > 0.01f ? Quaternion.LookRotation(normal) : Quaternion.identity);
         }

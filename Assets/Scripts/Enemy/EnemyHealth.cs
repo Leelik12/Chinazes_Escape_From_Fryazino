@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Unity.Netcode;
 using System;
+using RacingProject.Props;
 
 namespace RacingProject.Enemy
 {
@@ -11,6 +12,8 @@ namespace RacingProject.Enemy
         [SerializeField] private GameObject explosionPrefab;
         [Tooltip("Очки за уничтожение (до множителя комбо)")]
         [SerializeField] private int scoreValue = 100;
+        [Tooltip("Взрыв при гибели поджигает горящие бочки в этом радиусе и раскидывает разруху в полтора раза дальше")]
+        [SerializeField] private float deathIgniteRadius = 7f;
         private int currentHealth;
         private int scaledMaxHealth;
 
@@ -65,6 +68,9 @@ namespace RacingProject.Enemy
             {
                 Debug.Log("Враг умер");
                 OnDeath?.Invoke(gameObject);
+                // Горящие бочки рядом с гибнущей машиной взрываются следом
+                if (PropNetwork.Instance != null)
+                    PropNetwork.Instance.IgniteInRadius(transform.position, deathIgniteRadius);
                 // RPC уходит раньше сообщения о деспавне, поэтому клиент успевает показать взрыв
                 ExplodeRpc(transform.position, transform.rotation);
                 NetworkObject.Despawn();
@@ -76,6 +82,7 @@ namespace RacingProject.Enemy
         {
             if (explosionPrefab != null)
                 Instantiate(explosionPrefab, position, rotation);
+            LooseProp.Blast(position, deathIgniteRadius * 1.5f, 10f);
         }
     }
 }

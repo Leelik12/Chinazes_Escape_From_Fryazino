@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Unity.Netcode;
 using System.Collections;
+using RacingProject.Props;
 
 namespace RacingProject.Enemy
 {
@@ -118,6 +119,10 @@ namespace RacingProject.Enemy
                 {
                     player.RequestDamage((int)damage);
                 }
+
+                ExplosiveBarrel barrel = hit.collider.GetComponentInParent<ExplosiveBarrel>();
+                if (barrel != null)
+                    barrel.RequestHit((int)damage);
             }
 
             // Без попадания трассер летит на дальность выстрела
@@ -144,7 +149,10 @@ namespace RacingProject.Enemy
                 ShotEffects.SpawnImpact(hitEffectPrefabDust, hitEffectPrefabSparks, endPoint, hitNormal, 0.01f, hitEffectLifetime);
                 // След ставим по лучу в точку попадания: в RPC приходит только точка и нормаль
                 if (Physics.Raycast(endPoint + hitNormal * 0.05f, -hitNormal, out RaycastHit surface, 0.1f, hitLayerMask, QueryTriggerInteraction.Ignore))
+                {
                     ShotEffects.SpawnBulletHole(surface);
+                    LooseProp.PushHit(surface, -hitNormal);
+                }
             }
         }
     }

@@ -9787,6 +9787,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 9200732757584561556}
+  - component: {fileID: 7955063902264717102}
+  - component: {fileID: 8188429523397405884}
+  - component: {fileID: 3231147300297126386}
   m_Layer: 0
   m_Name: BurningBarrel
   m_TagString: Untagged
@@ -9813,6 +9816,70 @@ Transform:
   - {fileID: 5623763260068348851}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!54 &7955063902264717102
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9153637755350511983}
+  serializedVersion: 4
+  m_Mass: 70
+  m_Drag: 0.05
+  m_AngularDrag: 0.3
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &8188429523397405884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9153637755350511983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9916a54269600ae47a1981f4d1ca53cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletImpulse: 6
+--- !u!114 &3231147300297126386
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9153637755350511983}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 063b03ce568b8ab429a0449d68fe8142, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitPoints: 30
+  radius: 9
+  enemyDamage: 900
+  playerDamage: 150
+  carPush: 6
+  propPush: 14
+  chainDelay: 0.25
+  explosionPrefab: {fileID: 9181475436193262199, guid: 47271c1abe6f6e046b5ceaa6aebd96a2, type: 3}
+  fireObjects:
+  - {fileID: 8728686150307993395}
+  - {fileID: 5460964041607753495}
+  - {fileID: 1635554436561399184}
 --- !u!1001 &5101684177154456821
 PrefabInstance:
   m_ObjectHideFlags: 0

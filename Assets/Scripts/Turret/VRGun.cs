@@ -7,6 +7,7 @@ using RacingProject.Enemy;
 using RacingProject.Desktop;
 using RacingProject.Management;
 using RacingProject.Network;
+using RacingProject.Props;
 
 namespace RacingProject.Turret
 {
@@ -192,6 +193,10 @@ namespace RacingProject.Turret
                     if (hitMarkerPrefab != null)
                         Instantiate(hitMarkerPrefab, hit.point, Quaternion.identity);
                 }
+
+                ExplosiveBarrel barrel = hit.collider.GetComponentInParent<ExplosiveBarrel>();
+                if (barrel != null)
+                    barrel.RequestHit((int)damage);
             }
         }
 
@@ -212,6 +217,7 @@ namespace RacingProject.Turret
             {
                 ShotEffects.SpawnImpact(hitEffectPrefabDust, hitEffectPrefabSparks, hit.point, hit.normal, effectOffset, hitEffectLifetime);
                 ShotEffects.SpawnBulletHole(hit);
+                LooseProp.PushHit(hit, direction);
             }
             return hasHit;
         }
