@@ -6052,6 +6052,7 @@ GameObject:
   - component: {fileID: 9073275945802643692}
   - component: {fileID: 4539436297960331236}
   - component: {fileID: 4553857189073333550}
+  - component: {fileID: 3947818771598777502}
   m_Layer: 0
   m_Name: EnemyUral
   m_TagString: Untagged
@@ -6138,6 +6139,8 @@ MonoBehaviour:
   brakingDecel: 9
   lookaheadBase: 6
   lookaheadPerSpeed: 0.45
+  roadSnapDistance: 25
+  laneOffset: 5
   frontLeftWheel: {fileID: 846127437236723115}
   frontRightWheel: {fileID: 3269738398504656290}
   rearLeftWheel: {fileID: 6599518689454130666}
@@ -6161,6 +6164,15 @@ MonoBehaviour:
   stuckTimeThreshold: 1.2
   maxUnstuckAttempts: 4
   hiddenRecoveryDistance: 70
+  catchUpStartDistance: 60
+  catchUpFullDistance: 200
+  catchUpBoost: 0.6
+  catchUpCornerBoost: 0.25
+  catchUpAccel: 5
+  leapDistance: 200
+  leapTargetDistance: 100
+  unseenDistance: 180
+  leapCooldown: 8
   frontCheckDistance: 5
   obstacleMask:
     serializedVersion: 2
@@ -6168,6 +6180,7 @@ MonoBehaviour:
   pushableMass: 300
   waitInAmbush: 0
   ambushTriggerDistance: 90
+  ambushMaxWait: 40
 --- !u!114 &1600286298995000348
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6276,6 +6289,29 @@ MonoBehaviour:
   maxDamage: 320
   hitCooldown: 1.2
   pushPerSpeed: 250
+--- !u!114 &3947818771598777502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6946115600776318091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e4a89c9debe184e88638fe4b043ad7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  bodies:
+  - {fileID: 2712582528060300611}
+  minImpactSpeed: 4
+  depthPerSpeed: 0.025
+  maxDepth: 0.32
+  minRadius: 0.6
+  maxRadius: 1.4
+  maxTotalDent: 0.5
+  fullDentMass: 800
+  hitCooldown: 0.3
 --- !u!1 &7085396681375033627
 GameObject:
   m_ObjectHideFlags: 0
@@ -11806,6 +11842,11 @@ Transform:
 --- !u!4 &1300094411953672934 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 3415d003c231225459897ec511eb1818, type: 3}
+  m_PrefabInstance: {fileID: 1549349905536218381}
+  m_PrefabAsset: {fileID: 0}
+--- !u!33 &2712582528060300611 stripped
+MeshFilter:
+  m_CorrespondingSourceObject: {fileID: -5754084199372789682, guid: 3415d003c231225459897ec511eb1818, type: 3}
   m_PrefabInstance: {fileID: 1549349905536218381}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &5899416233317766572 stripped

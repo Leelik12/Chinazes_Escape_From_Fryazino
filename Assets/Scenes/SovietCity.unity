@@ -312942,6 +312942,7 @@ GameObject:
   - component: {fileID: 8422064855269990662}
   - component: {fileID: 8422064855269990663}
   - component: {fileID: 8422064855269990664}
+  - component: {fileID: 8422064855269990665}
   m_Layer: 0
   m_Name: VolgaCar
   m_TagString: Car
@@ -322737,6 +322738,29 @@ MonoBehaviour:
   m_IgnoreFromBuild: 1
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffff
+--- !u!114 &8422064855269990665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171050281947547841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6e4a89c9debe184e88638fe4b043ad7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  bodies:
+  - {fileID: 306850761}
+  minImpactSpeed: 4
+  depthPerSpeed: 0.025
+  maxDepth: 0.32
+  minRadius: 0.6
+  maxRadius: 1.4
+  maxTotalDent: 0.5
+  fullDentMass: 800
+  hitCooldown: 0.3
 --- !u!4 &8428538889073764768
 Transform:
   m_ObjectHideFlags: 0
