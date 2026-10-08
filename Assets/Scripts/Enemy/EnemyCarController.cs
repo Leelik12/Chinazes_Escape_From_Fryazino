@@ -50,6 +50,12 @@ namespace RacingProject.Enemy
         // Столько секунд после спавна и заднего хода застревание не считается: тяжёлой машине нужно время, чтобы тронуться
         private const float StuckGrace = 2f;
 
+        [Header("Damage")]
+        [Tooltip("Ниже этой доли прочности мотор слабеет")]
+        public float powerLossBelow = 0.5f;
+        [Tooltip("Доля мощности мотора и предельной скорости при нулевой прочности")]
+        public float minPower = 0.6f;
+
         [Header("Wheels")]
         public WheelCollider frontLeftWheel;
         public WheelCollider frontRightWheel;
@@ -156,6 +162,9 @@ namespace RacingProject.Enemy
         private const float MinProgress = 8f;
         private bool turningAround;
         private float turnForwardTimer;
+        // Подбитая машина слабеет: доля мощности и предельной скорости по прочности
+        private float DamagePower => health == null || powerLossBelow <= 0f ? 1f
+            : Mathf.Lerp(minPower, 1f, Mathf.Clamp01(health.HealthFraction / powerLossBelow));
         // Длина фазы разворота: длинной машине нужно дольше
         private float TurnPhaseDuration => 0.8f + wheelBase * 0.15f;
 
@@ -374,7 +383,7 @@ namespace RacingProject.Enemy
                 steer *= 0.5f;  // внутренний угол поворота занят — задние колёса срежут его, входим шире
 
             // Скорость: не быстрее, чем позволяют повороты пути впереди
-            float desiredSpeed = directRam ? maxSpeed : SpeedForPath(position, forwardSpeed);
+            float desiredSpeed = directRam ? maxSpeed * DamagePower : SpeedForPath(position, forwardSpeed);
             if (turnAround)
                 desiredSpeed = Mathf.Min(desiredSpeed, 5f);
 
@@ -633,7 +642,7 @@ namespace RacingProject.Enemy
         // Скорость, с которой можно ехать, чтобы успеть сбросить её перед каждым поворотом пути в пределах тормозного пути
         private float SpeedForPath(Vector3 position, float speed)
         {
-            float top = maxSpeed * (1f + catchUpBoost * catchUp);
+            float top = maxSpeed * (1f + catchUpBoost * catchUp) * DamagePower;
             float corner = cornerSpeed * (1f + catchUpCornerBoost * catchUp);
             float allowed = top;
             int segment = ClosestSegment(position, out Vector3 closest);
@@ -868,7 +877,7 @@ namespace RacingProject.Enemy
             float angle = steer * maxSteerAngle;
             frontLeftWheel.steerAngle = angle;
             frontRightWheel.steerAngle = angle;
-            float boost = 1f + catchUpBoost * catchUp;
+            float boost = (1f + catchUpBoost * catchUp) * DamagePower;
             SetMotorTorque(throttle >= 0f ? throttle * motorForce * boost : throttle * reverseForce);
             ApplyBrake(brake * brakeForce);
             // Отставшую машину ещё и подталкивает вперёд, пока колёса на земле

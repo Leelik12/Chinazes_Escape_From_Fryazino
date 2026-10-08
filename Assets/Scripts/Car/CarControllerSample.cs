@@ -40,6 +40,15 @@ namespace RacingProject.Car
         [Tooltip("Наклон руля к водителю, градусы: руль вращается вокруг оси рулевой колонки")]
         [SerializeField] private float steeringWheelTilt = 25f;
 
+        [Header("Повреждения")]
+        [SerializeField] private PlayerHealth health;
+        [Tooltip("Ниже этой доли прочности мотор слабеет")]
+        [SerializeField, Range(0f, 1f)] private float powerLossBelow = 0.5f;
+        [Tooltip("Доля мощности и предельной скорости на передаче при нулевой прочности")]
+        [SerializeField, Range(0f, 1f)] private float minPower = 0.55f;
+        [Tooltip("Ниже этой доли прочности мотор чихает: тяга на мгновения пропадает")]
+        [SerializeField, Range(0f, 1f)] private float misfireBelow = 0.25f;
+
         private float currentVisualAngle = 0f;
 
         [Header("Временные переменные")]
@@ -69,6 +78,8 @@ namespace RacingProject.Car
             Engine.Play();
             rb = GetComponent<Rigidbody>();
             rb.centerOfMass = new Vector3(0, -0.8f, 0);
+            if (health == null)
+                health = GetComponent<PlayerHealth>();
             ownerInterpolation = rb.interpolation;
         }
 
@@ -134,11 +145,16 @@ namespace RacingProject.Car
                 }
             }
 
+            // Разбитый мотор слабеет, а совсем разбитый ещё и чихает
+            bool misfire;
+            float power = EnginePower(out misfire);
+            finalmotor *= power;
+
             // Ограничение скорости по передаче
             float currentSpeed = rb.linearVelocity.magnitude * 3.6f;
             if (currentGear > 0 && currentGear < gearSpeedLimits.Length)
             {
-                if (currentSpeed >= gearSpeedLimits[currentGear])
+                if (currentSpeed >= gearSpeedLimits[currentGear] * Mathf.Lerp(minPower, 1f, DamageHealth()))
                 {
                     finalmotor = 0f; // перестаём ускоряться
                 }
@@ -149,7 +165,7 @@ namespace RacingProject.Car
 
             // Аудио двигателя
             float correction = Mathf.Lerp(1f, 1.4f, throttleInput);
-            Engine.pitch = correction;
+            Engine.pitch = misfire ? correction * 0.82f : correction;
 
             // UI
             UpdateGauges();
@@ -184,6 +200,27 @@ namespace RacingProject.Car
             HandleHatSwitchImpulse();
 
         }
+        // 0 при нулевой прочности, 1 — пока прочность не ниже powerLossBelow
+        private float DamageHealth()
+        {
+            if (health == null || health.MaxHealth <= 0 || powerLossBelow <= 0f) return 1f;
+            float fraction = Mathf.Clamp01((float)health.CurrentHealth / health.MaxHealth);
+            return Mathf.Clamp01(fraction / powerLossBelow);
+        }
+
+        private float EnginePower(out bool misfire)
+        {
+            float power = Mathf.Lerp(minPower, 1f, DamageHealth());
+            misfire = false;
+            if (health != null && health.MaxHealth > 0 && (float)health.CurrentHealth / health.MaxHealth < misfireBelow)
+            {
+                // Пропуски зажигания: короткие провалы тяги в случайные моменты
+                misfire = Mathf.PerlinNoise(Time.time * 3f, 0.37f) < 0.3f;
+                if (misfire) power *= 0.15f;
+            }
+            return power;
+        }
+
         // Физику машины считает только хост (водитель). У второго игрока машину двигает
         // NetworkTransform, а собственная физика и интерполяция Rigidbody спорили бы с сетью
         private void ApplyNetworkAuthority()

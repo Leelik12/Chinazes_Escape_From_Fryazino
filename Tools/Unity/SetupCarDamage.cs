@@ -1,4 +1,5 @@
-// Повреждения машин: вмятины (CarDeformation) на машине игроков (VolgaCar в сцене) и на префабах врагов.
+// Повреждения машин: вмятины (CarDeformation) на машине игроков (VolgaCar в сцене) и на префабах врагов,
+// урон машине игроков в авариях (CarCrashDamage) и ссылка на прочность для слабеющего мотора.
 // Не компилируется Unity (лежит вне Assets): текст выполняется в редакторе через execute_code (MCP for Unity, C# 6).
 // Повторный запуск безопасен: компоненты не дублируются, списки сеток переписываются.
 // Мнутся только видимые части кузова (без колёс и оружия); моделям без Read/Write он включается в импорте.
@@ -38,7 +39,15 @@ System.Action<string, string[]> setupPrefab = (path, paths) => {
 
 var car = GameObject.Find("VolgaCar");
 setup(car, new[] { "TahoeBody" });
+// Урон машине игроков в жёстких авариях (CarCrashDamage) и прочность для слабеющего мотора (CarControllerSample)
+var health = car.GetComponent<RacingProject.PlayerHealth>();
+var crash = car.GetComponent<RacingProject.Car.CarCrashDamage>();
+if (crash == null) crash = car.AddComponent<RacingProject.Car.CarCrashDamage>();
+var cso = new SerializedObject(crash); cso.FindProperty("health").objectReferenceValue = health; cso.ApplyModifiedPropertiesWithoutUndo();
+var ctl = new SerializedObject(car.GetComponent<RacingProject.Car.CarControllerSample>());
+ctl.FindProperty("health").objectReferenceValue = health; ctl.ApplyModifiedPropertiesWithoutUndo();
 UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(car.scene);
+UnityEditor.SceneManagement.EditorSceneManager.SaveScene(car.scene);
 // EnemyBoss — вариант EnemySedan и получает компонент от него
 setupPrefab("Assets/Resources/EnemySedan.prefab", new[] { "", "SEDAN", "SEDAN/matte_plastic", "SEDAN/F_LAMPS", "SEDAN/R_LAMPS", "SEDAN/WINDOWS" });
 setupPrefab("Assets/Prefabs/Enemy/EnemyUaz.prefab", new[] { "Model/uaz3909_body_low", "Model/backwall", "Model/uaz3909_glass", "Model/uaz3909_lights_high", "Model/uaz3909_reflector_low" });

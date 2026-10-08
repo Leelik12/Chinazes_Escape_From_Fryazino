@@ -312943,6 +312943,7 @@ GameObject:
   - component: {fileID: 8422064855269990663}
   - component: {fileID: 8422064855269990664}
   - component: {fileID: 8422064855269990665}
+  - component: {fileID: 8422064855269990666}
   m_Layer: 0
   m_Name: VolgaCar
   m_TagString: Car
@@ -320750,6 +320751,10 @@ MonoBehaviour:
   visualWheelRotationAngle: 80
   steeringSmoothness: 2
   steeringWheelTilt: 20
+  health: {fileID: 7459236575644943732}
+  powerLossBelow: 0.5
+  minPower: 0.55
+  misfireBelow: 0.25
   impulseForce: 5000
   impulseCooldown: 5
 --- !u!224 &7179876012936023633
@@ -322761,6 +322766,24 @@ MonoBehaviour:
   maxTotalDent: 0.5
   fullDentMass: 800
   hitCooldown: 0.3
+--- !u!114 &8422064855269990666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1171050281947547841}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2c04f34155265f41aee25cbe91973c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  health: {fileID: 7459236575644943732}
+  minImpactSpeed: 9
+  damagePerSpeed: 10
+  maxDamage: 200
+  harmlessMass: 300
+  hitCooldown: 0.6
 --- !u!4 &8428538889073764768
 Transform:
   m_ObjectHideFlags: 0
