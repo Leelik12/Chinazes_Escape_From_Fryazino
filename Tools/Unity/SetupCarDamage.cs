@@ -52,4 +52,28 @@ UnityEditor.SceneManagement.EditorSceneManager.SaveScene(car.scene);
 setupPrefab("Assets/Resources/EnemySedan.prefab", new[] { "", "SEDAN", "SEDAN/matte_plastic", "SEDAN/F_LAMPS", "SEDAN/R_LAMPS", "SEDAN/WINDOWS" });
 setupPrefab("Assets/Prefabs/Enemy/EnemyUaz.prefab", new[] { "Model/uaz3909_body_low", "Model/backwall", "Model/uaz3909_glass", "Model/uaz3909_lights_high", "Model/uaz3909_reflector_low" });
 setupPrefab("Assets/Prefabs/Enemy/EnemyUral.prefab", new[] { "Model" });
+// Таран по-настоящему: удар корпусом ранит игроков и самого врага (EnemyRamDamage), седан (и босс) и УАЗ бьют бортом.
+// Урал (таран) почти не страдает от своих ударов, лёгкие машины — наравне с игроками
+System.Action<string, float, float, int, float, float, bool> ram = (path, minSpeed, perSpeed, maxDmg, push, selfScale, swipe) => {
+    var root = PrefabUtility.LoadPrefabContents(path);
+    var r = root.GetComponent<RacingProject.Enemy.EnemyRamDamage>();
+    if (r == null) r = root.AddComponent<RacingProject.Enemy.EnemyRamDamage>();
+    var so = new SerializedObject(r);
+    so.FindProperty("minImpactSpeed").floatValue = minSpeed;
+    so.FindProperty("damagePerSpeed").floatValue = perSpeed;
+    so.FindProperty("maxDamage").intValue = maxDmg;
+    so.FindProperty("pushPerSpeed").floatValue = push;
+    so.FindProperty("selfDamageScale").floatValue = selfScale;
+    so.ApplyModifiedPropertiesWithoutUndo();
+    var ai = root.GetComponent<RacingProject.Enemy.EnemyCarController>();
+    ai.sideSwipe = swipe;
+    ai.ramBackOffTime = 2.5f; // тяжёлому Уралу нужно время, чтобы отъехать для нового разгона
+    EditorUtility.SetDirty(ai);
+    PrefabUtility.SaveAsPrefabAsset(root, path);
+    PrefabUtility.UnloadPrefabContents(root);
+    log.AppendLine("Таран: " + path);
+};
+ram("Assets/Prefabs/Enemy/EnemyUral.prefab", 5f, 14f, 320, 250f, 0.1f, false);
+ram("Assets/Resources/EnemySedan.prefab", 3f, 18f, 150, 120f, 0.6f, true);
+ram("Assets/Prefabs/Enemy/EnemyUaz.prefab", 3f, 20f, 180, 150f, 0.5f, true);
 return log.ToString();

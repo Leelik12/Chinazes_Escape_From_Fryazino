@@ -3,8 +3,8 @@ using Unity.Netcode;
 
 namespace RacingProject.Enemy
 {
-    // Урон машине игроков от удара корпусом (Урал-таран). Столкновения считает сервер:
-    // физику и врагов, и машины игроков симулирует хост
+    // Урон машине игроков от удара корпусом врага (таран Урала, удар бортом седана и УАЗа). Столкновения считает сервер:
+    // физику и врагов, и машины игроков симулирует хост. Удар ранит и самого врага, а его ИИ узнаёт о попадании
     public class EnemyRamDamage : NetworkBehaviour
     {
         [Tooltip("Удары со скоростью сближения меньше этой не ранят, м/с")]
@@ -16,6 +16,8 @@ namespace RacingProject.Enemy
         [SerializeField] private float hitCooldown = 1.2f;
         [Tooltip("Дополнительный толчок машине игроков на каждый м/с удара, чтобы удар грузовика ощущался")]
         [SerializeField] private float pushPerSpeed = 250f;
+        [Tooltip("Доля урона удара, которую получает сам враг (тяжёлый таран почти не страдает)")]
+        [SerializeField] private float selfDamageScale = 0.5f;
 
         private float nextHitTime;
 
@@ -33,7 +35,16 @@ namespace RacingProject.Enemy
             nextHitTime = Time.time + hitCooldown;
             int damage = Mathf.Min(maxDamage, Mathf.RoundToInt((speed - minImpactSpeed) * damagePerSpeed));
             if (damage > 0)
+            {
                 player.RequestDamage(damage);
+                int selfDamage = Mathf.RoundToInt(damage * selfDamageScale);
+                EnemyHealth own = GetComponent<EnemyHealth>();
+                if (selfDamage > 0 && own != null)
+                    own.RequestDamage(selfDamage);
+            }
+            EnemyCarController driver = GetComponent<EnemyCarController>();
+            if (driver != null)
+                driver.OnRamHit();
 
             Rigidbody playerBody = collision.rigidbody;
             if (playerBody != null && !playerBody.isKinematic)

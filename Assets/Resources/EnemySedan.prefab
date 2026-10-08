@@ -5874,6 +5874,7 @@ GameObject:
   - component: {fileID: 1662663028800305276}
   - component: {fileID: 7678513949393096724}
   - component: {fileID: 832442598586666789}
+  - component: {fileID: 7638985281087469763}
   m_Layer: 0
   m_Name: EnemySedan
   m_TagString: Untagged
@@ -6036,6 +6037,8 @@ MonoBehaviour:
   lookaheadPerSpeed: 0.45
   roadSnapDistance: 25
   laneOffset: 5
+  powerLossBelow: 0.5
+  minPower: 0.6
   frontLeftWheel: {fileID: 6045715257144834362}
   frontRightWheel: {fileID: 2917502288810888140}
   rearLeftWheel: {fileID: 58327596043950313}
@@ -6050,6 +6053,13 @@ MonoBehaviour:
   ramTarget: 0
   ramDistance: 45
   ramLeadTime: 0.5
+  ramBackOffTime: 2.5
+  sideSwipe: 1
+  swipeStartDistance: 45
+  swipeSideOffset: 7
+  swipeDuration: 0.8
+  swipeApproachTime: 8
+  swipeCooldown: 10
   reverseDuration: 2
   stuckSpeedThreshold: 1
   stuckTimeThreshold: 1.2
@@ -6190,6 +6200,25 @@ MonoBehaviour:
   maxTotalDent: 0.5
   fullDentMass: 800
   hitCooldown: 0.3
+--- !u!114 &7638985281087469763
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2604432941193830326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d278ef9dc6e76414da6b50a447c25bc6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  minImpactSpeed: 3
+  damagePerSpeed: 18
+  maxDamage: 150
+  hitCooldown: 1.2
+  pushPerSpeed: 120
+  selfDamageScale: 0.6
 --- !u!1 &2666817346989633140
 GameObject:
   m_ObjectHideFlags: 0

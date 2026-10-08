@@ -6141,6 +6141,8 @@ MonoBehaviour:
   lookaheadPerSpeed: 0.45
   roadSnapDistance: 25
   laneOffset: 5
+  powerLossBelow: 0.5
+  minPower: 0.6
   frontLeftWheel: {fileID: 846127437236723115}
   frontRightWheel: {fileID: 3269738398504656290}
   rearLeftWheel: {fileID: 6599518689454130666}
@@ -6159,6 +6161,13 @@ MonoBehaviour:
   ramTarget: 1
   ramDistance: 45
   ramLeadTime: 0.5
+  ramBackOffTime: 2.5
+  sideSwipe: 0
+  swipeStartDistance: 45
+  swipeSideOffset: 7
+  swipeDuration: 0.8
+  swipeApproachTime: 8
+  swipeCooldown: 10
   reverseDuration: 2.2
   stuckSpeedThreshold: 1
   stuckTimeThreshold: 1.2
@@ -6289,6 +6298,7 @@ MonoBehaviour:
   maxDamage: 320
   hitCooldown: 1.2
   pushPerSpeed: 250
+  selfDamageScale: 0.1
 --- !u!114 &3947818771598777502
 MonoBehaviour:
   m_ObjectHideFlags: 0

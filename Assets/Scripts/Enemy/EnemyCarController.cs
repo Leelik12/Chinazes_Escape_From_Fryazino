@@ -81,6 +81,22 @@ namespace RacingProject.Enemy
         public float ramDistance = 45f;
         [Tooltip("Упреждение по скорости игрока, сек")]
         public float ramLeadTime = 0.5f;
+        [Tooltip("После удара таран столько секунд сдаёт назад и разгоняется для нового удара, а не трётся о машину")]
+        public float ramBackOffTime = 2.5f;
+
+        [Header("Side Swipe")]
+        [Tooltip("Удар бортом: время от времени машина подходит вровень с игроком и бьёт его в бок")]
+        public bool sideSwipe;
+        [Tooltip("Ближе этого к игроку машина может пойти на удар бортом, м")]
+        public float swipeStartDistance = 45f;
+        [Tooltip("На таком расстоянии сбоку от игрока (между серединами машин) машина ждёт момента для удара, м")]
+        public float swipeSideOffset = 7f;
+        [Tooltip("Удар: столько секунд машина рулит прямо в игрока")]
+        public float swipeDuration = 0.8f;
+        [Tooltip("Если подойти вровень за столько секунд не вышло, атака отменяется")]
+        public float swipeApproachTime = 8f;
+        [Tooltip("Пауза между атаками бортом, с (±30 %)")]
+        public float swipeCooldown = 10f;
 
         [Header("Reverse Logic")]
         public float reverseDuration = 1.6f;
@@ -143,6 +159,10 @@ namespace RacingProject.Enemy
         private Vector3 destination;
         // Стрелок держится сбоку-сзади от игрока, сторону выбирает при спавне
         private float slotSide;
+        private enum SwipePhase { None, Approach, Hit }
+        private SwipePhase swipePhase;
+        // Остаток фазы удара бортом, а между атаками — пауза до следующей
+        private float swipeTimer;
 
         // Выезд из застревания
         private bool reversing;
@@ -186,6 +206,7 @@ namespace RacingProject.Enemy
                 navigatorAgent.enabled = false;
             path = new NavMeshPath();
             slotSide = (GetInstanceID() & 1) == 0 ? 1f : -1f;
+            swipeTimer = swipeCooldown * Random.Range(0.3f, 1f);
             // Чтобы враги одной волны не считали путь в одном кадре
             repathTimer = Random.value * repathInterval;
 
@@ -339,11 +360,15 @@ namespace RacingProject.Enemy
                 }
             }
 
-            // Куда рулить: точка пути впереди, вблизи у тарана — прямо в упреждённую точку игрока
+            // Куда рулить: точка пути впереди, вблизи у тарана — прямо в упреждённую точку игрока,
+            // при ударе бортом — в игрока чуть впереди его хода
             float lookahead = lookaheadBase + lookaheadPerSpeed * Mathf.Max(0f, forwardSpeed);
             Vector3 aimPoint = PointAlongPath(position, lookahead);
-            bool directRam = ramTarget && distanceToPlayer < ramDistance;
-            if (directRam)
+            bool swiping = UpdateSideSwipe(position, distanceToPlayer, forwardSpeed, targetVelocity, dt);
+            bool directRam = (ramTarget && distanceToPlayer < ramDistance) || swiping;
+            if (swiping)
+                aimPoint = target.position + targetVelocity * 0.3f;
+            else if (directRam)
                 aimPoint = target.position + targetVelocity * ramLeadTime;
 
             Vector3 toAim = aimPoint - position;
@@ -384,11 +409,13 @@ namespace RacingProject.Enemy
 
             // Скорость: не быстрее, чем позволяют повороты пути впереди
             float desiredSpeed = directRam ? maxSpeed * DamagePower : SpeedForPath(position, forwardSpeed);
+            if (swiping)
+                desiredSpeed = Mathf.Min(desiredSpeed, targetVelocity.magnitude + 5f);
             if (turnAround)
                 desiredSpeed = Mathf.Min(desiredSpeed, 5f);
 
             // Стрелок у игрока подстраивается под его скорость, а не тормозит в ноль
-            if (!ramTarget && stoppingDistance > 0f)
+            if (!ramTarget && stoppingDistance > 0f && !swiping)
             {
                 float playerSpeed = Vector3.Dot(targetVelocity, transform.forward);
                 float slotDistance = Vector3.Distance(position, destination);
@@ -475,6 +502,9 @@ namespace RacingProject.Enemy
             back.Normalize();
             Vector3 side = Vector3.Cross(Vector3.up, back) * slotSide;
             Vector3 slot = goal + (back * 0.6f + side * 0.8f).normalized * stoppingDistance;
+            // Подход к удару бортом: место вровень с игроком, чуть впереди, чтобы догнать
+            if (swipePhase == SwipePhase.Approach)
+                slot = goal + side * swipeSideOffset - back * 2f;
 
             NavMeshQueryFilter filter = new NavMeshQueryFilter { agentTypeID = agentTypeId, areaMask = NavMesh.AllAreas };
             if (NavMesh.SamplePosition(slot, out NavMeshHit hit, 8f, filter))
@@ -482,6 +512,69 @@ namespace RacingProject.Enemy
             // Сбоку места нет — пробуем другую сторону
             slotSide = -slotSide;
             return goal;
+        }
+
+        // Удар бортом: пауза → подход вровень с игроком (место задаёт ChooseDestination) → рывок рулём в игрока.
+        // Возвращает true, пока идёт сам удар
+        private bool UpdateSideSwipe(Vector3 position, float distanceToPlayer, float forwardSpeed, Vector3 targetVelocity, float dt)
+        {
+            if (!sideSwipe || ramTarget) return false;
+            swipeTimer -= dt;
+
+            Vector3 playerForward = targetVelocity.sqrMagnitude > 4f ? targetVelocity : target.forward;
+            playerForward.y = 0f;
+            playerForward.Normalize();
+            Vector3 offset = position - target.position;
+            float along = Vector3.Dot(offset, playerForward);
+            float lateral = Vector3.Dot(offset, Vector3.Cross(Vector3.up, playerForward));
+
+            switch (swipePhase)
+            {
+                case SwipePhase.None:
+                    // Атакует только едущего игрока: по стоящему бортом не попасть
+                    if (swipeTimer <= 0f && distanceToPlayer < swipeStartDistance && targetVelocity.sqrMagnitude > 36f)
+                    {
+                        swipePhase = SwipePhase.Approach;
+                        swipeTimer = swipeApproachTime;
+                        // Подходим с той стороны, где уже едем (side в ChooseDestination смотрит влево при slotSide = 1)
+                        slotSide = lateral >= 0f ? -1f : 1f;
+                        repathTimer = 0f;
+                    }
+                    return false;
+                case SwipePhase.Approach:
+                    bool level = Mathf.Abs(along) < halfLength && Mathf.Abs(lateral) < swipeSideOffset * 1.5f
+                        && Vector3.Dot(transform.forward, playerForward) > 0.85f && forwardSpeed > 6f;
+                    if (level)
+                    {
+                        swipePhase = SwipePhase.Hit;
+                        swipeTimer = swipeDuration;
+                        return true;
+                    }
+                    if (swipeTimer <= 0f || distanceToPlayer > swipeStartDistance * 1.5f)
+                        EndSideSwipe();
+                    return false;
+                default:
+                    if (swipeTimer > 0f) return true;
+                    EndSideSwipe();
+                    return false;
+            }
+        }
+
+        private void EndSideSwipe()
+        {
+            swipePhase = SwipePhase.None;
+            swipeTimer = swipeCooldown * Random.Range(0.7f, 1.3f);
+            repathTimer = 0f;
+        }
+
+        // Удар корпусом засчитан (EnemyRamDamage, только на сервере): таран отходит для нового разгона,
+        // а машина, ударившая бортом, отваливает
+        public void OnRamHit()
+        {
+            if (ramTarget && !reversing && ramBackOffTime > 0f)
+                StartReverse(Random.value < 0.5f ? -0.5f : 0.5f, ramBackOffTime);
+            if (swipePhase == SwipePhase.Hit)
+                EndSideSwipe();
         }
 
         // На ходу путь строится от точки впереди машины: так маршрут продолжается вперёд и не перескакивает
