@@ -7,7 +7,8 @@
 // Корень ставится под XR Rig Menu и поворачивается так, чтобы −Z смотрел туда же, куда камера меню.
 // Холсты Main и Settings ложатся на экраны пульта, Tips — листком на пробковую доску (и выходит из-под Canvases).
 // Подвижные детали (створка двери со штурвалом, кремальеры, стрелки, тумблеры, линзы ламп) — Bunker_Moving.fbx;
-// приборами пульта управляет BunkerConsole, звуками, тумблерами и разрывами наверху — BunkerLife.
+// приборами пульта управляет BunkerConsole, звуками, тумблерами и разрывами наверху — BunkerLife,
+// выходом из бункера при старте раунда — MenuExitSequence.
 // Бункер — дочерний объект Menu и прячется вместе с меню.
 AssetDatabase.Refresh(); // свежие FBX из Blender: иначе ремап увидит старые имена материалов
 var menu = GameObject.Find("Menu").transform;
@@ -452,6 +453,61 @@ var moving = root.Find("Bunker_Moving");
         lso.FindProperty("dustCloud").objectReferenceValue = cloud;
     }
     lso.ApplyModifiedPropertiesWithoutUndo();
+
+    // Выход из бункера при старте раунда (MenuExitSequence): оси и знаки поворотов подбираются здесь по геометрии,
+    // поэтому не зависят от того, как FBX повернул детали при импорте
+    var exit = root.gameObject.AddComponent<RacingProject.Management.MenuExitSequence>();
+    // При старте раунда RoomController прячет весь Menu: с ним выключаются бункер, его звуки и BunkerAmbience
+    // (возвращает солнце), а MenuExitSequence находится среди дочерних объектов
+    { var rso = new SerializedObject(roomCtrl); rso.FindProperty("Menu").objectReferenceValue = menu.gameObject; rso.ApplyModifiedPropertiesWithoutUndo(); }
+    var xso = new SerializedObject(exit);
+    xso.FindProperty("lobby").objectReferenceValue = roomCtrl.GetComponent<RacingProject.Network.LanLobby>();
+    xso.FindProperty("output").objectReferenceValue = mixer.FindMatchingGroups("Master")[0];
+    var inward = root.TransformDirection(B(1f, 0f, 0f)); // нормаль стены с дверью — внутрь комнаты
+    System.Func<Transform, Vector3> centerOf = part => part.TransformPoint(part.GetComponent<MeshFilter>().sharedMesh.bounds.center);
+    // Знак угла, при котором точка детали уходит по направлению goal
+    System.Func<Transform, Vector3, float, Vector3, float> signFor = (part, axisLocal, angle, goal) => {
+        var rest = part.localRotation; var c0 = centerOf(part);
+        part.localRotation = Quaternion.AngleAxis(angle, axisLocal) * rest; var c1 = centerOf(part);
+        part.localRotation = rest;
+        return Vector3.Dot(c1 - c0, goal) >= 0f ? angle : -angle;
+    };
+    var leafT = moving.Find("DoorLeaf");
+    {
+        var p = xso.FindProperty("leaf");
+        var axis = leafT.parent.InverseTransformDirection(Vector3.up);
+        p.FindPropertyRelative("transform").objectReferenceValue = leafT;
+        p.FindPropertyRelative("axis").vector3Value = axis;
+        p.FindPropertyRelative("angle").floatValue = signFor(leafT, axis, 80f, inward); // створка открывается в комнату
+    }
+    {
+        var wheelT = leafT.Find("DoorWheel");
+        var p = xso.FindProperty("wheel");
+        p.FindPropertyRelative("transform").objectReferenceValue = wheelT;
+        p.FindPropertyRelative("axis").vector3Value = wheelT.parent.InverseTransformDirection(inward);
+        p.FindPropertyRelative("angle").floatValue = -720f; // два оборота против часовой, если смотреть из комнаты
+    }
+    var dogsProp = xso.FindProperty("dogs"); dogsProp.arraySize = 3;
+    for (int i = 0; i < 3; i++) {
+        var dogT = moving.Find("DoorDog_" + i);
+        var p = dogsProp.GetArrayElementAtIndex(i);
+        var axis = dogT.parent.InverseTransformDirection(inward);
+        p.FindPropertyRelative("transform").objectReferenceValue = dogT;
+        p.FindPropertyRelative("axis").vector3Value = axis;
+        p.FindPropertyRelative("angle").floatValue = signFor(dogT, axis, 90f, Vector3.up); // рычаг откидывается вверх
+    }
+    {
+        // Красная лампа тревоги над дверью и дневной свет в коридоре за ней (без теней: до открытия выключен)
+        var alarm = addLight("AlarmLight", B(-2.3f + 0.25f, -2.1f, 2.35f));
+        alarm.type = LightType.Point; alarm.color = new Color(1f, 0.12f, 0.06f); alarm.range = 4.5f; alarm.shadows = LightShadows.None;
+        alarm.enabled = false;
+        var day = addLight("DaylightLight", B(-2.3f - 0.8f, -2.1f, 1.5f));
+        day.type = LightType.Point; day.color = new Color(0.85f, 0.9f, 1f); day.range = 4f; day.shadows = LightShadows.None;
+        day.enabled = false;
+        xso.FindProperty("alarm").objectReferenceValue = alarm;
+        xso.FindProperty("daylight").objectReferenceValue = day;
+    }
+    xso.ApplyModifiedPropertiesWithoutUndo();
 }
 
 // Листок с советами на пробковой доске правой стены

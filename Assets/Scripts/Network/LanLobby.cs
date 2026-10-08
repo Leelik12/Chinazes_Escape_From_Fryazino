@@ -42,6 +42,8 @@ namespace RacingProject.Network
         private float searchEndTime;
         private bool wasConnected;
         private bool reloading;
+        // Сообщение о запуске раунда: кнопки прячутся, пока бункер провожает экипаж к выходу
+        private string launchStatus;
 
         // Идёт поиск игры в сети (для индикаторов меню)
         public bool Searching => discovery.IsListening;
@@ -88,6 +90,11 @@ namespace RacingProject.Network
             manager.OnClientDisconnectCallback -= OnPartnerDisconnected;
             if (manager.ConnectionApprovalCallback == ApproveConnection)
                 manager.ConnectionApprovalCallback = null;
+        }
+
+        public void ShowLaunch(string text)
+        {
+            launchStatus = text;
         }
 
         public void OnHostPressed()
@@ -192,6 +199,16 @@ namespace RacingProject.Network
             bool online = manager.IsListening;
             bool searching = discovery.IsListening;
             bool inSession = manager.IsServer || manager.IsConnectedClient;
+
+            if (launchStatus != null)
+            {
+                SetActive(hostButton, false);
+                SetActive(joinButton, false);
+                SetActive(readyButton, false);
+                SetActive(leaveButton, false);
+                SetText(statusText, launchStatus);
+                return;
+            }
 
             SetActive(hostButton, !online && !searching);
             SetActive(joinButton, !online);

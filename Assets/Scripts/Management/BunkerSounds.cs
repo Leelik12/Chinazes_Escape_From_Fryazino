@@ -4,13 +4,14 @@ using UnityEngine;
 namespace RacingProject.Management
 {
     // Звуки бункера меню, синтезированные при первом обращении: гул вентиляции, гудение ламп, эфир радиостанции
-    // с морзянкой, щелчки кнопок терминала и тумблеров, далёкий разрыв. Циклы склеиваются без щелчка:
+    // с морзянкой, щелчки кнопок терминала и тумблеров, далёкий разрыв, а для выхода из бункера — ревун тревоги,
+    // треск штурвала, лязг кремальер и скрип тяжёлой двери. Циклы склеиваются без щелчка:
     // частоты тонов кратны длине цикла, шум в конце плавно переходит в начало. Сторонних файлов и лицензий нет
     public static class BunkerSounds
     {
         private const int Rate = 44100;
 
-        private static AudioClip vent, buzz, radio, hover, click, toggle, rumble;
+        private static AudioClip vent, buzz, radio, hover, click, toggle, rumble, klaxon, ratchet, clank, creak;
 
         public static AudioClip Vent => vent != null ? vent : vent = Make("BunkerVent", 8f, true, VentSample);
         public static AudioClip LampBuzz => buzz != null ? buzz : buzz = Make("BunkerLampBuzz", 2f, true, BuzzSample);
@@ -19,6 +20,11 @@ namespace RacingProject.Management
         public static AudioClip Click => click != null ? click : click = Make("TerminalClick", 0.12f, false, ClickSample);
         public static AudioClip Toggle => toggle != null ? toggle : toggle = Make("ToggleSnap", 0.1f, false, ToggleSample);
         public static AudioClip Rumble => rumble != null ? rumble : rumble = Make("DistantShelling", 5f, false, RumbleSample);
+        // Ревун периодичен сам по себе (целое число периодов, гудок начинается и кончается в тишине), склейка не нужна
+        public static AudioClip Klaxon => klaxon != null ? klaxon : klaxon = Make("AlarmKlaxon", 1f, false, KlaxonSample);
+        public static AudioClip Ratchet => ratchet != null ? ratchet : ratchet = Make("WheelRatchet", 1.3f, false, RatchetSample);
+        public static AudioClip Clank => clank != null ? clank : clank = Make("DogClank", 0.5f, false, ClankSample);
+        public static AudioClip Creak => creak != null ? creak : creak = Make("DoorCreak", 2.4f, false, CreakSample);
 
         // Генератор заполняет буфер целиком: ему нужны и шум, и состояние фильтров
         private delegate void Fill(float[] data, float length, System.Random rnd);
@@ -82,6 +88,70 @@ namespace RacingProject.Management
                 d[i] = hp * 0.6f * fade + crackle;
                 if (MorseOn(morse, t - start, dot))
                     d[i] += 0.35f * Mathf.Sin(2f * Mathf.PI * 750f * t);
+            }
+        }
+
+        private static void KlaxonSample(float[] d, float length, System.Random rnd)
+        {
+            // Гудок 0,6 с и пауза: «пила» 220 Гц с хрипом 30 Гц
+            for (int i = 0; i < d.Length; i++)
+            {
+                float t = (float)i / Rate;
+                float env = Mathf.Clamp01(t / 0.02f) * Mathf.Clamp01((0.6f - t) / 0.03f);
+                float saw = 2f * Mathf.Repeat(220f * t, 1f) - 1f;
+                float rasp = 0.75f + 0.25f * Mathf.Sin(2f * Mathf.PI * 30f * t);
+                d[i] = Mathf.Max(0f, env) * (saw * 0.7f + Mathf.Sin(2f * Mathf.PI * 440f * t) * 0.3f) * rasp;
+            }
+        }
+
+        private static void RatchetSample(float[] d, float length, System.Random rnd)
+        {
+            // Штурвал: частые щелчки собачки, сначала туго и редко, потом быстрее
+            float next = 0.05f;
+            float lastClick = -1f;
+            for (int i = 0; i < d.Length; i++)
+            {
+                float t = (float)i / Rate;
+                if (t >= next)
+                {
+                    lastClick = t;
+                    next = t + Mathf.Lerp(0.11f, 0.05f, t / length);
+                }
+                float k = lastClick >= 0f ? t - lastClick : 1f;
+                d[i] = Noise(rnd) * Mathf.Exp(-k * 700f) + Mathf.Sin(2f * Mathf.PI * 1900f * k) * Mathf.Exp(-k * 160f) * 0.5f
+                     + Mathf.Sin(2f * Mathf.PI * 240f * k) * Mathf.Exp(-k * 50f) * 0.3f;
+            }
+        }
+
+        private static void ClankSample(float[] d, float length, System.Random rnd)
+        {
+            // Удар стального рычага: неравные обертоны звенят и быстро глохнут
+            for (int i = 0; i < d.Length; i++)
+            {
+                float t = (float)i / Rate;
+                d[i] = Noise(rnd) * Mathf.Exp(-t * 300f) * 0.8f
+                     + Mathf.Sin(2f * Mathf.PI * 185f * t) * Mathf.Exp(-t * 14f) * 0.6f
+                     + Mathf.Sin(2f * Mathf.PI * 412f * t) * Mathf.Exp(-t * 18f) * 0.4f
+                     + Mathf.Sin(2f * Mathf.PI * 697f * t) * Mathf.Exp(-t * 25f) * 0.3f
+                     + Mathf.Sin(2f * Mathf.PI * 1310f * t) * Mathf.Exp(-t * 40f) * 0.2f;
+            }
+        }
+
+        private static void CreakSample(float[] d, float length, System.Random rnd)
+        {
+            // Скрип петель тяжёлой двери: «пила» с плавающей высотой через резонанс и шорох трения
+            float phase = 0f, lp = 0f, bp = 0f;
+            for (int i = 0; i < d.Length; i++)
+            {
+                float t = (float)i / Rate;
+                float f = 85f + 30f * Mathf.Sin(t * 2.3f) + 12f * Mathf.Sin(t * 7.1f);
+                phase = Mathf.Repeat(phase + f / Rate, 1f);
+                float saw = 2f * phase - 1f;
+                // Полосовой фильтр на 900 Гц даёт металлический призвук
+                lp += 0.13f * bp;
+                bp += 0.13f * (saw - lp - 0.25f * bp);
+                float env = Mathf.Clamp01(t / 0.25f) * Mathf.Clamp01((length - t) / 0.6f);
+                d[i] = env * (bp * 0.8f + saw * 0.15f + Noise(rnd) * 0.12f);
             }
         }
 

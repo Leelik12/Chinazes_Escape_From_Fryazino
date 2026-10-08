@@ -3,6 +3,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using RacingProject.Enemy;
+using RacingProject.Management;
 
 namespace RacingProject.Network
 {
@@ -112,10 +113,16 @@ namespace RacingProject.Network
             StartGameRpc();
         }
 
+        // Если в меню есть бункер, сначала открывается гермодверь (MenuExitSequence), и риги включаются в темноте.
+        // Длительность одинакова у обоих игроков, поэтому раунд у них стартует одновременно
         [Rpc(SendTo.Everyone)]
         private void StartGameRpc()
         {
-            ActivatePlayerRigs();
+            MenuExitSequence exit = Menu != null && Menu.activeInHierarchy ? Menu.GetComponentInChildren<MenuExitSequence>() : null;
+            if (exit != null)
+                exit.Play(ActivatePlayerRigs);
+            else
+                ActivatePlayerRigs();
         }
 
         private void ActivatePlayerRigs()
