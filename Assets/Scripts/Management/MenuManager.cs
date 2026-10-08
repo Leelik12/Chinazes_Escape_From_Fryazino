@@ -11,8 +11,10 @@ namespace RacingProject.Management
     {
         public Slider volumeSliderMusik;
         public Slider volumeSliderEngine;
+        public Slider volumeSliderAmbient;
         public AudioMixer audioMixer;
         public AudioMixer MusikMixer;
+        public AudioMixer ambientMixer;
 
         // Нижняя граница микшера: такой уровень уже не слышен
         private const float MinDb = -80f;
@@ -26,6 +28,10 @@ namespace RacingProject.Management
             volumeSliderEngine.value = StaticHolder.EngineVolume;
             SetVolumeEngine(StaticHolder.EngineVolume);
             volumeSliderEngine.onValueChanged.AddListener(OnVolumeChangedEngine);
+
+            volumeSliderAmbient.value = StaticHolder.AmbientVolume;
+            SetVolumeAmbient(StaticHolder.AmbientVolume);
+            volumeSliderAmbient.onValueChanged.AddListener(SetVolumeAmbient);
         }
         void OnVolumeChangedMusik(float volume)
         {
@@ -47,6 +53,12 @@ namespace RacingProject.Management
         {
             audioMixer.SetFloat("EngineVolume", ToDecibels(volume));
             StaticHolder.EngineVolume = volume;
+        }
+
+        public void SetVolumeAmbient(float volume)
+        {
+            ambientMixer.SetFloat("AmbientVolume", ToDecibels(volume));
+            StaticHolder.AmbientVolume = volume;
         }
 
         // Слух воспринимает громкость логарифмически: линейный слайдер 0..1 переводится в 20·log10.
