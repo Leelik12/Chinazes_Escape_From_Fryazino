@@ -7,7 +7,8 @@
 // Корень ставится под XR Rig Menu и поворачивается так, чтобы −Z смотрел туда же, куда камера меню.
 // Холсты Main и Settings ложатся на экраны пульта, Tips — листком на пробковую доску (и выходит из-под Canvases).
 // Подвижные детали (створка двери со штурвалом, кремальеры, стрелки, тумблеры, линзы ламп) — Bunker_Moving.fbx;
-// приборами пульта управляет BunkerConsole. Бункер — дочерний объект Menu и прячется вместе с меню.
+// приборами пульта управляет BunkerConsole, звуками, тумблерами и разрывами наверху — BunkerLife.
+// Бункер — дочерний объект Menu и прячется вместе с меню.
 AssetDatabase.Refresh(); // свежие FBX из Blender: иначе ремап увидит старые имена материалов
 var menu = GameObject.Find("Menu").transform;
 var canvases = menu.Find("Canvases");
@@ -323,6 +324,134 @@ var moving = root.Find("Bunker_Moving");
         float a = (210f - 120f * k) * Mathf.Deg2Rad;
         label(k.ToString(), 0f, 0.33f + Mathf.Cos(a) * 0.029f, 0.2f + Mathf.Sin(a) * 0.029f, 0.0168f, 0.012f, 0.008f);
     }
+
+    // Жизнь бункера: фоновые звуки, щелчки терминала и тумблеров, разрывы наверху (BunkerLife)
+    var life = root.gameObject.AddComponent<RacingProject.Management.BunkerLife>();
+    var lso = new SerializedObject(life);
+    var mixer = AssetDatabase.LoadAssetAtPath<UnityEngine.Audio.AudioMixer>("Assets/Content/Sound/AmbientMixer.mixer");
+    lso.FindProperty("output").objectReferenceValue = mixer.FindMatchingGroups("Master")[0];
+    System.Func<string, Vector3, Transform> marker = (mname, pos) => {
+        var g = new GameObject(mname).transform; g.SetParent(root, false); g.localPosition = pos; return g;
+    };
+    // Фильтровентиляционная установка у задней стены и радиостанция на правой секции пульта
+    lso.FindProperty("vent").objectReferenceValue = marker("VentSound", B(-0.45f, -3.1f, 1.2f));
+    {
+        float d = -SECTION * Mathf.Deg2Rad;
+        lso.FindProperty("radio").objectReferenceValue = marker("RadioSound", B(-1.1f * Mathf.Sin(d), 1.1f * Mathf.Cos(d), 0.97f));
+    }
+    var hanging = new System.Collections.Generic.List<Transform>();
+    foreach (Transform c in root) if (c.name == "Bunker_Lamp") hanging.Add(c);
+    var hl = lso.FindProperty("hangingLamps"); hl.arraySize = hanging.Count;
+    for (int i = 0; i < hanging.Count; i++) hl.GetArrayElementAtIndex(i).objectReferenceValue = hanging[i];
+    var dipList = new System.Collections.Generic.List<Light>();
+    foreach (var h in hanging) dipList.Add(h.GetComponentInChildren<Light>());
+    dipList.Add(root.Find("DeskLampLight").GetComponent<Light>());
+    dipList.Add(root.Find("BulkheadLight").GetComponent<Light>());
+    var dl = lso.FindProperty("dipLights"); dl.arraySize = dipList.Count;
+    for (int i = 0; i < dipList.Count; i++) dl.GetArrayElementAtIndex(i).objectReferenceValue = dipList[i];
+    var rows = lso.FindProperty("toggleRows"); rows.arraySize = 2;
+    for (int r = 0; r < 2; r++) {
+        var row = rows.GetArrayElementAtIndex(r);
+        float deg = r == 0 ? 0f : SECTION;
+        string prefix = r == 0 ? "Toggle_Main_" : "Toggle_Settings_";
+        row.FindPropertyRelative("screen").objectReferenceValue = canvases.Find(r == 0 ? "Main" : "Settings").GetComponent<Canvas>();
+        var parts = new System.Collections.Generic.List<Transform>();
+        foreach (Transform part in moving) if (part.name.StartsWith(prefix)) parts.Add(part);
+        var tg = row.FindPropertyRelative("toggles"); tg.arraySize = parts.Count;
+        for (int i = 0; i < parts.Count; i++) tg.GetArrayElementAtIndex(i).objectReferenceValue = parts[i];
+        row.FindPropertyRelative("axis").vector3Value = panelDir(deg, Vector3.right).normalized;
+        row.FindPropertyRelative("up").vector3Value = panelDir(deg, Vector3.up).normalized;
+        row.FindPropertyRelative("throwAngle").floatValue = 2f * Mathf.Atan2(0.012f, 0.03f) * Mathf.Rad2Deg; // 2 × TOGGLE_TILT
+    }
+
+    // Частицы: пылинки в лучах настольной и подвесной ламп (светятся, складываясь со светом) и пыль со свода
+    var dotPath = CD + "Textures/DustMote.png";
+    {
+        var dot = new Texture2D(32, 32, TextureFormat.RGBA32, false);
+        for (int y = 0; y < 32; y++) for (int x = 0; x < 32; x++) {
+            float rr = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(16f, 16f)) / 16f;
+            dot.SetPixel(x, y, new Color(1f, 1f, 1f, Mathf.Pow(Mathf.Clamp01(1f - rr), 2f)));
+        }
+        System.IO.File.WriteAllBytes(dotPath, dot.EncodeToPNG());
+        UnityEngine.Object.DestroyImmediate(dot);
+        AssetDatabase.ImportAsset(dotPath);
+        var ti = (TextureImporter)AssetImporter.GetAtPath(dotPath);
+        ti.alphaIsTransparency = true; ti.mipmapEnabled = true; ti.wrapMode = TextureWrapMode.Clamp; ti.SaveAndReimport();
+    }
+    var partShader = Shader.Find("Universal Render Pipeline/Particles/Unlit");
+    System.Func<string, bool, Material> partMat = (pname, additive) => {
+        string path = CD + "Materials/" + pname + ".mat";
+        var m = AssetDatabase.LoadAssetAtPath<Material>(path);
+        if (m == null) { m = new Material(partShader); AssetDatabase.CreateAsset(m, path); }
+        m.shader = partShader;
+        m.SetTexture("_BaseMap", AssetDatabase.LoadAssetAtPath<Texture2D>(dotPath)); m.SetColor("_BaseColor", Color.white);
+        m.SetFloat("_Surface", 1f); m.SetFloat("_Blend", additive ? 2f : 0f);
+        m.SetFloat("_SrcBlend", (float)UnityEngine.Rendering.BlendMode.SrcAlpha);
+        m.SetFloat("_DstBlend", (float)(additive ? UnityEngine.Rendering.BlendMode.One : UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha));
+        m.SetFloat("_ZWrite", 0f); m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+        m.SetOverrideTag("RenderType", "Transparent"); m.renderQueue = 3000;
+        EditorUtility.SetDirty(m);
+        return m;
+    };
+    var moteMat = partMat("BK_DustMote", true);
+    var fallMat = partMat("BK_DustFall", false);
+    System.Func<string, Transform, Material, ParticleSystem> particles = (pname, parent, pm) => {
+        var g = new GameObject(pname); g.transform.SetParent(parent, false);
+        var ps = g.AddComponent<ParticleSystem>();
+        ps.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        var pr = g.GetComponent<ParticleSystemRenderer>(); pr.sharedMaterial = pm;
+        pr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; pr.receiveShadows = false;
+        var main = ps.main; main.simulationSpace = ParticleSystemSimulationSpace.World; main.scalingMode = ParticleSystemScalingMode.Hierarchy;
+        return ps;
+    };
+    System.Action<ParticleSystem, float, float, float, float, float> motes = (ps, angle, length, radius, rate, alpha) => {
+        var main = ps.main; main.loop = true; main.prewarm = true; main.duration = 10f;
+        main.startLifetime = new ParticleSystem.MinMaxCurve(6f, 10f); main.startSpeed = new ParticleSystem.MinMaxCurve(0.003f, 0.015f);
+        main.startSize = new ParticleSystem.MinMaxCurve(0.0025f, 0.006f); main.maxParticles = 250;
+        main.startColor = new Color(1f, 0.86f, 0.65f, alpha);
+        var em = ps.emission; em.rateOverTime = rate;
+        var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.ConeVolume; sh.angle = angle; sh.radius = radius; sh.length = length;
+        var nz = ps.noise; nz.enabled = true; nz.strength = 0.015f; nz.frequency = 0.4f; nz.scrollSpeed = 0.05f;
+        var col = ps.colorOverLifetime; col.enabled = true;
+        var grad = new Gradient(); grad.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+            new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.2f), new GradientAlphaKey(1f, 0.8f), new GradientAlphaKey(0f, 1f) });
+        col.color = grad;
+        ps.Play();
+    };
+    motes(particles("DustMotes", root.Find("DeskLampLight"), moteMat), 38f, 0.75f, 0.03f, 18f, 0.55f);
+    {
+        var lampMotes = particles("DustMotes", hanging[0].GetComponentInChildren<Light>().transform, moteMat);
+        lampMotes.transform.localRotation = Quaternion.Euler(90f, 0f, 0f); // конус вниз из-под решётки
+        motes(lampMotes, 40f, 1.5f, 0.08f, 22f, 0.35f);
+    }
+    // Пыль со свода: только выпускается из BunkerLife при разрыве
+    System.Func<string, ParticleSystem> ceilingDust = pname => {
+        var ps = particles(pname, root, fallMat);
+        ps.transform.localPosition = B(-0.3f, -0.9f, 2.75f);
+        var main = ps.main; main.loop = true; main.playOnAwake = true; main.duration = 5f;
+        var em = ps.emission; em.rateOverTime = 0f;
+        var sh = ps.shape; sh.shapeType = ParticleSystemShapeType.Box; sh.scale = new Vector3(3f, 0.05f, 3.8f);
+        return ps;
+    };
+    {
+        var crumbs = ceilingDust("DustFall");
+        var main = crumbs.main; main.startLifetime = new ParticleSystem.MinMaxCurve(2.5f, 4f); main.startSpeed = new ParticleSystem.MinMaxCurve(0f, 0.05f);
+        main.startSize = new ParticleSystem.MinMaxCurve(0.004f, 0.012f); main.gravityModifier = 0.25f; main.maxParticles = 400;
+        main.startColor = new Color(0.55f, 0.5f, 0.42f, 0.8f);
+        var cloud = ceilingDust("DustCloud");
+        var cm = cloud.main; cm.startLifetime = new ParticleSystem.MinMaxCurve(3f, 5f); cm.startSpeed = new ParticleSystem.MinMaxCurve(0.02f, 0.08f);
+        cm.startSize = new ParticleSystem.MinMaxCurve(0.25f, 0.6f); cm.gravityModifier = 0.03f; cm.maxParticles = 40;
+        cm.startColor = new Color(0.5f, 0.46f, 0.4f, 0.07f);
+        var ccol = cloud.colorOverLifetime; ccol.enabled = true;
+        var cg = new Gradient(); cg.SetKeys(new[] { new GradientColorKey(Color.white, 0f), new GradientColorKey(Color.white, 1f) },
+            new[] { new GradientAlphaKey(0f, 0f), new GradientAlphaKey(1f, 0.15f), new GradientAlphaKey(0f, 1f) });
+        ccol.color = cg;
+        var csz = cloud.sizeOverLifetime; csz.enabled = true; csz.size = new ParticleSystem.MinMaxCurve(1f, AnimationCurve.Linear(0f, 0.6f, 1f, 1.4f));
+        crumbs.Play(); cloud.Play();
+        lso.FindProperty("dust").objectReferenceValue = crumbs;
+        lso.FindProperty("dustCloud").objectReferenceValue = cloud;
+    }
+    lso.ApplyModifiedPropertiesWithoutUndo();
 }
 
 // Листок с советами на пробковой доске правой стены
