@@ -86,6 +86,25 @@ namespace RacingProject.Enemy
         [Tooltip("Ближе этого к игроку машину не переставляют и не переворачивают — он бы это увидел, м")]
         public float hiddenRecoveryDistance = 70f;
 
+        [Header("Catch-up")]
+        [Tooltip("Дальше этого от игрока машине помогают догнать: выше предел скорости и мощность мотора, м")]
+        public float catchUpStartDistance = 60f;
+        [Tooltip("С этого расстояния помощь полная, м")]
+        public float catchUpFullDistance = 200f;
+        [Tooltip("На сколько при полной помощи растут maxSpeed и мощность мотора (0,6 — на 60 %)")]
+        public float catchUpBoost = 0.6f;
+        [Tooltip("На сколько при полной помощи растёт cornerSpeed")]
+        public float catchUpCornerBoost = 0.25f;
+        [Tooltip("Добавочное ускорение вперёд при полной помощи, м/с²: тяжёлым машинам не хватает мотора")]
+        public float catchUpAccel = 5f;
+        [Tooltip("Если до игрока по пути дальше этого, а игрок машину не видит, её переносит вперёд по пути, м")]
+        public float leapDistance = 200f;
+        [Tooltip("Куда переносит: за столько метров пути до игрока (или дальше, если там на виду или тесно), м")]
+        public float leapTargetDistance = 100f;
+        [Tooltip("Дальше этого игрок машину не разглядит, даже если её ничто не закрывает, м")]
+        public float unseenDistance = 180f;
+        public float leapCooldown = 8f;
+
         [Header("Obstacle Check")]
         [Tooltip("Запас до препятствия за бампером на малой скорости, м")]
         public float frontCheckDistance = 4f;
@@ -130,6 +149,9 @@ namespace RacingProject.Enemy
         private float ambushTimer;
         private float progressTimer;
         private Vector3 progressAnchor;
+        // Помощь отставшей машине: 0 — рядом с игроком, 1 — дальше catchUpFullDistance
+        private float catchUp;
+        private float leapTimer;
         private const float ProgressWindow = 10f;
         private const float MinProgress = 8f;
         private bool turningAround;
@@ -279,6 +301,12 @@ namespace RacingProject.Enemy
                 }
             }
 
+            // Отставшей машине нечестно помогают: она быстрее, а вне поля зрения игрока её переносит вперёд
+            catchUp = Mathf.Clamp01(Mathf.InverseLerp(catchUpStartDistance, catchUpFullDistance, distanceToPlayer));
+            leapTimer -= dt;
+            if (leapTimer <= 0f && distanceToPlayer > leapTargetDistance && TryLeapForward(position))
+                return;
+
             float forwardSpeed = Vector3.Dot(rb.linearVelocity, transform.forward);
 
             if (reversing)
@@ -324,6 +352,10 @@ namespace RacingProject.Enemy
                 turnAround = Mathf.Abs(alpha) > 50f * Mathf.Deg2Rad;
                 if (!turnAround)
                     turnForwardTimer = 0f;
+            }
+            else if (turnAround && distanceToPlayer > catchUpStartDistance && TurnInPlace(position, toAim))
+            {
+                return;
             }
             else if (turnAround && !ProbeBlocked(-transform.forward, halfLength + 2f))
             {
@@ -600,7 +632,9 @@ namespace RacingProject.Enemy
         // Скорость, с которой можно ехать, чтобы успеть сбросить её перед каждым поворотом пути в пределах тормозного пути
         private float SpeedForPath(Vector3 position, float speed)
         {
-            float allowed = maxSpeed;
+            float top = maxSpeed * (1f + catchUpBoost * catchUp);
+            float corner = cornerSpeed * (1f + catchUpCornerBoost * catchUp);
+            float allowed = top;
             int segment = ClosestSegment(position, out Vector3 closest);
             float horizon = speed * speed / (2f * brakingDecel) + 25f;
 
@@ -610,7 +644,7 @@ namespace RacingProject.Enemy
             heading.y = 0f;
             toPath.y = 0f;
             if (toPath.sqrMagnitude > 1f)
-                allowed = Mathf.Lerp(maxSpeed, cornerSpeed, Mathf.Clamp01(Vector3.Angle(heading, toPath) / 90f));
+                allowed = Mathf.Lerp(top, corner, Mathf.Clamp01(Vector3.Angle(heading, toPath) / 90f));
 
             // Поворот в каждой точке пути меряем по хордам на три точки назад и вперёд (около 12 м при частых точках):
             // на раздробленном пути угол между соседними отрезками мал и крутого поворота не показал бы
@@ -626,7 +660,7 @@ namespace RacingProject.Enemy
                 dirOut.y = 0f;
                 if (dirIn.sqrMagnitude < 0.25f || dirOut.sqrMagnitude < 0.25f) continue;
                 float turn = Vector3.Angle(dirIn, dirOut);
-                float limit = Mathf.Lerp(maxSpeed, cornerSpeed, Mathf.Clamp01(turn / 90f));
+                float limit = Mathf.Lerp(top, corner, Mathf.Clamp01(turn / 90f));
                 allowed = Mathf.Min(allowed, Mathf.Sqrt(limit * limit + 2f * brakingDecel * travelled));
             }
             return allowed;
@@ -745,15 +779,86 @@ namespace RacingProject.Enemy
             return true;
         }
 
-        private void PlaceAt(Vector3 position, Quaternion rotation)
+        private void PlaceAt(Vector3 position, Quaternion rotation, float speed = 0f)
         {
-            rb.linearVelocity = Vector3.zero;
+            rb.linearVelocity = rotation * Vector3.forward * speed;
             rb.angularVelocity = Vector3.zero;
             rb.position = position;
             rb.rotation = rotation;
             transform.SetPositionAndRotation(position, rotation);
             reversing = false;
+            turningAround = false;
+            turnForwardTimer = 0f;
             stuckTimer = -StuckGrace;
+            progressTimer = 0f;
+            progressAnchor = position;
+            repathTimer = 0f;
+        }
+
+        // Перенос отставшей машины вперёд по пути: и откуда, и куда игрок не должен видеть.
+        // Сначала точка за leapTargetDistance метров пути до игрока, если она на виду или там тесно — дальше от него
+        private bool TryLeapForward(Vector3 position)
+        {
+            leapTimer = 1f;
+            if (corners.Count < 2) return false;
+            float remaining = PathLengthFrom(position);
+            if (remaining < leapDistance || !HiddenFromPlayer(position)) return false;
+            NavMeshQueryFilter filter = new NavMeshQueryFilter { agentTypeID = agentTypeId, areaMask = NavMesh.AllAreas };
+            for (float left = leapTargetDistance; left < remaining - 60f; left += 30f)
+            {
+                float along = remaining - left;
+                Vector3 point = PointAlongPath(position, along);
+                Vector3 ahead = PointAlongPath(position, along + 8f) - point;
+                ahead.y = 0f;
+                if (ahead.sqrMagnitude < 0.01f || !NavMesh.SamplePosition(point, out NavMeshHit hit, 4f, filter)) continue;
+                Vector3 placed = hit.position + Vector3.up * 1.5f;
+                Quaternion rotation = Quaternion.LookRotation(ahead);
+                if (!HiddenFromPlayer(placed) || !HasRoom(placed, rotation)) continue;
+                // Машина появляется на ходу, со скоростью, с которой проходит повороты
+                PlaceAt(placed, rotation, cornerSpeed);
+                leapTimer = leapCooldown;
+                return true;
+            }
+            return false;
+        }
+
+        // Разворот на месте вместо разворота в три приёма, пока игрок машину не видит
+        private bool TurnInPlace(Vector3 position, Vector3 toAim)
+        {
+            if (toAim.sqrMagnitude < 0.01f || !HiddenFromPlayer(position)) return false;
+            Quaternion rotation = Quaternion.LookRotation(toAim);
+            Vector3 placed = position + Vector3.up * 0.3f;
+            if (!HasRoom(placed, rotation)) return false;
+            PlaceAt(placed, rotation);
+            return true;
+        }
+
+        // Длина пути от ближайшей к машине точки до его конца
+        private float PathLengthFrom(Vector3 position)
+        {
+            int segment = ClosestSegment(position, out Vector3 closest);
+            float length = 0f;
+            Vector3 from = closest;
+            for (int i = segment + 1; i < corners.Count; i++)
+            {
+                length += Vector3.Distance(from, corners[i]);
+                from = corners[i];
+            }
+            return length;
+        }
+
+        // Игрок не видит точку: она дальше unseenDistance или её закрывают дома, рельеф, деревья.
+        // Направление взгляда не учитываем: стрелок в машине смотрит куда угодно, в том числе назад
+        private bool HiddenFromPlayer(Vector3 point)
+        {
+            float distance = Vector3.Distance(point, target.position);
+            if (distance < hiddenRecoveryDistance) return false;
+            if (distance > unseenDistance) return true;
+            Vector3 eye = target.position + Vector3.up * 2.5f;
+            Vector3 body = point + Vector3.up * 1.5f;
+            if (!Physics.Linecast(eye, body, out RaycastHit hit, obstacleMask, QueryTriggerInteraction.Ignore))
+                return false;
+            return !ownColliders.Contains(hit.collider) && (targetBody == null || hit.rigidbody != targetBody);
         }
 
         // steer −1…1, throttle −1…1 (меньше нуля — задний ход), brake 0…1
@@ -762,8 +867,16 @@ namespace RacingProject.Enemy
             float angle = steer * maxSteerAngle;
             frontLeftWheel.steerAngle = angle;
             frontRightWheel.steerAngle = angle;
-            SetMotorTorque(throttle >= 0f ? throttle * motorForce : throttle * reverseForce);
+            float boost = 1f + catchUpBoost * catchUp;
+            SetMotorTorque(throttle >= 0f ? throttle * motorForce * boost : throttle * reverseForce);
             ApplyBrake(brake * brakeForce);
+            // Отставшую машину ещё и подталкивает вперёд, пока колёса на земле
+            if (throttle > 0f && catchUp > 0f && (frontLeftWheel.isGrounded || rearLeftWheel.isGrounded))
+            {
+                Vector3 forward = transform.forward;
+                forward.y = 0f;
+                rb.AddForce(forward.normalized * (catchUpAccel * catchUp * throttle), ForceMode.Acceleration);
+            }
         }
 
         private void SetMotorTorque(float torque)
