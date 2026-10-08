@@ -10,7 +10,7 @@ var log = new System.Text.StringBuilder();
 
 // Растр дорог 2 м на клетку
 int N = 1000; var road = new bool[N * N];
-foreach (var mf in env.Find("RoadArchitectSystem1").GetComponentsInChildren<MeshFilter>()) {
+foreach (var mf in env.Find("Roads").GetComponentsInChildren<MeshFilter>()) {
     if (mf.sharedMesh == null || mf.GetComponent<Renderer>() == null) continue;
     var v = mf.sharedMesh.vertices; var tris = mf.sharedMesh.triangles; var tf = mf.transform;
     for (int i = 0; i < tris.Length; i += 3) {

@@ -2,7 +2,7 @@
 // Не компилируется Unity (лежит вне Assets): текст выполняется в редакторе через execute_code (MCP for Unity, C# 6).
 // Каждый запуск пересобирает Environment/Roadside с нуля. Модели — Tools/Blender/roadside, префабы — Assets/Prefabs/Roadside.
 // У моделей перед смотрит в +Z, поэтому остановки, ларьки, будка и фонари повёрнуты LookRotation к оси дороги.
-// Вдоль дорог Road Architect (сплайн GSDSplineC): за городом опоры ЛЭП справа через 45 м с проводами (один меш на дорогу,
+// Вдоль осей дорог (Environment/RoadNetwork): за городом опоры ЛЭП справа через 45 м с проводами (один меш на дорогу,
 // Assets/Models/Roadside/Wires_<дорога>.asset), фонари слева внутри города, остановки с ларьками и блокпост на Road1.
 // После запуска перепечь NavMesh (Tools/Unity/BakeNavMesh.cs): гаражи и блоки блокпоста меняют проезды.
 // Фонари — LooseProp (Rigidbody 150 кг): машины их сбивают, в NavMesh они не попадают (NavMeshModifier в префабе).
@@ -75,8 +75,20 @@ Physics.SyncTransforms(); // иначе OverlapBox в free() не видит т�
 
 // --- 2. Дороги: опоры с проводами, фонари, остановки, ларьки, блокпост ---
 var poles = group("PowerPoles"); var lamps = group("StreetLamps"); var stops = group("BusStops"); var post = group("Checkpoint");
+var net = env.Find("RoadNetwork").GetComponent<RacingProject.Enemy.RoadNetwork>();
+// Перекрёстки: места, где ось одной дороги подходит к оси другой ближе 3 м. Стык конца одной дороги с началом другой
+// (Road3 переходит в Road1) — продолжение той же трассы, не перекрёсток
 var interPos = new System.Collections.Generic.List<Vector3>();
-foreach (Transform c in env.Find("RoadArchitectSystem1/Intersections")) interPos.Add(c.position);
+for (int ra = 0; ra < net.Roads.Length; ra++) for (int rb = ra + 1; rb < net.Roads.Length; rb++) {
+    var A = net.Roads[ra].points; var B = net.Roads[rb].points;
+    for (int i = 0; i < A.Length; i++) for (int j = 0; j < B.Length; j++) {
+        float dx = A[i].x - B[j].x, dz = A[i].z - B[j].z; if (dx * dx + dz * dz > 9f) continue;
+        bool joint = (i < 3 || i > A.Length - 4) && (j < 3 || j > B.Length - 4); if (joint) continue;
+        bool known = false; foreach (var q in interPos) if (Vector3.Distance(q, A[i]) < 40f) known = true;
+        if (!known) interPos.Add(A[i]);
+    }
+}
+log.AppendLine("intersections: " + interPos.Count);
 System.Func<Vector3, bool> nearInter = p => { foreach (var q in interPos) if (Vector3.Distance(new Vector3(p.x, 0, p.z), new Vector3(q.x, 0, q.z)) < 40f) return true; return false; };
 System.Func<Vector3, bool> inCity = p => p.x > 330f && p.x < 830f && p.z > 120f && p.z < 780f;
 float half = 4 * 5f / 2f + 3f; // половина ширины дороги с обочинами: 4 полосы по 5 м и 3 м обочины
@@ -89,11 +101,16 @@ if (wireMat == null) {
     AssetDatabase.CreateAsset(wireMat, "Assets/Content/PrivateSector/Materials/PS_Wire.mat");
 }
 
-foreach (var rn in new[] { "Road1", "Road2", "Road3" }) {
-    var sp = env.Find("RoadArchitectSystem1/" + rn + "/Spline").GetComponent("GSDSplineC"); var T = sp.GetType();
-    float len = (float)T.GetField("distance").GetValue(sp);
-    var toParam = T.GetMethod("TranslateDistBasedToParam"); var value = T.GetMethod("GetSplineValue", new[] { typeof(float), typeof(bool) });
-    System.Func<float, Vector3> at = dist => (Vector3)value.Invoke(sp, new object[] { (float)toParam.Invoke(sp, new object[] { Mathf.Clamp(dist, 0f, len) }), false });
+foreach (var road in net.Roads) {
+    // Имя дороги без номера части: Road1#0 → Road1 (от него зависят имена проводов и остановки)
+    string rn = road.name.EndsWith("#0") ? road.name.Substring(0, road.name.Length - 2) : road.name.Replace('#', '_');
+    var pts = road.points; var arc = new float[pts.Length];
+    for (int i = 1; i < pts.Length; i++) arc[i] = arc[i - 1] + Vector3.Distance(pts[i], pts[i - 1]);
+    float len = arc[pts.Length - 1];
+    // Точка оси на расстоянии dist от начала дороги
+    System.Func<float, Vector3> at = dist => {
+        dist = Mathf.Clamp(dist, 0f, len); int i = System.Array.BinarySearch(arc, dist); if (i < 0) i = ~i; i = Mathf.Clamp(i, 1, pts.Length - 1);
+        return Vector3.Lerp(pts[i - 1], pts[i], Mathf.InverseLerp(arc[i - 1], arc[i], dist)); };
     System.Func<float, Vector3> dirAt = dist => { var a = at(dist - 2f); var b = at(dist + 2f); var dd = b - a; dd.y = 0; return dd.normalized; };
 
     // Опоры ЛЭП: справа по ходу сплайна; провода только между соседними поставленными опорами
@@ -154,6 +171,7 @@ foreach (var rn in new[] { "Road1", "Road2", "Road3" }) {
     // Остановки с ларьком рядом: на заданных расстояниях вдоль дороги, справа; если места нет — пробуем чуть дальше
     float[] stopAt = rn == "Road1" ? new[] { 520f, 1450f } : rn == "Road2" ? new[] { 900f, 2600f, 3700f } : new[] { 600f, 1500f };
     foreach (var d0 in stopAt) {
+        if (d0 > len - 20f) continue; // Road3 обрезана там, где начинается Road1
         for (float d = d0; d < d0 + 200f; d += 15f) {
             var c = at(d); if (nearInter(c)) continue;
             var f = dirAt(d); var right = Vector3.Cross(Vector3.up, f);

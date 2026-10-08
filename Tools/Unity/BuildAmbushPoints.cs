@@ -2,7 +2,7 @@
 // Не компилируется Unity (лежит вне Assets): текст выполняется в редакторе через execute_code (MCP for Unity, C# 6).
 // Каждый запуск пересоздаёт точки. Кандидаты — дворы, проезд гаражей, улицы частного сектора, промзона, кварталы City2/City3.
 // Точка ставится на NavMesh (агент Car) рядом с кандидатом (перебор смещений до 36 м) и принимается, только если от неё
-// есть полный путь до ближайшей точки дороги (по сплайнам Road Architect); разворачивается вдоль этого пути.
+// есть полный путь до ближайшей точки дороги (по осям Environment/RoadNetwork); разворачивается вдоль этого пути.
 // Запускать после запекания NavMesh.
 var env = GameObject.Find("Environment").transform;
 var log = new System.Text.StringBuilder();
@@ -17,15 +17,11 @@ var candidates = new[] {
     new Vector3(1066, 21, 1312), new Vector3(1066, 21, 1364), new Vector3(1300, 30, 1470), new Vector3(1420, 35, 1560),
     new Vector3(1075, 68, 230), new Vector3(1035, 68, 250),
     new Vector3(1700, 30, 700), new Vector3(1600, 30, 600), new Vector3(1750, 30, 880), new Vector3(495, 36, 1625) };
-// Точки дорог через 10 м по сплайнам, лежащие на NavMesh в области Road
+// Точки осей дорог через 10 м (оси хранят точки через 2 м), лежащие на NavMesh в области Road
 var roadPts = new System.Collections.Generic.List<Vector3>();
-foreach (var rn in new[] { "Road1", "Road2", "Road3" }) {
-    var sp = env.Find("RoadArchitectSystem1/" + rn + "/Spline").GetComponent("GSDSplineC"); var T = sp.GetType();
-    float len = (float)T.GetField("distance").GetValue(sp);
-    var toParam = T.GetMethod("TranslateDistBasedToParam"); var value = T.GetMethod("GetSplineValue", new[] { typeof(float), typeof(bool) });
-    for (float d = 0f; d < len; d += 10f) {
-        var v = (Vector3)value.Invoke(sp, new object[] { (float)toParam.Invoke(sp, new object[] { d }), false });
-        UnityEngine.AI.NavMeshHit rh; if (UnityEngine.AI.NavMesh.SamplePosition(v, out rh, 8f, roadFilter)) roadPts.Add(rh.position);
+foreach (var road in env.Find("RoadNetwork").GetComponent<RacingProject.Enemy.RoadNetwork>().Roads) {
+    for (int i = 0; i < road.points.Length; i += 5) {
+        UnityEngine.AI.NavMeshHit rh; if (UnityEngine.AI.NavMesh.SamplePosition(road.points[i], out rh, 8f, roadFilter)) roadPts.Add(rh.position);
     }
 }
 var path = new UnityEngine.AI.NavMeshPath();

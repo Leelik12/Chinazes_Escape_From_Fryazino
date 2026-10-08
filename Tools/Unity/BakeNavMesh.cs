@@ -2,8 +2,9 @@
 // Не компилируется Unity (лежит вне Assets): текст выполняется в редакторе через execute_code (MCP for Unity, C# 6).
 // Поверхность собирает физические коллайдеры. Деревья террейна NavMeshSurface не видит, поэтому на время
 // запекания под каждое дерево ставится временный BoxCollider, потом они удаляются.
-// Дороги Road Architect помечены областью Road (стоимость 1) через NavMeshModifier на RoadArchitectSystem1,
-// остальная земля — Walkable (стоимость 3), поэтому враги предпочитают дороги. Машина игроков из запекания исключена.
+// Проезжая часть дорог (Environment/Roads, Tools/Unity/BuildRoads.cs) помечена областью Road (стоимость 1) через
+// NavMeshModifier на Environment/Roads; тротуары, бордюры, обочины и остальная земля — Walkable (стоимость 3),
+// поэтому враги предпочитают дороги. Машина игроков из запекания исключена.
 var surf = GameObject.Find("Environment/NavMesh Surface").GetComponent<Unity.AI.Navigation.NavMeshSurface>();
 var terrain = Terrain.activeTerrain; var td = terrain.terrainData;
 var tmp = new GameObject("TmpTreeObstacles");

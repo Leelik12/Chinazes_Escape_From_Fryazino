@@ -157,9 +157,9 @@ for (int iz = 0; iz < res; iz++) for (int ix = 0; ix < res; ix++) {
 td.SetAlphamaps(0, 0, alpha);
 log.AppendLine("terrain trees removed: " + (treesBefore - trees2.Count));
 
-// --- 4. Проверка: дома не должны стоять на дорогах (растр 2 м по мешам Road Architect) ---
+// --- 4. Проверка: дома не должны стоять на дорогах (растр 2 м по мешам Environment/Roads) ---
 int N = 1000; var road = new bool[N * N];
-foreach (var mf in env.Find("RoadArchitectSystem1").GetComponentsInChildren<MeshFilter>()) {
+foreach (var mf in env.Find("Roads").GetComponentsInChildren<MeshFilter>()) {
     if (mf.sharedMesh == null || mf.GetComponent<Renderer>() == null) continue;
     var v = mf.sharedMesh.vertices; var tris = mf.sharedMesh.triangles; var tf = mf.transform;
     for (int i = 0; i < tris.Length; i += 3) {
