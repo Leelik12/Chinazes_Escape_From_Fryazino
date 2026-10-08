@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 3cab74d6dc046734594731bdfe6978ee
+guid: a34e4bddf41554542a81dd2dfb09ff64
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -7,28 +7,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: BK_Bulb
-    second: {fileID: 2100000, guid: 2a151c9301ea73c4cb27dbda28465dd9, type: 2}
+      name: BK_LampAmber
+    second: {fileID: 2100000, guid: 21b5a2d7caca8e14db58333cce31f18e, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: BK_Concrete
-    second: {fileID: 2100000, guid: c39b2b22f9e9c9244acee10ec8705c6e, type: 2}
+      name: BK_LampGreen
+    second: {fileID: 2100000, guid: 90b83d0c61139284dad84e4ce9a90848, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: BK_Daylight
-    second: {fileID: 2100000, guid: 56c090ca490dd5c4fbeaa2caee93a68b, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: BK_Floor
-    second: {fileID: 2100000, guid: 775ceda5e94594b47ab1d8bb28abe6b6, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: BK_Galv
-    second: {fileID: 2100000, guid: 9b8a52b288a853443828444870e126e0, type: 2}
+      name: BK_LampRed
+    second: {fileID: 2100000, guid: 8d163123bc7561048a7de14a3df47412, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -47,11 +37,6 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: BK_PaintYellow
-    second: {fileID: 2100000, guid: d3077509a355fe042a37faacfa076571, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
       name: BK_Rubber
     second: {fileID: 2100000, guid: 7406f208ad009d04ba30c732bd133c6b, type: 2}
   - first:
@@ -59,46 +44,6 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: BK_Steel
     second: {fileID: 2100000, guid: be0722b9f0f39944896f2179e7d0412d, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: BK_WallPaint
-    second: {fileID: 2100000, guid: 3c55a2a0a3cd0d34793782d5dd4c51c8, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: BK_Wood
-    second: {fileID: 2100000, guid: ff04996aae5b86b41ab3ac4a675cc837, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: PS_Concrete
-    second: {fileID: 2100000, guid: 1da446d94711fe848b851dd7cf4214a3, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: PS_MetalGreen
-    second: {fileID: 2100000, guid: 5fb8649d3eba07f47a5fd4b4c67d4e9b, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: PS_PaintYellow
-    second: {fileID: 2100000, guid: b67cfb418416c294a9f6d31dca049894, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: PS_Planks_Raw
-    second: {fileID: 2100000, guid: 95e83f96d60cc6d429bed1222946fa2d, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: PS_Rust
-    second: {fileID: 2100000, guid: 9be0fdd005888e1448bd9949a503499d, type: 2}
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: PS_Trim
-    second: {fileID: 2100000, guid: 74dda58145f84714080f44a3f3a1e1b3, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0

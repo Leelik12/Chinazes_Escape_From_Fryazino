@@ -38,6 +38,7 @@ MATS = {
     "BK_Screen": (1.0, (0.05, 0.12, 0.08)), "BK_Bulb": (1.0, (1.0, 0.85, 0.6)),
     "BK_Glass": (1.0, (0.15, 0.17, 0.17)), "BK_LampRed": (1.0, (0.9, 0.1, 0.05)),
     "BK_LampGreen": (1.0, (0.2, 0.9, 0.3)), "BK_LampAmber": (1.0, (1.0, 0.6, 0.1)),
+    "BK_Daylight": (1.0, (0.85, 0.9, 1.0)),
     "PS_Rust": (2.0, (0.45, 0.25, 0.14)),
 }
 for _n, (_t, _c) in MATS.items():
@@ -71,6 +72,10 @@ LAMP2_POS = (-0.3, -2.6)
 DESK_LAMP = (32.0, 1.2)        # угол и радиус настольной лампы на пульте (Unity ставит в абажур прожектор)
 BULKHEAD = (X0, -1.25, 2.05)   # настенный светильник у двери
 DOOR_Y = -2.1                  # центр гермодвери на левой стене
+DOOR_HALF, DOOR_Z0, DOOR_Z1 = 0.5, 0.22, 1.98   # проём в стене за дверью (внутренний край рамы)
+HINGE = (0.66, 0.14)           # ось петель в системе стены двери: x вдоль стены, y от стены
+CORRIDOR = 1.4                 # длина горизонтального коридора за дверью до лестницы
+STEPS, STEP_RUN, STEP_RISE = 8, 0.28, 0.19
 FVU_X = -0.45                  # фильтровентиляционная установка у задней стены
 DUCT_X = 0.7                   # воздуховод под сводом
 
@@ -297,6 +302,15 @@ def rot_z(deg, origin=(0, 0, 0)):
     return Matrix.Translation(Vector(origin)) @ Matrix.Rotation(math.radians(deg), 4, "Z")
 
 
+MOVING = []
+
+
+def moving(name, matrix, build, parent=None, bevel=0.0):
+    # Подвижная деталь (стрелка, тумблер, линза, створка двери) — отдельный объект в Bunker_Moving.fbx.
+    # build(b) строит её в локальных координатах: начало — точка вращения
+    MOVING.append((name, matrix.copy(), build, parent, bevel))
+
+
 def finish(b, col, bevel=0.005, segs=2, angle=40.0, recalc=True):
     # Сварка вершин и развёртка — в Builder.finish; затем нормали наружу (кроме комнаты, у неё грани смотрят внутрь),
     # гладкое затенение с острыми рёбрами по углу и модификатор Bevel с выравниванием нормалей (применяется при экспорте)
@@ -321,13 +335,63 @@ def finish(b, col, bevel=0.005, segs=2, angle=40.0, recalc=True):
 
 # ---------------------------------------------------------------- комната
 
+def left_wall(b, z0, z1, mat):
+    # Внутренняя грань левой стены в полосе высот z0..z1 с прямоугольным проёмом за гермодверью
+    ya, yb = DOOR_Y - DOOR_HALF, DOOR_Y + DOOR_HALF
+    face_out(b, [(X0, Y0, z0), (X0, ya, z0), (X0, ya, z1), (X0, Y0, z1)], mat, (1, 0, 0))
+    face_out(b, [(X0, yb, z0), (X0, Y1, z0), (X0, Y1, z1), (X0, yb, z1)], mat, (1, 0, 0))
+    for c0, c1 in ((z0, min(z1, DOOR_Z0)), (max(z0, DOOR_Z1), z1)):
+        if c1 > c0:
+            face_out(b, [(X0, ya, c0), (X0, yb, c0), (X0, yb, c1), (X0, ya, c1)], mat, (1, 0, 0))
+
+
+def corridor(b):
+    # Коридор за гермодверью: короткий проход в толще стены и лестница наверх к дневному свету.
+    # Грани смотрят внутрь прохода (его видно из комнаты, когда дверь открыта)
+    ya, yb = DOOR_Y - DOOR_HALF, DOOR_Y + DOOR_HALF
+    xc = X0 - CORRIDOR
+    xe = xc - STEPS * STEP_RUN
+    top = DOOR_Z1 + 0.12
+    # Пол, стены и потолок горизонтального участка
+    face_out(b, [(X0, ya, DOOR_Z0), (xc, ya, DOOR_Z0), (xc, yb, DOOR_Z0), (X0, yb, DOOR_Z0)], "BK_Floor", (0, 0, 1))
+    for y, out in ((ya, 1), (yb, -1)):
+        face_out(b, [(X0, y, DOOR_Z0), (xc, y, DOOR_Z0), (xc, y, top), (X0, y, top)], "BK_Concrete", (0, out, 0))
+    face_out(b, [(X0, ya, top), (xc - STEP_RUN, ya, top), (xc - STEP_RUN, yb, top), (X0, yb, top)], "BK_Concrete", (0, 0, -1))
+    # Порог проёма: торцы стены над и под проёмом
+    face_out(b, [(X0, ya, DOOR_Z1), (X0, yb, DOOR_Z1), (X0 - 0.01, yb, top), (X0 - 0.01, ya, top)], "BK_Concrete", (1, 0, -1))
+    # Ступени: проступь и подступёнок
+    z = DOOR_Z0
+    x = xc
+    for i in range(STEPS):
+        face_out(b, [(x, ya, z), (x, yb, z), (x, yb, z + STEP_RISE), (x, ya, z + STEP_RISE)], "BK_Concrete", (1, 0, 0))
+        z += STEP_RISE
+        face_out(b, [(x, ya, z), (x - STEP_RUN, ya, z), (x - STEP_RUN, yb, z), (x, yb, z)], "BK_Floor", (0, 0, 1))
+        cube(b, (x - 0.035, ya + 0.02, z), (x, yb - 0.02, z + 0.012), "BK_Steel")  # уголок на кромке ступени
+        x -= STEP_RUN
+    # Стены и наклонный потолок лестничного марша
+    zs = DOOR_Z0 + STEPS * STEP_RISE
+    for y, out in ((ya, 1), (yb, -1)):
+        face_out(b, [(xc, y, DOOR_Z0), (xe, y, zs), (xe, y, zs + 2.1), (xc - STEP_RUN, y, top), (xc, y, top)],
+                 "BK_Concrete", (0, out, 0))
+    face_out(b, [(xc - STEP_RUN, ya, top), (xe, ya, zs + 2.1), (xe, yb, zs + 2.1), (xc - STEP_RUN, yb, top)],
+             "BK_Concrete", (1, 0, -1))
+    # Наверху — открытый выход: светящийся проём
+    face_out(b, [(xe, ya, zs), (xe, yb, zs), (xe, yb, zs + 2.1), (xe, ya, zs + 2.1)], "BK_Daylight", (1, 0, 0))
+    # Перила вдоль правой (если смотреть вверх) стены
+    sweep(b, [Vector((xc + 0.2, yb - 0.06, DOOR_Z0 + 0.9)), Vector((xe + 0.2, yb - 0.06, zs + 0.9))], 0.02, "BK_Steel", segs=8)
+    for k in range(3):
+        xk = xc - 0.1 - k * (STEPS * STEP_RUN - 0.4) / 2
+        zk = DOOR_Z0 + (xc - xk) / STEP_RUN * STEP_RISE + 0.9
+        sweep(b, [Vector((xk, yb, zk)), Vector((xk, yb - 0.06, zk))], 0.012, "BK_Steel", segs=6)
+
+
 def room(col, name):
     b = Builder(name)
     t = WALL_T
     # Пол и стены — коробки толщиной t: внутрь комнаты смотрят их внешние грани
     b.box((X0 - t, Y0 - t, -0.2), (X1 + t, Y1 + t, 0.0), "BK_Floor", skip=("-z",))
     for z0, z1, mat in ((0.0, PAINT_H, "BK_WallPaint"), (PAINT_H, WALL_H, "BK_Concrete")):
-        b.box((X0 - t, Y0, z0), (X0, Y1, z1), mat, skip=("-x", "-y", "+y", "+z", "-z"))
+        left_wall(b, z0, z1, mat)
         b.box((X1, Y0, z0), (X1 + t, Y1, z1), mat, skip=("+x", "-y", "+y", "+z", "-z"))
         b.box((X0 - t, Y0 - t, z0), (X1 + t, Y0, z1), mat, skip=("-y", "-x", "+x", "+z", "-z"))
         b.box((X0 - t, Y1, z0), (X1 + t, Y1 + t, z1), mat, skip=("+y", "-x", "+x", "+z", "-z"))
@@ -341,9 +405,16 @@ def room(col, name):
     b.face([(x, Y0, vault_z(x)) for x in xs], "BK_Concrete")
     b.face([(x, Y1, vault_z(x)) for x in reversed(xs)], "BK_Concrete")
     # Цоколь по периметру и полоса-разделитель между краской и побелкой
+    ya, yb = DOOR_Y - DOOR_HALF, DOOR_Y + DOOR_HALF
     for (x0, y0, x1, y1) in ((X0, Y0, X0 + 0.03, Y1), (X1 - 0.03, Y0, X1, Y1), (X0, Y0, X1, Y0 + 0.03), (X0, Y1 - 0.03, X1, Y1)):
         cube(b, (x0, y0, 0.0), (x1, y1, 0.12), "BK_Paint")
-        cube(b, (x0, y0, PAINT_H - 0.015), (x1, y1, PAINT_H + 0.015), "BK_Paint")
+        if x0 == X0 and x1 == X0 + 0.03:
+            # Полоса на левой стене прерывается проёмом двери
+            cube(b, (x0, y0, PAINT_H - 0.015), (x1, ya, PAINT_H + 0.015), "BK_Paint")
+            cube(b, (x0, yb, PAINT_H - 0.015), (x1, y1, PAINT_H + 0.015), "BK_Paint")
+        else:
+            cube(b, (x0, y0, PAINT_H - 0.015), (x1, y1, PAINT_H + 0.015), "BK_Paint")
+    corridor(b)
     # Рёбра свода через 1,25 м с пилястрами
     y = Y0 + 0.6
     while y < Y1 - 0.3:
@@ -553,6 +624,44 @@ def room(col, name):
 
 # ---------------------------------------------------------------- гермодверь
 
+def door_leaf(b):
+    # Створка гермодвери в координатах петли (начало — ось петель, x вдоль стены, y от стены)
+    b.m = Matrix.Translation((-HINGE[0], -HINGE[1], 0.0))
+    prism(b, rrect(-0.56, 0.56, 0.18, 2.02, 0.16, 6), "xz", 0.1, 0.2, "BK_Paint")
+    frame(b, rrect(-0.5, 0.5, 0.24, 1.96, 0.12, 6), rrect(-0.44, 0.44, 0.3, 1.9, 0.08, 6), "xz", 0.2, 0.225, "BK_Paint")
+    for z in (0.62, 1.55):
+        cube(b, (-0.44, 0.2, z - 0.03), (0.44, 0.235, z + 0.03), "BK_Paint")
+    frame(b, rrect(-0.565, 0.565, 0.175, 2.025, 0.165, 6), rrect(-0.55, 0.55, 0.19, 2.01, 0.15, 6), "xz", 0.09, 0.105,
+          "BK_Rubber")  # уплотнитель
+    for z in (0.5, 1.7):
+        lathe(b, (HINGE[0], HINGE[1], z - 0.02), [(0.0, 0.0), (0.05, 0.0), (0.05, 0.15), (0.045, 0.17), (0.0, 0.17)],
+              "BK_Paint", segs=16)
+        cube(b, (0.45, 0.17, z - 0.1), (0.66, 0.215, z + 0.1), "BK_Paint")
+    # Ступица штурвала и табличка «ВЫХОД» (текст ставит Unity)
+    wc = Vector((0.05, 0.3, 1.1))
+    lathe(b, wc - Vector((0, 0.08, 0)), [(0.0, 0.0), (0.07, 0.0), (0.07, 0.04), (0.05, 0.07), (0.0, 0.07)],
+          "BK_Steel", axis=(0, 1, 0), segs=20)
+    cube(b, (-0.24, 0.2, 1.68), (0.24, 0.21, 1.82), "BK_PaintCream")
+
+
+def door_wheel(b):
+    # Штурвал: втулка, обод и четыре спицы; ось — локальный y
+    lathe(b, (0, -0.01, 0), [(0.0, 0.0), (0.045, 0.0), (0.035, 0.04), (0.0, 0.04)], "BK_Steel", axis=(0, 1, 0), segs=16)
+    torus(b, Vector((0, 0.02, 0)), (0, 1, 0), 0.24, 0.02, "BK_Steel", segs=32, tsegs=10)
+    for k in range(4):
+        a = math.pi * k / 2 + math.pi / 4
+        d = Vector((math.cos(a), 0, math.sin(a)))
+        sweep(b, [Vector((0, 0.02, 0)) + d * 0.04, Vector((0, 0.03, 0)) + d * 0.12, Vector((0, 0.02, 0)) + d * 0.225],
+              0.013, "BK_Steel", segs=8)
+
+
+def door_dog(b):
+    # Рычаг кремальеры: поворачивается вокруг локального y; в закрытом положении лежит поперёк щели на створке
+    sweep(b, [Vector((0, 0.1, 0)), Vector((0.12, 0.15, 0.02)), Vector((0.26, 0.17, 0.05))], 0.016, "BK_Steel", segs=8)
+    lathe(b, (0.26, 0.17, 0.05), [(0.0, -0.03), (0.022, -0.02), (0.03, 0.0), (0.022, 0.02), (0.0, 0.03)],
+          "BK_PaintRed", axis=(0, 1, 0), segs=12)
+
+
 def door(col, name):
     # Гермодверь в левой стене: рама со скруглёнными углами, полотно с рёбрами, кремальеры, петли, штурвал, глазок
     b = Builder(name)
@@ -560,38 +669,23 @@ def door(col, name):
     ow, oh = 0.62, 2.0
     frame(b, rrect(-ow - 0.12, ow + 0.12, 0.0, oh + 0.12, 0.2, 6), rrect(-0.5, 0.5, 0.22, 1.98, 0.14, 6),
           "xz", 0.0, 0.1, "BK_Paint")
-    # Полотно: плита, выпуклая филёнка и горизонтальные рёбра
-    prism(b, rrect(-0.56, 0.56, 0.18, 2.02, 0.16, 6), "xz", 0.1, 0.2, "BK_Paint")
-    frame(b, rrect(-0.5, 0.5, 0.24, 1.96, 0.12, 6), rrect(-0.44, 0.44, 0.3, 1.9, 0.08, 6), "xz", 0.2, 0.225, "BK_Paint")
-    for z in (0.62, 1.55):
-        cube(b, (-0.44, 0.2, z - 0.03), (0.44, 0.235, z + 0.03), "BK_Paint")
-    frame(b, rrect(-0.565, 0.565, 0.175, 2.025, 0.165, 6), rrect(-0.55, 0.55, 0.19, 2.01, 0.15, 6), "xz", 0.09, 0.105,
-          "BK_Rubber")  # уплотнитель
-    # Петли со стороны +x
+    # Неподвижные половины петель (на раме)
     for z in (0.5, 1.7):
-        lathe(b, (0.66, 0.14, z - 0.15), [(0.0, 0.0), (0.045, 0.0), (0.05, 0.02), (0.05, 0.28), (0.045, 0.3), (0.0, 0.3)],
+        lathe(b, (HINGE[0], HINGE[1], z - 0.15), [(0.0, 0.0), (0.045, 0.0), (0.05, 0.02), (0.05, 0.13), (0.0, 0.13)],
               "BK_Paint", segs=16)
-        cube(b, (0.45, 0.17, z - 0.1), (0.66, 0.215, z + 0.1), "BK_Paint")
-        lathe(b, (0.66, 0.14, z + 0.15), [(0.0, 0.0), (0.02, 0.0), (0.0, 0.03)], "BK_Steel", segs=10)
+        lathe(b, (HINGE[0], HINGE[1], z + 0.15), [(0.0, 0.0), (0.02, 0.0), (0.0, 0.03)], "BK_Steel", segs=10)
+    wall = b.m.copy()
+    hinge = wall @ Matrix.Translation((HINGE[0], HINGE[1], 0.0))
+    moving("DoorLeaf", hinge, door_leaf, bevel=0.008)
+    # Штурвал: ось вдоль нормали двери (локальный y стены)
+    wc = Vector((0.05, 0.3, 1.1))
+    moving("DoorWheel", hinge @ Matrix.Translation(wc - Vector((HINGE[0], HINGE[1], 0.0))), door_wheel, parent="DoorLeaf",
+           bevel=0.004)
     # Кремальеры со стороны ручки: ось на раме, рычаг поперёк щели и шар на конце
-    for z in (0.45, 1.1, 1.75):
+    for i, z in enumerate((0.45, 1.1, 1.75)):
         lathe(b, (-0.62, 0.1, z), [(0.0, 0.0), (0.035, 0.0), (0.035, 0.08), (0.025, 0.1), (0.0, 0.1)], "BK_Steel",
               axis=(0, 1, 0), segs=12)
-        sweep(b, [Vector((-0.62, 0.2, z)), Vector((-0.5, 0.25, z + 0.02)), Vector((-0.36, 0.27, z + 0.05))], 0.016,
-              "BK_Steel", segs=8)
-        lathe(b, (-0.36, 0.27, z + 0.05), [(0.0, -0.03), (0.022, -0.02), (0.03, 0.0), (0.022, 0.02), (0.0, 0.03)],
-              "BK_PaintRed", axis=(0, 1, 0), segs=12)
-    # Штурвал на ступице
-    wc = Vector((0.05, 0.3, 1.1))
-    lathe(b, wc - Vector((0, 0.08, 0)), [(0.0, 0.0), (0.07, 0.0), (0.07, 0.04), (0.05, 0.07), (0.035, 0.11), (0.0, 0.11)],
-          "BK_Steel", axis=(0, 1, 0), segs=20)
-    torus(b, wc + Vector((0, 0.02, 0)), (0, 1, 0), 0.24, 0.02, "BK_Steel", segs=32, tsegs=10)
-    for k in range(4):
-        a = math.pi * k / 2 + math.pi / 4
-        d = Vector((math.cos(a), 0, math.sin(a)))
-        sweep(b, [wc + Vector((0, 0.02, 0)) + d * 0.04, wc + Vector((0, 0.03, 0)) + d * 0.12,
-                  wc + Vector((0, 0.02, 0)) + d * 0.225], 0.013, "BK_Steel", segs=8)
-    cube(b, (-0.24, 0.2, 1.68), (0.24, 0.21, 1.82), "BK_PaintCream")  # табличка «ВЫХОД» (текст ставит Unity)
+        moving("DoorDog_%d" % i, wall @ Matrix.Translation((-0.62, 0.1, z)), door_dog, bevel=0.003)
     b.reset()
     return finish(b, col, bevel=0.008, segs=2)
 
@@ -632,15 +726,23 @@ def strip_frame(deg):
     return rot_z(deg) @ Matrix.Translation((0, y0, z0)) @ Matrix.Rotation(slope, 4, "X"), math.hypot(y1 - y0, z1 - z0)
 
 
-def gauge(b, x, y, r, mat_face="BK_PaintCream"):
-    # Стрелочный прибор: обод, шкала с рисками, стрелка, стекло
+def gauge(b, x, y, r, mat_face="BK_PaintCream", part=None):
+    # Стрелочный прибор: обод, шкала с рисками, стрелка
+    # Обод — кольцо: внутренняя стенка опускается до шкалы, иначе крышка закрыла бы шкалу и стрелку
     lathe(b, (x, y, 0), [(0.0, 0.0), (r + 0.008, 0.0), (r + 0.01, 0.012), (r + 0.004, 0.022), (r - 0.002, 0.02),
-                         (0.0, 0.02)], "BK_Steel", segs=24)
+                         (r - 0.002, 0.0165)], "BK_Steel", segs=24)
     lathe(b, (x, y, 0.004), [(0.0, 0.0), (r - 0.002, 0.0), (r - 0.002, 0.0125), (0.0, 0.0125)], mat_face, segs=24)
     for k in range(9):
         a = math.radians(210 - 240 * k / 8)
         cube(b, (x + math.cos(a) * r * 0.78 - 0.0015, y + math.sin(a) * r * 0.78 - 0.0015, 0.0165),
              (x + math.cos(a) * r * 0.78 + 0.0015, y + math.sin(a) * r * 0.78 + 0.0015, 0.0175), "BK_Rubber")
+    if part:
+        # Стрелка подвижная: вдоль локального x, в нуле шкалы (210°); вращается вокруг нормали панели
+        def needle(nb, length=r * 0.75):
+            sweep(nb, [Vector((-length * 0.18, 0, 0)), Vector((length, 0, 0))], 0.0018, "BK_PaintRed", segs=4)
+            lathe(nb, (0, 0, -0.001), [(0.0, 0.0), (0.005, 0.0), (0.005, 0.003), (0.0, 0.004)], "BK_Steel", segs=10)
+        moving(part, b.m @ Matrix.Translation((x, y, 0.018)) @ Matrix.Rotation(math.radians(210), 4, "Z"), needle)
+        return
     a = math.radians(random.Random(int(x * 1000 + y * 100)).uniform(40, 150))
     sweep(b, [Vector((x, y, 0.018)), Vector((x + math.cos(a) * r * 0.75, y + math.sin(a) * r * 0.75, 0.018))], 0.0018,
           "BK_PaintRed", segs=4)
@@ -652,16 +754,36 @@ def knob(b, x, y, r, mat="BK_Rubber"):
     cube(b, (x - 0.002, y + r * 0.3, 0.04), (x + 0.002, y + r * 0.9, 0.042), "BK_PaintCream")
 
 
-def toggle(b, x, y, up=True):
+TOGGLE_TILT = math.degrees(math.atan2(0.012, 0.03))
+
+
+def toggle(b, x, y, up=True, part=None):
     lathe(b, (x, y, 0), [(0.0, 0.0), (0.012, 0.0), (0.012, 0.008), (0.008, 0.012), (0.0, 0.012)], "BK_Steel", segs=12)
-    tip = Vector((x, y + (0.012 if up else -0.012), 0.04))
-    sweep(b, [Vector((x, y, 0.01)), tip], 0.003, "BK_Steel", segs=6)
-    lathe(b, tip, [(0.0, -0.003), (0.0045, 0.0), (0.0035, 0.006), (0.0, 0.007)], "BK_Steel", segs=8)
+
+    def lever(nb):
+        tip = Vector((0, 0, 0.0323))
+        sweep(nb, [Vector((0, 0, 0)), tip], 0.003, "BK_Steel", segs=6)
+        lathe(nb, tip, [(0.0, -0.003), (0.0045, 0.0), (0.0035, 0.006), (0.0, 0.007)], "BK_Steel", segs=8)
+    # Рычаг наклонён вдоль ската панели: вверх (+y) или вниз
+    m = b.m @ Matrix.Translation((x, y, 0.01)) @ Matrix.Rotation(math.radians(-TOGGLE_TILT if up else TOGGLE_TILT), 4, "X")
+    if part:
+        moving(part, m, lever)
+    else:
+        prev = b.m
+        b.m = m
+        lever(b)
+        b.m = prev
 
 
-def lamp_light(b, x, y, mat):
+def lamp_light(b, x, y, mat, part=None):
     lathe(b, (x, y, 0), [(0.0, 0.0), (0.014, 0.0), (0.014, 0.008), (0.011, 0.01), (0.0, 0.01)], "BK_Steel", segs=12)
-    lathe(b, (x, y, 0.009), [(0.0, 0.0), (0.0095, 0.0), (0.009, 0.006), (0.005, 0.011), (0.0, 0.012)], mat, segs=12)
+
+    def lens(nb):
+        lathe(nb, (0, 0, 0), [(0.0, 0.0), (0.0095, 0.0), (0.009, 0.006), (0.005, 0.011), (0.0, 0.012)], mat, segs=12)
+    if part:
+        moving(part, b.m @ Matrix.Translation((x, y, 0.009)), lens)
+    else:
+        lathe(b, (x, y, 0.009), [(0.0, 0.0), (0.0095, 0.0), (0.009, 0.006), (0.005, 0.011), (0.0, 0.012)], mat, segs=12)
 
 
 def control_strip(b, deg, layout):
@@ -674,13 +796,13 @@ def control_strip(b, deg, layout):
     cube(b, (-0.41, 0.02, 0.0), (0.41, L - 0.02, 0.003), "BK_PaintCream")  # лицевая пластина
     rnd = random.Random(int(deg) + 11)
     if layout == "main":
-        gauge(b, -0.33, 0.2, 0.05)
-        gauge(b, 0.33, 0.2, 0.05)
+        gauge(b, -0.33, 0.2, 0.05, part="Needle_Signal")
+        gauge(b, 0.33, 0.2, 0.05, part="Needle_Ready")
         for i in range(6):
-            toggle(b, -0.2 + i * 0.08, 0.24, up=rnd.random() < 0.5)
+            toggle(b, -0.2 + i * 0.08, 0.24, up=rnd.random() < 0.5, part="Toggle_Main_%d" % i)
             cube(b, (-0.2 + i * 0.08 - 0.018, 0.27, 0.003), (-0.2 + i * 0.08 + 0.018, 0.282, 0.0045), "BK_Rubber")
         for i, m in enumerate(("BK_LampGreen", "BK_LampGreen", "BK_LampAmber", "BK_LampRed", "BK_LampGreen")):
-            lamp_light(b, -0.16 + i * 0.08, 0.15, m)
+            lamp_light(b, -0.16 + i * 0.08, 0.15, m, part="Lens_%d" % i)
         # Клавишный блок
         for i in range(10):
             for j in range(3):
@@ -690,11 +812,11 @@ def control_strip(b, deg, layout):
         knob(b, -0.33, 0.06, 0.018)
         knob(b, 0.33, 0.06, 0.018)
     else:
-        gauge(b, -0.3, 0.19, 0.06)
+        gauge(b, -0.3, 0.19, 0.06, part="Needle_Volts")
         for i in range(4):
             knob(b, -0.16 + i * 0.09, 0.2, 0.02)
         for i in range(8):
-            toggle(b, -0.2 + i * 0.06, 0.08, up=rnd.random() < 0.5)
+            toggle(b, -0.2 + i * 0.06, 0.08, up=rnd.random() < 0.5, part="Toggle_Settings_%d" % i)
         for i, m in enumerate(("BK_LampRed", "BK_LampAmber", "BK_LampGreen")):
             lamp_light(b, 0.24 + i * 0.05, 0.22, m)
         lamp_light(b, 0.32, 0.12, "BK_LampGreen")
@@ -1070,11 +1192,30 @@ def build_all():
         bpy.data.objects.remove(o, do_unlink=True)
         if data and data.users == 0:
             bpy.data.meshes.remove(data)
+    MOVING.clear()
     objs = [room(col, "Bunker_Room"), door(col, "Bunker_Door"), console(col, "Bunker_Console"),
             lamp(col, "Bunker_Lamp"), props(col, "Bunker_Props")]
     # Лампа строится от точки крепления: для осмотра в Blender подвешиваем её под свод
     objs[3].location = (LAMP_POS[0], LAMP_POS[1], vault_z(LAMP_POS[0]))
-    return scene, objs
+    return scene, objs, moving_parts(col)
+
+
+def moving_parts(col):
+    # Подвижные детали в положении сборки; дочерние (штурвал) хранят позу относительно родителя
+    made = {}
+    for name, matrix, build, parent, bevel in MOVING:
+        b = Builder(name)
+        build(b)
+        b.reset()
+        obj = finish(b, col, bevel=bevel, segs=2)
+        obj.matrix_world = matrix
+        made[name] = obj
+    for name, matrix, build, parent, bevel in MOVING:
+        if parent:
+            child = made[name]
+            child.parent = made[parent]
+            child.matrix_parent_inverse = made[parent].matrix_world.inverted()
+    return [made[n] for n, *_ in MOVING]
 
 
 def export(scene, objs):
@@ -1098,6 +1239,22 @@ def export(scene, objs):
         print("exported", path)
 
 
+def export_moving(scene, parts):
+    # Все подвижные детали — в одном FBX с иерархией; позы деталей заданы в координатах комнаты
+    vl = scene.view_layers[0]
+    for other in scene.objects:
+        other.select_set(other in parts, view_layer=vl)
+    vl.objects.active = parts[0]
+    path = os.path.join(OUT, "Bunker_Moving.fbx")
+    with bpy.context.temp_override(scene=scene, view_layer=vl, selected_objects=parts, active_object=parts[0]):
+        bpy.ops.export_scene.fbx(filepath=path, use_selection=True, object_types={'MESH'}, apply_unit_scale=True,
+                                 apply_scale_options='FBX_SCALE_ALL', axis_forward='-Z', axis_up='Y',
+                                 bake_space_transform=True, use_mesh_modifiers=True, mesh_smooth_type='OFF',
+                                 use_tspace=False, add_leaf_bones=False, bake_anim=False, path_mode='STRIP')
+    print("exported", path, len(parts), "parts")
+
+
 if __name__ == "__main__":
-    sc, models = build_all()
+    sc, models, parts = build_all()
     export(sc, models)
+    export_moving(sc, parts)

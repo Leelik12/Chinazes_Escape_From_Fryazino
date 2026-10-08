@@ -5,8 +5,9 @@
 // Модели построены в общих координатах комнаты: ноль — пол под глазами сидящего оператора, взгляд вдоль +Y Blender.
 // После импорта Blender (x, y, z) становится Unity (−x, z, −y), поэтому оператор смотрит в −Z корня.
 // Корень ставится под XR Rig Menu и поворачивается так, чтобы −Z смотрел туда же, куда камера меню.
-// Холсты Main и Settings ложатся на экраны пульта, Tips — листком на пробковую доску (и выходит из-под Canvases,
-// чтобы MenuTheme не перекрашивал его в цвета темы). Бункер — дочерний объект Menu и прячется вместе с меню.
+// Холсты Main и Settings ложатся на экраны пульта, Tips — листком на пробковую доску (и выходит из-под Canvases).
+// Подвижные детали (створка двери со штурвалом, кремальеры, стрелки, тумблеры, линзы ламп) — Bunker_Moving.fbx;
+// приборами пульта управляет BunkerConsole. Бункер — дочерний объект Menu и прячется вместе с меню.
 AssetDatabase.Refresh(); // свежие FBX из Blender: иначе ремап увидит старые имена материалов
 var menu = GameObject.Find("Menu").transform;
 var canvases = menu.Find("Canvases");
@@ -73,10 +74,12 @@ bkMats["BK_Glass"] = mat("BK_Glass", new Color(0.05f, 0.06f, 0.06f), 0.95f, Colo
 bkMats["BK_LampRed"] = mat("BK_LampRed", new Color(0.6f, 0.05f, 0.03f), 0.9f, new Color(1f, 0.08f, 0.04f) * 2.5f);
 bkMats["BK_LampGreen"] = mat("BK_LampGreen", new Color(0.1f, 0.5f, 0.15f), 0.9f, new Color(0.2f, 1f, 0.3f) * 2f);
 bkMats["BK_LampAmber"] = mat("BK_LampAmber", new Color(0.7f, 0.45f, 0.1f), 0.9f, new Color(1f, 0.55f, 0.1f) * 1.6f);
+// Дневной свет в проёме выхода наверх за гермодверью
+bkMats["BK_Daylight"] = mat("BK_Daylight", new Color(0.85f, 0.9f, 1f), 0f, new Color(0.85f, 0.9f, 1f) * 3f);
 var pinMat = mat("BK_Pin", new Color(0.7f, 0.08f, 0.06f), 0.6f, Color.black);
 
 // --- Импорт моделей: масштаб 1 (бункер в человеческом масштабе, не как город), материалы PS_* и BK_* ---
-var models = new[] { "Bunker_Room", "Bunker_Door", "Bunker_Console", "Bunker_Lamp", "Bunker_Props" };
+var models = new[] { "Bunker_Room", "Bunker_Door", "Bunker_Console", "Bunker_Lamp", "Bunker_Props", "Bunker_Moving" };
 foreach (var name in models) {
     var imp = (ModelImporter)AssetImporter.GetAtPath(MD + name + ".fbx");
     imp.globalScale = 1f; imp.importCameras = false; imp.importLights = false; imp.importAnimation = false;
@@ -257,7 +260,69 @@ foreach (var deg in new[] { 0f, SECTION }) {
         t.rectTransform.sizeDelta = size;
     };
     sign("ВЫХОД", B(-2.3f + 0.212f, -2.1f, 1.75f), B(-1f, 0f, 0f), new Vector2(0.42f, 0.11f), new Color(0.55f, 0.08f, 0.05f));
+    root.Find("Sign_ВЫХОД").SetParent(root.Find("Bunker_Moving/DoorLeaf"), true); // табличка на створке и открывается с ней
     sign("УКРЫТИЕ № 17", B(X1 - 0.017f, -2.1f, 1.61f), B(1f, 0f, 0f), new Vector2(0.54f, 0.16f), new Color(0.12f, 0.1f, 0.08f));
+}
+
+// Приборы пульта: панель перед экраном — strip_frame(deg) из build_models.py (x вдоль, y вверх по скату, z — нормаль)
+var moving = root.Find("Bunker_Moving");
+{
+    float slope = Mathf.Atan2(0.1f, 0.33f), DESK_Z = 0.76f;
+    System.Func<float, Vector3, Vector3> panelDirB = (deg, v) => {
+        var r = new Vector3(v.x, v.y * Mathf.Cos(slope) - v.z * Mathf.Sin(slope), v.y * Mathf.Sin(slope) + v.z * Mathf.Cos(slope));
+        float d = deg * Mathf.Deg2Rad;
+        return new Vector3(r.x * Mathf.Cos(d) - r.y * Mathf.Sin(d), r.x * Mathf.Sin(d) + r.y * Mathf.Cos(d), r.z);
+    };
+    System.Func<float, float, float, float, Vector3> panelPt = (deg, x, y, z) => {
+        var o = panelDirB(deg, new Vector3(x, y, z)); float d = deg * Mathf.Deg2Rad;
+        var p = o + new Vector3(-0.6f * Mathf.Sin(d), 0.6f * Mathf.Cos(d), DESK_Z + 0.035f);
+        return B(p.x, p.y, p.z);
+    };
+    System.Func<float, Vector3, Vector3> panelDir = (deg, v) => { var d = panelDirB(deg, v); return moving.InverseTransformDirection(root.TransformDirection(B(d.x, d.y, d.z))); };
+    var cons = root.gameObject.AddComponent<RacingProject.Management.BunkerConsole>();
+    var so = new SerializedObject(cons);
+    var roomCtrl = UnityEngine.Object.FindObjectOfType<RacingProject.Network.RoomController>();
+    so.FindProperty("room").objectReferenceValue = roomCtrl;
+    so.FindProperty("lobby").objectReferenceValue = roomCtrl.GetComponent<RacingProject.Network.LanLobby>();
+    var lamps = so.FindProperty("lamps"); lamps.arraySize = 5;
+    for (int i = 0; i < 5; i++) lamps.GetArrayElementAtIndex(i).objectReferenceValue = moving.Find("Lens_" + i).GetComponent<MeshRenderer>();
+    foreach (var g in new[] { new { prop = "signal", part = "Needle_Signal", deg = 0f }, new { prop = "ready", part = "Needle_Ready", deg = 0f }, new { prop = "volts", part = "Needle_Volts", deg = SECTION } }) {
+        var gp = so.FindProperty(g.prop);
+        gp.FindPropertyRelative("needle").objectReferenceValue = moving.Find(g.part);
+        gp.FindPropertyRelative("normal").vector3Value = panelDir(g.deg, Vector3.forward).normalized;
+        gp.FindPropertyRelative("right").vector3Value = panelDir(g.deg, Vector3.right).normalized;
+        gp.FindPropertyRelative("up").vector3Value = panelDir(g.deg, Vector3.up).normalized;
+    }
+    so.ApplyModifiedPropertiesWithoutUndo();
+    foreach (Transform part in moving)
+        if (part.name.StartsWith("Lens_") || part.name.StartsWith("Needle_") || part.name.StartsWith("Toggle_"))
+            part.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+
+    // Надписи на лицевой пластине и шкалах: тёмная краска по кремовому, как гравировка
+    var labelFont = AssetDatabase.LoadAssetAtPath<TMPro.TMP_FontAsset>("Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset");
+    var labels = new GameObject("PanelLabels").transform; labels.SetParent(root, false);
+    System.Action<string, float, float, float, float, float, float> label = (text, deg, x, y, z, w, h) => {
+        var g = new GameObject("Label_" + text); g.transform.SetParent(labels, false);
+        g.transform.localPosition = panelPt(deg, x, y, z);
+        var n = panelDirB(deg, Vector3.forward); var u = panelDirB(deg, Vector3.up);
+        g.transform.localRotation = Quaternion.LookRotation(-B(n.x, n.y, n.z), B(u.x, u.y, u.z));
+        var t = g.AddComponent<TMPro.TextMeshPro>();
+        t.font = labelFont; t.text = text; t.color = new Color(0.13f, 0.11f, 0.09f);
+        t.fontStyle = TMPro.FontStyles.Bold | TMPro.FontStyles.UpperCase; t.alignment = TMPro.TextAlignmentOptions.Center;
+        t.enableWordWrapping = false; t.enableAutoSizing = true; t.fontSizeMin = 0.01f; t.fontSizeMax = 0.2f;
+        t.rectTransform.sizeDelta = new Vector2(w, h);
+        g.GetComponent<MeshRenderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+    };
+    string[] lampNames = { "Связь", "Водитель", "Поиск", "Нет связи", "Стрелок" };
+    for (int i = 0; i < 5; i++) label(lampNames[i], 0f, -0.16f + i * 0.08f, 0.18f, 0.0035f, 0.076f, 0.014f);
+    label("Сигнал", 0f, -0.33f, 0.174f, 0.0168f, 0.05f, 0.008f);
+    label("Экипаж", 0f, 0.33f, 0.174f, 0.0168f, 0.05f, 0.008f);
+    label("Сеть, В", SECTION, -0.3f, 0.163f, 0.0168f, 0.06f, 0.009f);
+    // Цифры шкалы готовности: 0, 1 и 2 из двух на нуле, середине и конце шкалы
+    for (int k = 0; k < 3; k++) {
+        float a = (210f - 120f * k) * Mathf.Deg2Rad;
+        label(k.ToString(), 0f, 0.33f + Mathf.Cos(a) * 0.029f, 0.2f + Mathf.Sin(a) * 0.029f, 0.0168f, 0.012f, 0.008f);
+    }
 }
 
 // Листок с советами на пробковой доске правой стены
