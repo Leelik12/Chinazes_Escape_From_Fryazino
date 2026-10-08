@@ -111,7 +111,7 @@ namespace RacingProject.Hud
             builder.Append($"VSync: {vSync}   лимит FPS: {targetFps}   физика: {1f / Time.fixedDeltaTime:F0} Гц\n");
 
             builder.Append($"Экран: {Screen.width}×{Screen.height} @ {Screen.currentResolution.refreshRateRatio.value:F0} Гц, {Screen.fullScreenMode}\n");
-            builder.Append($"Графика: {(GraphicsQuality.Low ? "низкая" : "обычная")}, качество «{QualitySettings.names[QualitySettings.GetQualityLevel()]}»\n");
+            builder.Append($"Графика: {GraphicsQuality.PresetName}, масштаб {GraphicsQuality.OptionLabels(GraphicsQuality.Option.RenderScale)[GraphicsQuality.Get(GraphicsQuality.Option.RenderScale)]}, качество «{QualitySettings.names[QualitySettings.GetQualityLevel()]}»\n");
 
             float allocated = Profiler.GetTotalAllocatedMemoryLong() / BytesInMb;
             float reserved = Profiler.GetTotalReservedMemoryLong() / BytesInMb;

@@ -1,4 +1,5 @@
-// Экраны меню в стиле военного терминала: главный экран (Menu/Canvases/Main) с лобби и блоком состояния.
+// Экраны меню в стиле военного терминала: главный экран (Menu/Canvases/Main) с лобби и блоком состояния
+// и экран настроек (Menu/Canvases/Settings) с вкладками «Звук», «Графика», «Экран».
 // Не компилируется Unity (лежит вне Assets): текст выполняется в редакторе через execute_code (MCP for Unity, C# 6).
 // Каждый запуск пересобирает содержимое холстов с нуля; сами холсты (размер, положение на экранах пульта,
 // рейкастеры VR) не трогаются — их ставит BuildBunker.cs. Текстуры развёртки и виньетки пишутся в Assets/Content/UI/Terminal.
@@ -182,6 +183,141 @@ screenFx(main, mc, clock, cursor, new TMPro.TMP_Text[] { status });
     so.ApplyModifiedPropertiesWithoutUndo();
 }
 
-UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(menu.gameObject.scene);
 log.AppendLine("main ok " + W + "x" + H);
+
+// --- Экран настроек ---
+var set = canvases.Find("Settings");
+float SW = ((RectTransform)set).sizeDelta.x, SH = ((RectTransform)set).sizeDelta.y;
+var sc = screenBase(set);
+var sHead = text("Header", sc, "Укрытие № 17 · настройки терминала", 11f, dim, TMPro.TextAlignmentOptions.MidlineLeft); place(sHead.rectTransform, M, 10f, 320f, 18f);
+var sClock = text("Clock", sc, "00:00:00", 11f, dim, TMPro.TextAlignmentOptions.MidlineRight); place(sClock.rectTransform, SW - M - 120f, 10f, 120f, 18f);
+hline(sc, M, 31f, SW - 2 * M);
+
+// Вкладки: плашка выбранной ярче (цвет задаёт SettingsMenu), при наведении — «>»
+string[] tabNames = { "Звук", "Графика", "Экран" };
+var tabButtons = new UnityEngine.UI.Button[3];
+var tabBacks = new UnityEngine.UI.Image[3];
+var tabPages = new RectTransform[3];
+float tabW = 150f;
+for (int i = 0; i < 3; i++) {
+    var tb = menuButton("Tab" + i, sc, tabNames[i], tabW, 26f);
+    place((RectTransform)tb.transform, M + i * (tabW + 6f), 40f, tabW, 26f);
+    var back = image("Back", tb.transform, phosphor); stretch(back.rectTransform); back.transform.SetSiblingIndex(0);
+    tabButtons[i] = tb; tabBacks[i] = back;
+    var page = node("Page" + i, sc); place(page, M, 78f, SW - 2 * M, SH - 78f - 40f);
+    tabPages[i] = page;
+}
+hline(sc, M, 70f, SW - 2 * M);
+
+// Строка настройки: подпись, «◄ значение ►» и, если нужно, шкала из делений
+string arrowL = bodyFont.HasCharacter('◄', true) ? "◄" : "<", arrowR = bodyFont.HasCharacter('►', true) ? "►" : ">";
+System.Func<string, Transform, string, float, UnityEngine.UI.Button> arrow = (name, parent, glyph, x) => {
+    var t = text(name, parent, glyph, 12f, phosphor, TMPro.TextAlignmentOptions.Center); place(t.rectTransform, x, 0f, 22f, 24f);
+    t.raycastTarget = true;
+    var b = t.gameObject.AddComponent<UnityEngine.UI.Button>(); b.targetGraphic = t;
+    var cb = b.colors; cb.normalColor = new Color(1f, 1f, 1f, 0.8f); cb.highlightedColor = Color.white; cb.pressedColor = new Color(1f, 1f, 1f, 0.5f);
+    cb.selectedColor = new Color(1f, 1f, 1f, 0.8f); cb.disabledColor = new Color(1f, 1f, 1f, 0.15f); cb.fadeDuration = 0.05f; b.colors = cb;
+    var nav = b.navigation; nav.mode = UnityEngine.UI.Navigation.Mode.None; b.navigation = nav;
+    t.gameObject.AddComponent<RacingProject.Management.TerminalButtonFx>();
+    return b;
+};
+System.Func<string, Transform, string, float, float, float, float, float, int, string, RacingProject.Management.TerminalSelector> selector =
+    (name, parent, label, x, y, w, labelW, valueW, segCount, hintText) => {
+    var r = node(name, parent); place(r, x, y, w, 24f);
+    var hit = r.gameObject.AddComponent<UnityEngine.UI.Image>(); hit.color = new Color(0f, 0f, 0f, 0f); // ловит наведение для подсказки
+    r.gameObject.AddComponent<CanvasGroup>();
+    var lb = text("Label", r, label, 11f, dim, TMPro.TextAlignmentOptions.MidlineLeft); place(lb.rectTransform, 4f, 0f, labelW, 24f);
+    var prev = arrow("Prev", r, arrowL, labelW);
+    var val = text("Value", r, "—", 11f, phosphor, TMPro.TextAlignmentOptions.Center); place(val.rectTransform, labelW + 22f, 0f, valueW, 24f);
+    var nxt = arrow("Next", r, arrowR, labelW + 22f + valueW);
+    var segs = new UnityEngine.UI.Image[segCount];
+    float sx = labelW + 22f + valueW + 22f + 12f, sw = segCount > 0 ? (w - sx - 4f) / segCount : 0f;
+    for (int i = 0; i < segCount; i++) { segs[i] = image("Segment" + i, r, phosphor); place(segs[i].rectTransform, sx + i * sw, 7f, sw - 3f, 10f); }
+    var low = image("Underline", r, new Color(dim.r, dim.g, dim.b, 0.35f)); place(low.rectTransform, 4f, 23f, w - 8f, 1f);
+    var ts = r.gameObject.AddComponent<RacingProject.Management.TerminalSelector>();
+    var so = new SerializedObject(ts);
+    so.FindProperty("label").objectReferenceValue = lb; so.FindProperty("value").objectReferenceValue = val;
+    so.FindProperty("previous").objectReferenceValue = prev; so.FindProperty("next").objectReferenceValue = nxt;
+    var arr = so.FindProperty("segments"); arr.arraySize = segCount;
+    for (int i = 0; i < segCount; i++) arr.GetArrayElementAtIndex(i).objectReferenceValue = segs[i];
+    so.FindProperty("segmentOn").colorValue = phosphor; so.FindProperty("segmentOff").colorValue = new Color(phosphor.r, phosphor.g, phosphor.b, 0.15f);
+    so.FindProperty("hint").stringValue = hintText;
+    so.ApplyModifiedPropertiesWithoutUndo();
+    return ts;
+};
+float PW = SW - 2 * M, row = 28f;
+
+// Звук
+var pa = tabPages[0];
+var sMusic = selector("Music", pa, "Музыка", 0f, 0f, PW, 190f, 70f, 10, "Громкость музыки в меню и в заезде");
+var sEngine = selector("Engine", pa, "Двигатели", 0f, row, PW, 190f, 70f, 10, "Громкость моторов, шин и ударов");
+var sAmbient = selector("Ambient", pa, "Окружение", 0f, row * 2, PW, 190f, 70f, 10, "Громкость фоновых звуков: ветер, бункер, стрельба вдали");
+
+// Графика: пресет во всю ширину и два столбца параметров
+var pg = tabPages[1];
+var sPreset = selector("Preset", pg, "Пресет качества", 0f, 0f, PW, 190f, 120f, 0, "Набор всех параметров графики сразу. Ручная правка любого параметра даёт пресет «Своё»");
+float colW = (PW - 16f) / 2f;
+string[,] gfx = {
+    { "RenderScale", "Масштаб рендера", "Разрешение, в котором рисуется кадр. Меньше — быстрее, но картинка мягче" },
+    { "AntiAliasing", "Сглаживание", "MSAA убирает «лесенку» на краях. 4x и 8x заметно нагружают видеокарту" },
+    { "Shadows", "Тени", "Разрешение и дальность теней. Самый тяжёлый параметр после масштаба" },
+    { "Ssao", "Затенение SSAO", "Мягкое затенение в углах и щелях: объём сцены ценой нескольких FPS" },
+    { "PostProcessing", "Постобработка", "Цветокоррекция, свечение и виньетка камеры" },
+    { "Textures", "Текстуры", "Чёткость текстур. Ниже — меньше видеопамяти" },
+    { "Anisotropic", "Анизотропия", "Чёткость дороги и земли под острым углом" },
+    { "Grass", "Трава", "Дальность и густота травы на земле" },
+    { "Trees", "Деревья", "С какого расстояния деревья становятся плоскими картинками" },
+    { "Detail", "Детализация", "Дальность, на которой модели переключаются на упрощённые" },
+};
+var sGfx = new RacingProject.Management.TerminalSelector[10];
+for (int i = 0; i < 10; i++) {
+    int column = i / 5, rowIndex = i % 5;
+    sGfx[i] = selector(gfx[i, 0], pg, gfx[i, 1], column * (colW + 16f), 36f + rowIndex * row, colW, 134f, 108f, 0, gfx[i, 2]);
+}
+
+// Экран
+var pd = tabPages[2];
+var sView = selector("ViewMode", pd, "Режим игры", 0f, 0f, PW, 190f, 150f, 0, "Шлем VR или монитор с мышью. Без подключённого шлема остаётся монитор");
+var sWindow = selector("WindowMode", pd, "Окно", 0f, row, PW, 190f, 150f, 0, "Полный экран без рамки, окно или монопольный режим. В VR не действует");
+var sRes = selector("Resolution", pd, "Разрешение", 0f, row * 2, PW, 190f, 150f, 0, "Разрешение окна игры на мониторе");
+var sVSync = selector("VSync", pd, "Вертикальная синхронизация", 0f, row * 3, PW, 190f, 150f, 0, "Убирает разрывы кадра; частота кадров равна частоте монитора");
+var sLimit = selector("FrameLimit", pd, "Ограничение кадров", 0f, row * 4, PW, 190f, 150f, 0, "Верхний предел FPS при выключенной синхронизации");
+
+// Подвал: приглашение с курсором и подсказка к строке под указателем
+hline(sc, M, SH - 34f, SW - 2 * M);
+var sPrompt = text("Prompt", sc, ">", 12f, phosphor, TMPro.TextAlignmentOptions.MidlineLeft); place(sPrompt.rectTransform, M, SH - 28f, 14f, 18f);
+var sCursor = image("Cursor", sc, phosphor); place(sCursor.rectTransform, M + 13f, SH - 25f, 8f, 12f);
+var sHint = text("Hint", sc, "", 10f, dim, TMPro.TextAlignmentOptions.MidlineLeft); place(sHint.rectTransform, M + 28f, SH - 28f, SW - 2 * M - 28f, 18f);
+screenFx(set, sc, sClock, sCursor, new TMPro.TMP_Text[] { sHint });
+
+var sm = set.GetComponent<RacingProject.Management.SettingsMenu>();
+if (sm == null) sm = set.gameObject.AddComponent<RacingProject.Management.SettingsMenu>();
+{
+    var so = new SerializedObject(sm);
+    so.FindProperty("manager").objectReferenceValue = manager;
+    var tb = so.FindProperty("tabButtons"); var tp = so.FindProperty("tabPages"); var tg = so.FindProperty("tabBackgrounds"); var tl = so.FindProperty("tabLabels");
+    tb.arraySize = 3; tp.arraySize = 3; tg.arraySize = 3; tl.arraySize = 3;
+    for (int i = 0; i < 3; i++) {
+        tb.GetArrayElementAtIndex(i).objectReferenceValue = tabButtons[i];
+        tp.GetArrayElementAtIndex(i).objectReferenceValue = tabPages[i].gameObject;
+        tg.GetArrayElementAtIndex(i).objectReferenceValue = tabBacks[i];
+        tl.GetArrayElementAtIndex(i).objectReferenceValue = tabButtons[i].transform.Find("Text (TMP)").GetComponent<TMPro.TMP_Text>();
+    }
+    so.FindProperty("tabOn").colorValue = new Color(phosphor.r, phosphor.g, phosphor.b, 0.9f);
+    so.FindProperty("labelOn").colorValue = bg; so.FindProperty("labelOff").colorValue = phosphor;
+    so.FindProperty("tabOff").colorValue = new Color(phosphor.r, phosphor.g, phosphor.b, 0.06f);
+    so.FindProperty("music").objectReferenceValue = sMusic; so.FindProperty("engine").objectReferenceValue = sEngine; so.FindProperty("ambient").objectReferenceValue = sAmbient;
+    so.FindProperty("preset").objectReferenceValue = sPreset;
+    var ga = so.FindProperty("graphics"); ga.arraySize = 10;
+    for (int i = 0; i < 10; i++) ga.GetArrayElementAtIndex(i).objectReferenceValue = sGfx[i];
+    so.FindProperty("viewMode").objectReferenceValue = sView; so.FindProperty("windowMode").objectReferenceValue = sWindow;
+    so.FindProperty("resolution").objectReferenceValue = sRes; so.FindProperty("vSync").objectReferenceValue = sVSync; so.FindProperty("frameLimit").objectReferenceValue = sLimit;
+    so.FindProperty("hint").objectReferenceValue = sHint;
+    so.ApplyModifiedPropertiesWithoutUndo();
+}
+// В редакторе видна первая вкладка
+for (int i = 0; i < 3; i++) tabPages[i].gameObject.SetActive(i == 0);
+log.AppendLine("settings ok " + SW + "x" + SH + " arrows " + arrowL + arrowR);
+
+UnityEditor.SceneManagement.EditorSceneManager.MarkSceneDirty(menu.gameObject.scene);
 return log.ToString();

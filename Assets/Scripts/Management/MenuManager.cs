@@ -1,17 +1,10 @@
-﻿using System.Collections.Generic;
-using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 using UnityEngine.Audio;
-using UnityEngine.SceneManagement;
 
 namespace RacingProject.Management
 {
     public class MenuManager : MonoBehaviour
     {
-        public Slider volumeSliderMusik;
-        public Slider volumeSliderEngine;
-        public Slider volumeSliderAmbient;
         public AudioMixer audioMixer;
         public AudioMixer MusikMixer;
         public AudioMixer ambientMixer;
@@ -19,30 +12,14 @@ namespace RacingProject.Management
         // Нижняя граница микшера: такой уровень уже не слышен
         private const float MinDb = -80f;
 
+        // Громкость задаётся на экране настроек (SettingsMenu); здесь применяется сохранённая
         void Start()
         {
-            volumeSliderMusik.value = StaticHolder.MusikVolume;
             SetVolumeMusik(StaticHolder.MusikVolume);
-            volumeSliderMusik.onValueChanged.AddListener(OnVolumeChangedMusik);
-
-            volumeSliderEngine.value = StaticHolder.EngineVolume;
             SetVolumeEngine(StaticHolder.EngineVolume);
-            volumeSliderEngine.onValueChanged.AddListener(OnVolumeChangedEngine);
-
-            volumeSliderAmbient.value = StaticHolder.AmbientVolume;
             SetVolumeAmbient(StaticHolder.AmbientVolume);
-            volumeSliderAmbient.onValueChanged.AddListener(SetVolumeAmbient);
         }
-        void OnVolumeChangedMusik(float volume)
-        {
-            SetVolumeMusik(volume);
-            StaticHolder.MusikVolume = volume; // Сохраняем значение
-        }
-        void OnVolumeChangedEngine(float volume)
-        {
-            SetVolumeEngine(volume);
-            StaticHolder.EngineVolume = volume; // Сохраняем значение
-        }
+
         public void SetVolumeMusik(float volume)
         {
             MusikMixer.SetFloat("MusikVolume", ToDecibels(volume));
