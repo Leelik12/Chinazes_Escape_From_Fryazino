@@ -20,6 +20,8 @@ System.Func<Vector3, bool> inCity = p => { foreach (var r in cityRects) if (r.Co
 const int ChunkRows = 50;            // 100 м дороги на кусок: меньше кусков — меньше вызовов отрисовки, больше — лучше отсечение
 const float CurbHeight = 0.15f, CurbWidth = 0.3f, WalkWidth = 2.7f, ShoulderWidth = 3f;
 const float PaintLift = 0.02f;
+// Угол городского перекрёстка — квадрат тротуара шириной CornerWidth от края каждой дороги; тротуары дорог обрезаются по его краю
+const float CornerWidth = CurbWidth + WalkWidth + 0.5f;
 
 // Старые дороги выключаем, чтобы не перекрывались с новыми
 
@@ -54,7 +56,22 @@ System.Func<int, int, Vector3, float[]> closestOther = (li, idx, q) => {
     }
     return res; };
 System.Func<int, int, Vector3, float> distOther = (li, idx, q) => closestOther(li, idx, q)[0];
-// Перекрёстки, где обе дороги идут дальше: { центр, правая сторона первой дороги, правая сторона второй, (полуширины, город) }
+// Запас тротуара до угла перекрёстка: расстояние от точки до чужой оси минус её полуширина и ширина угла (< 0 — точка в углу или на дороге)
+System.Func<int, int, Vector3, float> cornerClearance = (li, idx, q) => {
+    var co = closestOther(li, idx, q); return co[6] < 0f ? 1e9f : co[0] - (halfs[(int)co[6]] + CornerWidth); };
+// Ближайшая точка оси k рядом с отрезком near (±15), по горизонтали: { смещение вправо от оси, правая сторона x, z }
+System.Func<int, int, Vector3, float[]> sideOffset = (k, near, q) => {
+    var L = lines[k]; float best = 1e9f; var res = new float[3];
+    for (int i = Mathf.Max(0, near - 15); i < Mathf.Min(L.Count - 1, near + 15); i++) {
+        var a = new Vector2(L[i].x, L[i].z); var ab = new Vector2(L[i + 1].x, L[i + 1].z) - a; var p = new Vector2(q.x, q.z);
+        float t = Mathf.Clamp01(Vector2.Dot(p - a, ab) / Mathf.Max(ab.sqrMagnitude, 1e-4f));
+        float d = (a + ab * t - p).magnitude; if (d >= best) continue;
+        best = d; var dir = ab.normalized; var rt = new Vector2(dir.y, -dir.x);
+        res = new float[] { Vector2.Dot(p - (a + ab * t), rt), rt.x, rt.y };
+    }
+    return res; };
+// Перекрёстки, где обе дороги идут дальше: { центр, правая сторона первой дороги, правая сторона второй, (полуширины, город),
+// (линия, отрезок) первой дороги, (линия, отрезок) второй }
 var crossings = new System.Collections.Generic.List<Vector3[]>();
 
 // --- Сборка мешей ---
@@ -139,7 +156,7 @@ for (int li = 0; li < lines.Count; li++) {
         if (j < 8 || j > lines[k].Count - 9 || k < li || (k == li && j < i)) continue;
         if (distOther(li, i - 1, L[i - 1]) < co[0] || distOther(li, i + 1, L[i + 1]) < co[0]) continue;
         var rB = Vector3.Cross(Vector3.up, new Vector3(co[4], 0f, co[5]));
-        crossings.Add(new[] { L[i], right[i], rB, new Vector3(half, halfs[k], city[i] ? 1f : 0f) });
+        crossings.Add(new[] { L[i], right[i], rB, new Vector3(half, halfs[k], city[i] ? 1f : 0f), new Vector3(li, i, 0f), new Vector3(k, j, 0f) });
     }
     int chunk = 0;
     for (int c0 = 0; c0 < n - 1; chunk++) {
@@ -187,7 +204,8 @@ for (int li = 0; li < lines.Count; li++) {
             bool flip = side == 0;
             for (int part = 0; part < (cityChunk ? 2 : 1); part++) {
                 for (int i = c0; i < c1; i++) {
-                    if (!sideOk[i, side] || !sideOk[i + 1, side]) continue;
+                    // В городе тротуар и бордюр обрезаются ниже, точно по краю угла перекрёстка
+                    if (!cityChunk && (!sideOk[i, side] || !sideOk[i + 1, side])) continue;
                     Vector3[,] q; Vector2[,] qu;
                     if (cityChunk && part == 0) {
                         // Бордюр: лицевая грань и верх, UV: вдоль — метры / 2 (шов камня через 1 м), поперёк — по профилю
@@ -211,6 +229,20 @@ for (int li = 0; li < lines.Count; li++) {
                             q[r, 0] = c + rt * e + Vector3.up * -0.02f; q[r, 1] = c + rt * (e + ShoulderWidth * 0.5f) + Vector3.up * Mathf.Min(-0.05f, dy * 0.5f);
                             q[r, 2] = outer + Vector3.up * dy; q[r, 3] = outer + rt * 0.2f + Vector3.up * (dy - 0.6f);
                             for (int j = 0; j < 4; j++) qu[r, j] = new Vector2(q[r, j].x / 4f, q[r, j].z / 4f); }
+                    }
+                    if (cityChunk) {
+                        // Каждая точка профиля, заходящая в угол перекрёстка или на чужую дорогу, сдвигается вдоль дороги
+                        // на границу (запас 0): конец тротуара ложится ровно на край угла, без ступенек по рядам
+                        int cols = q.GetLength(1); bool any = false;
+                        for (int j = 0; j < cols; j++) {
+                            float a0 = cornerClearance(li, i, q[0, j]), a1 = cornerClearance(li, i + 1, q[1, j]);
+                            if (a0 >= 0f && a1 >= 0f) { any = true; continue; }
+                            if (a0 < 0f && a1 < 0f) { q[1, j] = q[0, j]; qu[1, j] = qu[0, j]; continue; }
+                            int lo = a0 < 0f ? 0 : 1; float t = a0 / (a0 - a1);
+                            var p = Vector3.Lerp(q[0, j], q[1, j], t); var pu = Vector2.Lerp(qu[0, j], qu[1, j], t);
+                            q[lo, j] = p; qu[lo, j] = pu; any = true;
+                        }
+                        if (!any) continue;
                     }
                     strip(q, qu, flip);
                 }
@@ -238,8 +270,17 @@ foreach (var cr in crossings) {
     if (cr[3].z < 0.5f) continue;
     var c = cr[0]; var rA = new Vector2(cr[1].x, cr[1].z); var rB = new Vector2(cr[2].x, cr[2].z); float hA = cr[3].x, hB = cr[3].y;
     float det = rA.x * rB.y - rA.y * rB.x; if (Mathf.Abs(det) < 0.2f) continue;
-    float W = CurbWidth + WalkWidth + 0.5f;
-    System.Func<float, float, float, Vector3> X = (oa, ob, up) => new Vector3(c.x + (oa * rB.y - ob * rA.y) / det, c.y + up, c.z + (rA.x * ob - rB.x * oa) / det);
+    float W = CornerWidth;
+    int kA = (int)cr[4].x, iA = (int)cr[4].y, kB = (int)cr[5].x, iB = (int)cr[5].y;
+    System.Func<float, float, float, Vector3> X = (oa, ob, up) => {
+        var p = new Vector3(c.x + (oa * rB.y - ob * rA.y) / det, c.y + up, c.z + (rA.x * ob - rB.x * oa) / det);
+        // Дороги изогнуты: несколько шагов Ньютона по смещениям от их осей
+        for (int it = 0; it < 6; it++) {
+            var a = sideOffset(kA, iA, p); var b = sideOffset(kB, iB, p);
+            float da = oa - a[0], db = ob - b[0], dd = a[1] * b[2] - a[2] * b[1]; if (Mathf.Abs(dd) < 0.05f) break;
+            p.x += (da * b[2] - db * a[2]) / dd; p.z += (a[1] * db - b[1] * da) / dd;
+        }
+        return p; };
     var cgo = new GameObject("Crossing_" + crossCount++); cgo.transform.SetParent(crossRoot.transform, false); cgo.isStatic = true;
     float top = CurbHeight + 0.01f; // на сантиметр выше тротуаров, чтобы не мерцать там, где они заходят под угол
     foreach (float sA in new[] { -1f, 1f }) foreach (float sB in new[] { -1f, 1f }) {
