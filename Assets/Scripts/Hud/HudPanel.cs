@@ -16,9 +16,29 @@ namespace RacingProject.Hud
     // Отладочная IMGUI-панель: полупрозрачный фон, заголовок с клавишей и текст.
     // Клавиша сворачивает панель до одной строки заголовка. Панели одного угла
     // встают друг под другом (или над, у нижних углов) в порядке order.
-    // Размеры заданы для экрана высотой 1080 пикселей и масштабируются под текущий
+    // Размеры заданы для экрана высотой 1080 пикселей и масштабируются под текущий.
+    // Все панели показываются, только если в настройках включена «Отладочная информация» (DebugVisible)
     public sealed class HudPanel
     {
+        private const string DebugVisibleKey = "DebugHud";
+        private static bool? debugVisible;
+
+        // Строка «Отладочная информация» на вкладке «Экран» настроек; хранится в PlayerPrefs, по умолчанию выключена
+        public static bool DebugVisible
+        {
+            get
+            {
+                debugVisible ??= PlayerPrefs.GetInt(DebugVisibleKey, 0) == 1;
+                return debugVisible.Value;
+            }
+            set
+            {
+                debugVisible = value;
+                PlayerPrefs.SetInt(DebugVisibleKey, value ? 1 : 0);
+                PlayerPrefs.Save();
+            }
+        }
+
         private const float ReferenceHeight = 1080f;
         private const float Margin = 16f;
         private const float Spacing = 8f;
@@ -73,6 +93,7 @@ namespace RacingProject.Hud
         // Вызывать из Update владельца
         public void HandleInput()
         {
+            if (!DebugVisible) return;
             Keyboard keyboard = Keyboard.current;
             if (keyboard != null && keyboard[toggleKey].wasPressedThisFrame)
                 Expanded = !Expanded;
@@ -93,6 +114,11 @@ namespace RacingProject.Hud
         // (координаты — в пикселях экрана высотой 1080)
         public void Draw(string body, float extraHeight = 0f, System.Action<Rect> drawExtra = null)
         {
+            if (!DebugVisible)
+            {
+                height = 0f;
+                return;
+            }
             EnsureStyles();
 
             float scale = Screen.height / ReferenceHeight;

@@ -113,6 +113,9 @@ float W = ((RectTransform)main).sizeDelta.x, H = ((RectTransform)main).sizeDelta
 var mc = screenBase(main);
 var head = text("Header", mc, "Укрытие № 17 · терминал связи", 11f, dim, TMPro.TextAlignmentOptions.MidlineLeft); place(head.rectTransform, M, 10f, 300f, 18f);
 var clock = text("Clock", mc, "00:00:00", 11f, dim, TMPro.TextAlignmentOptions.MidlineRight); place(clock.rectTransform, W - M - 120f, 10f, 120f, 18f);
+// Версия сборки слева от часов (текст ставит VersionLabel при запуске)
+var version = text("Version", mc, "v" + Application.version, 11f, dim, TMPro.TextAlignmentOptions.MidlineRight); place(version.rectTransform, W - M - 240f, 10f, 110f, 18f);
+version.fontStyle = TMPro.FontStyles.Bold; version.gameObject.AddComponent<RacingProject.Management.VersionLabel>();
 hline(mc, M, 31f, W - 2 * M);
 var sub = text("Subtitle", mc, "Chinazes:", 13f, dim, TMPro.TextAlignmentOptions.MidlineLeft); place(sub.rectTransform, M, 38f, 300f, 18f);
 sub.characterSpacing = 12f;
@@ -309,6 +312,7 @@ var sWindow = selector("WindowMode", pd, "Окно", 0f, row, PW, 190f, 150f, 0,
 var sRes = selector("Resolution", pd, "Разрешение", 0f, row * 2, PW, 190f, 150f, 0, "Разрешение окна игры на мониторе");
 var sVSync = selector("VSync", pd, "Вертикальная синхронизация", 0f, row * 3, PW, 190f, 150f, 0, "Убирает разрывы кадра; частота кадров равна частоте монитора");
 var sLimit = selector("FrameLimit", pd, "Ограничение кадров", 0f, row * 4, PW, 190f, 150f, 0, "Верхний предел FPS при выключенной синхронизации");
+var sDebug = selector("DebugInfo", pd, "Отладочная информация", 0f, row * 5, PW, 190f, 150f, 0, "Панели поверх экрана: управление, телеметрия, FPS и система. Сворачиваются клавишами F1–F4");
 
 // Подвал: приглашение с курсором и подсказка к строке под указателем
 hline(sc, M, SH - 34f, SW - 2 * M);
@@ -339,6 +343,7 @@ if (sm == null) sm = set.gameObject.AddComponent<RacingProject.Management.Settin
     for (int i = 0; i < 10; i++) ga.GetArrayElementAtIndex(i).objectReferenceValue = sGfx[i];
     so.FindProperty("viewMode").objectReferenceValue = sView; so.FindProperty("windowMode").objectReferenceValue = sWindow;
     so.FindProperty("resolution").objectReferenceValue = sRes; so.FindProperty("vSync").objectReferenceValue = sVSync; so.FindProperty("frameLimit").objectReferenceValue = sLimit;
+    so.FindProperty("debugInfo").objectReferenceValue = sDebug;
     so.FindProperty("hint").objectReferenceValue = sHint;
     so.ApplyModifiedPropertiesWithoutUndo();
 }

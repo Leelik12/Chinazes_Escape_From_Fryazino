@@ -1,6 +1,7 @@
 ﻿using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using RacingProject.Hud;
 
 namespace RacingProject.Management
 {
@@ -38,6 +39,8 @@ namespace RacingProject.Management
         [SerializeField] private TerminalSelector resolution;
         [SerializeField] private TerminalSelector vSync;
         [SerializeField] private TerminalSelector frameLimit;
+        [Tooltip("Отладочные панели поверх экрана (F1–F4): управление, телеметрия, FPS и система")]
+        [SerializeField] private TerminalSelector debugInfo;
 
         [Header("Подсказка")]
         [SerializeField] private TMP_Text hint;
@@ -45,6 +48,7 @@ namespace RacingProject.Management
 
         private const int VolumeSteps = 10;
         private static readonly string[] ViewModes = { "Шлем VR", "Монитор" };
+        private static readonly string[] OffOn = { "Выкл", "Вкл" };
 
         private int tab;
 
@@ -68,6 +72,7 @@ namespace RacingProject.Management
             Bind(vSync, GraphicsQuality.Option.VSync);
             Bind(frameLimit, GraphicsQuality.Option.FrameLimit);
             if (viewMode != null) viewMode.ValueChanged += i => ViewModeService.SetPreferDesktop(i == 1);
+            if (debugInfo != null) debugInfo.ValueChanged += i => HudPanel.DebugVisible = i == 1;
 
             SelectTab(0);
         }
@@ -126,6 +131,7 @@ namespace RacingProject.Management
             // В VR окном и частотой кадров управляет шлем
             bool desktop = !ViewModeService.IsVR;
             if (viewMode != null) viewMode.SetOptions(ViewModes, desktop ? 1 : 0);
+            if (debugInfo != null) debugInfo.SetOptions(OffOn, HudPanel.DebugVisible ? 1 : 0);
             SetInteractable(windowMode, desktop);
             SetInteractable(resolution, desktop);
             SetInteractable(vSync, desktop);

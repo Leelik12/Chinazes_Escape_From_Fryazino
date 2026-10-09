@@ -181,7 +181,7 @@ namespace RacingProject.Car
     #if UNITY_EDITOR || DEVELOPMENT_BUILD
         private void OnGUI()
         {
-            if (!showHapticsGUI) return;
+            if (!showHapticsGUI || !RacingProject.Hud.HudPanel.DebugVisible) return;
 
             // Позиционируем GUI в правом верхнем углу
             GUILayout.BeginArea(new Rect(Screen.width - guiWidth - 30, 10, guiWidth, guiHeight));
