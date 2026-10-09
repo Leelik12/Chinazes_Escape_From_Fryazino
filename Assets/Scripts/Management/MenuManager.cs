@@ -8,6 +8,8 @@ namespace RacingProject.Management
         public AudioMixer audioMixer;
         public AudioMixer MusikMixer;
         public AudioMixer ambientMixer;
+        [Tooltip("Окно «Выйти из игры?» на экране терминала: без него кнопка выхода закрывает игру сразу")]
+        [SerializeField] private ConfirmDialog quitConfirm;
 
         // Нижняя граница микшера: такой уровень уже не слышен
         private const float MinDb = -80f;
@@ -48,6 +50,15 @@ namespace RacingProject.Management
         public void EndGame()
         {
             Application.Quit();
+        }
+
+        // Кнопка «Выйти из игры» в меню: сначала спрашивает, чтобы случайный клик не закрыл игру
+        public void RequestQuit()
+        {
+            if (quitConfirm != null)
+                quitConfirm.Show("Выйти из игры?", EndGame);
+            else
+                EndGame();
         }
     }
 }

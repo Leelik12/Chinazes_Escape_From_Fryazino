@@ -135,7 +135,7 @@ UnityEditor.Events.UnityEventTools.AddPersistentListener(bHost.onClick, lobby.On
 UnityEditor.Events.UnityEventTools.AddPersistentListener(bJoin.onClick, lobby.OnJoinPressed);
 UnityEditor.Events.UnityEventTools.AddPersistentListener(bPlay.onClick, room.OnReadyButtonPressed);
 UnityEditor.Events.UnityEventTools.AddPersistentListener(bLeave.onClick, lobby.OnLeavePressed);
-UnityEditor.Events.UnityEventTools.AddPersistentListener(bExit.onClick, manager.EndGame);
+UnityEditor.Events.UnityEventTools.AddPersistentListener(bExit.onClick, manager.RequestQuit);
 bPlay.gameObject.SetActive(false); bLeave.gameObject.SetActive(false);
 
 // Блок состояния справа: рамка, три строки «параметр — значение» и сообщение лобби
@@ -184,6 +184,30 @@ screenFx(main, mc, clock, cursor, new TMPro.TMP_Text[] { status });
     so.FindProperty("leaveButton").objectReferenceValue = bLeave.gameObject;
     so.FindProperty("statusText").objectReferenceValue = status;
     so.ApplyModifiedPropertiesWithoutUndo();
+}
+
+// Окно «Выйти из игры?» поверх главного экрана (ConfirmDialog): фон перехватывает клики, пока окно открыто
+{
+    var qc = stretch(node("QuitConfirm", mc));
+    var qcBack = qc.gameObject.AddComponent<UnityEngine.UI.Image>(); qcBack.color = new Color(bg.r, bg.g, bg.b, 0.94f);
+    float bw = 300f, bh = 120f;
+    var qBox = node("Box", qc); place(qBox, (W - bw) / 2f, (H - bh) / 2f, bw, bh);
+    foreach (var e in new[] { new Vector4(0f, 0f, bw, 1.5f), new Vector4(0f, bh - 1.5f, bw, 1.5f), new Vector4(0f, 0f, 1.5f, bh), new Vector4(bw - 1.5f, 0f, 1.5f, bh) }) {
+        var l = image("Frame", qBox, phosphor); place(l.rectTransform, e.x, e.y, e.z, e.w);
+    }
+    var qText = text("Question", qBox, "Выйти из игры?", 15f, phosphor, TMPro.TextAlignmentOptions.Center); place(qText.rectTransform, 10f, 16f, bw - 20f, 30f);
+    var bYes = menuButton("Yes", qBox, "Да, выйти", 130f, 29f); place((RectTransform)bYes.transform, 14f, 72f, 130f, 29f);
+    var bNo = menuButton("No", qBox, "Нет", 130f, 29f); place((RectTransform)bNo.transform, bw - 144f, 72f, 130f, 29f);
+    var dialog = qc.gameObject.AddComponent<RacingProject.Management.ConfirmDialog>();
+    var so = new SerializedObject(dialog);
+    so.FindProperty("question").objectReferenceValue = qText;
+    so.FindProperty("yesButton").objectReferenceValue = bYes;
+    so.FindProperty("noButton").objectReferenceValue = bNo;
+    so.ApplyModifiedPropertiesWithoutUndo();
+    qc.gameObject.SetActive(false);
+    var mso = new SerializedObject(manager);
+    mso.FindProperty("quitConfirm").objectReferenceValue = dialog;
+    mso.ApplyModifiedPropertiesWithoutUndo();
 }
 
 log.AppendLine("main ok " + W + "x" + H);

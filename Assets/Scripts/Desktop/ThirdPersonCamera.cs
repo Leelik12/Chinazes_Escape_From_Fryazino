@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using RacingProject.Management;
 
 namespace RacingProject.Desktop
 {
     // Камера от третьего лица для одиночной игры: висит позади и выше машины и вращается мышью вокруг неё.
     // Направление обзора задаётся в мировых осях, поэтому прицел не сбивается, когда машина поворачивает;
     // если мышь не трогать и не стрелять, на ходу камера плавно заходит за корму. Если между машиной и камерой
-    // стена, камера придвигается к машине. Esc освобождает курсор, клик снова захватывает
+    // стена, камера придвигается к машине. Курсор освобождает меню паузы (Esc), клик в игре снова захватывает
     [DefaultExecutionOrder(40)] // раньше DesktopGunnerAim (50), который целится из центра этой камеры
     public class ThirdPersonCamera : MonoBehaviour
     {
@@ -108,10 +109,8 @@ namespace RacingProject.Desktop
         // Возвращает true, если курсор захвачен и мышь управляет камерой
         private static bool UpdateCursorLock(Mouse mouse)
         {
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
-                SetCursorLocked(false);
-            else if (Cursor.lockState != CursorLockMode.Locked && mouse.leftButton.wasPressedThisFrame)
+            if (PauseMenu.IsOpen) return false;
+            if (Cursor.lockState != CursorLockMode.Locked && mouse.leftButton.wasPressedThisFrame)
                 SetCursorLocked(true);
 
             return Cursor.lockState == CursorLockMode.Locked;

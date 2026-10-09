@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using RacingProject.Management;
 
 namespace RacingProject.Desktop
 {
@@ -69,14 +70,13 @@ namespace RacingProject.Desktop
             transform.localRotation = Quaternion.Euler(pitch, baseYaw + yaw, 0f);
         }
 
-        // Esc освобождает курсор (переключиться на другое окно, выйти из игры), клик снова захватывает.
+        // Курсор освобождает меню паузы (Esc) или переключение окна, клик снова захватывает.
         // Возвращает true, если курсор захвачен и мышь управляет камерой
         private static bool UpdateCursorLock(Mouse mouse)
         {
-            Keyboard keyboard = Keyboard.current;
-            if (keyboard != null && keyboard.escapeKey.wasPressedThisFrame)
-                SetCursorLocked(false);
-            else if (Cursor.lockState != CursorLockMode.Locked && mouse.leftButton.wasPressedThisFrame)
+            // Esc обрабатывает меню паузы: оно и освобождает курсор
+            if (PauseMenu.IsOpen) return false;
+            if (Cursor.lockState != CursorLockMode.Locked && mouse.leftButton.wasPressedThisFrame)
                 SetCursorLocked(true);
 
             return Cursor.lockState == CursorLockMode.Locked;
