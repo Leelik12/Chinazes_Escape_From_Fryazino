@@ -3,10 +3,12 @@ using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using RacingProject.Management;
 
 namespace RacingProject.Network
 {
-    // Лобби в главном меню: создать игру (хост, водитель) или найти её в локальной сети (клиент, стрелок).
+    // Лобби в главном меню: одиночная игра (только на мониторе), создать игру (хост, водитель)
+    // или найти её в локальной сети (клиент, стрелок).
     // Состояние кнопок берётся из NetworkManager каждый кадр, поэтому переживает перезагрузку сцены
     [RequireComponent(typeof(RoomController))]
     public class LanLobby : MonoBehaviour
@@ -15,6 +17,8 @@ namespace RacingProject.Network
         public const string ConnectArgument = "-connect";
 
         [Header("Кнопки")]
+        [Tooltip("Одиночная игра: видна только в режиме монитора")]
+        [SerializeField] private GameObject soloButton;
         [SerializeField] private GameObject hostButton;
         [SerializeField] private GameObject joinButton;
         [SerializeField] private TMP_Text joinButtonLabel;
@@ -97,6 +101,24 @@ namespace RacingProject.Network
             launchStatus = text;
         }
 
+        // Одиночная игра — хост только для этого компьютера: в сети не объявляется и никого не пускает
+        public void OnSoloPressed()
+        {
+            NetworkManager manager = NetworkManager.Singleton;
+            if (manager == null || manager.IsListening || ViewModeService.IsVR) return;
+
+            discovery.Stop();
+            hostNotice = null;
+            Transport.SetConnectionData("127.0.0.1", gamePort, "127.0.0.1");
+            if (!manager.StartHost())
+            {
+                idleStatus = "Не удалось начать игру: порт " + gamePort + " занят?";
+                return;
+            }
+            wasConnected = true;
+            room.StartSolo();
+        }
+
         public void OnHostPressed()
         {
             NetworkManager manager = NetworkManager.Singleton;
@@ -158,7 +180,7 @@ namespace RacingProject.Network
         // Хост объявляет игру, пока не подключился второй игрок
         private void UpdateBroadcast(NetworkManager manager)
         {
-            bool shouldBroadcast = manager.IsServer && manager.IsListening
+            bool shouldBroadcast = manager.IsServer && manager.IsListening && !room.Solo
                 && manager.ConnectedClientsIds.Count < RoomController.RequiredPlayers
                 && !room.GameStarted;
 
@@ -202,6 +224,7 @@ namespace RacingProject.Network
 
             if (launchStatus != null)
             {
+                SetActive(soloButton, false);
                 SetActive(hostButton, false);
                 SetActive(joinButton, false);
                 SetActive(readyButton, false);
@@ -210,6 +233,7 @@ namespace RacingProject.Network
                 return;
             }
 
+            SetActive(soloButton, !online && !searching && !ViewModeService.IsVR);
             SetActive(hostButton, !online && !searching);
             SetActive(joinButton, !online);
             SetActive(readyButton, online && inSession);
@@ -272,9 +296,9 @@ namespace RacingProject.Network
             bool full = manager.ConnectedClientsIds.Count >= RoomController.RequiredPlayers;
 
             response.CreatePlayerObject = false;
-            response.Approved = isHost || (!full && !room.GameStarted);
+            response.Approved = isHost || (!full && !room.GameStarted && !room.Solo);
             if (!response.Approved)
-                response.Reason = full ? "В игре уже два игрока" : "Игра уже началась";
+                response.Reason = room.Solo ? "Это одиночная игра" : full ? "В игре уже два игрока" : "Игра уже началась";
         }
 
         // Соединение закрыто: вышли сами, хост закрыл игру или связь пропала

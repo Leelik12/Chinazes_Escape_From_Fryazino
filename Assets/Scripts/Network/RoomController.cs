@@ -7,7 +7,8 @@ using RacingProject.Management;
 
 namespace RacingProject.Network
 {
-    // Готовность игроков и старт раунда. Хост — водитель, подключившийся клиент — стрелок
+    // Готовность игроков и старт раунда. Хост — водитель, подключившийся клиент — стрелок.
+    // Одиночная игра — тот же хост, но без напарника: раунд стартует сразу, игрок и ведёт, и стреляет
     public class RoomController : NetworkBehaviour
     {
         // Игра рассчитана ровно на двоих: водитель и стрелок
@@ -21,6 +22,8 @@ namespace RacingProject.Network
         public GameObject DriverBody;
         public GameObject GunnerBody;
         public Collider TouchColliderPistol;
+        [Tooltip("Риг одиночной игры: камера от третьего лица и экранный HUD")]
+        public GameObject soloRig;
 
         [Header("Перезапуск")]
         [Tooltip("Пауза между гибелью машины и перезапуском: напарник получает последнее здоровье и отдачу гибели, оба видят взрыв и экран гибели")]
@@ -34,7 +37,11 @@ namespace RacingProject.Network
         private bool isLocalReady = false;
         private bool rigsActivated = false;
         private bool restartPending = false;
+        private bool soloPending = false;
         private PlayerHealth carHealth;
+
+        // Одиночная игра: хост запущен без напарника, раунд не перезапускается, а возвращает в меню
+        public bool Solo { get; private set; }
 
         // Во время раунда новые подключения не принимаются
         public bool GameStarted => IsSpawned && gameStarted.Value;
@@ -63,6 +70,8 @@ namespace RacingProject.Network
         {
             if (IsServer)
                 NetworkManager.OnClientDisconnectCallback += OnClientDisconnected;
+            if (soloPending)
+                StartSolo();
         }
 
         public override void OnNetworkDespawn()
@@ -76,6 +85,24 @@ namespace RacingProject.Network
             if (carHealth != null)
                 carHealth.OnDeath -= OnCarDestroyed;
             base.OnDestroy();
+        }
+
+        // Вызывает LanLobby сразу после запуска хоста одиночной игры; если сцена ещё не заспавнена, старт — в OnNetworkSpawn
+        public void StartSolo()
+        {
+            Solo = true;
+            if (!IsSpawned)
+            {
+                soloPending = true;
+                return;
+            }
+            soloPending = false;
+            if (!IsServer || gameStarted.Value) return;
+
+            isLocalReady = true;
+            hostReady.Value = true;
+            gameStarted.Value = true;
+            StartGameRpc();
         }
 
         public void OnReadyButtonPressed()
@@ -130,9 +157,20 @@ namespace RacingProject.Network
             if (rigsActivated) return;
             rigsActivated = true;
 
-            LocalPlayerRole.Set(IsServer ? PlayerRole.Driver : PlayerRole.Gunner);
+            LocalPlayerRole.Set(Solo ? PlayerRole.Solo : IsServer ? PlayerRole.Driver : PlayerRole.Gunner);
 
-            if (IsServer)
+            if (Solo)
+            {
+                // Видны оба члена экипажа, камера — снаружи машины
+                TouchColliderPistol.enabled = false;
+                DriverBody.SetActive(true);
+                GunnerBody.SetActive(true);
+                if (driverRig != null) driverRig.SetActive(false);
+                if (gunnerRig != null) gunnerRig.SetActive(false);
+                if (soloRig != null) soloRig.SetActive(true);
+                Menu.SetActive(false);
+            }
+            else if (IsServer)
             {
                 // Хост — водитель
                 TouchColliderPistol.enabled = false;
@@ -179,7 +217,11 @@ namespace RacingProject.Network
         private IEnumerator RestartAfterDelay()
         {
             yield return new WaitForSeconds(restartDelay);
-            RestartRound();
+            // Одиночная игра закрывает хост, и LanLobby возвращает в меню с выбором режима
+            if (Solo)
+                GetComponent<LanLobby>().OnLeavePressed();
+            else
+                RestartRound();
         }
 
         // Перезапуск раунда: сервер перезагружает сцену у всех. Соединение остаётся,
