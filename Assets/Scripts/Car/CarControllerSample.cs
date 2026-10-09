@@ -25,6 +25,14 @@ namespace RacingProject.Car
         [Header("Ограничение скорости (км/ч)")]
         [SerializeField] private float[] gearSpeedLimits = { 0f, 20f, 40f, 60f, 90f, 120f, 150f, 20f };
 
+        [Header("Автоматическая коробка (одиночная игра)")]
+        [Tooltip("Повышать передачу при такой доле предела скорости текущей передачи")]
+        [SerializeField, Range(0.5f, 1f)] private float autoUpshift = 0.93f;
+        [Tooltip("Понижать передачу, когда скорость ниже такой доли предела предыдущей передачи")]
+        [SerializeField, Range(0.1f, 1f)] private float autoDownshift = 0.6f;
+        [Tooltip("Ниже этой скорости (км/ч) тормоз включает заднюю передачу, а газ — первую")]
+        [SerializeField] private float autoReverseSpeed = 3f;
+
         [Header("Звуки")]
         [SerializeField] private AudioSource Engine;
         [SerializeField] private AudioClip Racing;
@@ -86,8 +94,8 @@ namespace RacingProject.Car
         public void FixedUpdate()
         {
             ApplyNetworkAuthority();
-            // Управляет только водитель; до старта раунда машина стоит
-            if (LocalPlayerRole.Current != PlayerRole.Driver) return;
+            // Управляет только водитель (в одиночной игре — сам игрок); до старта раунда машина стоит
+            if (!LocalPlayerRole.Controls(PlayerRole.Driver)) return;
 
             // Газ
             throttleInput = inputControllerReader.Throttle;
@@ -99,9 +107,24 @@ namespace RacingProject.Car
             steering = maxSteeringAngle * inputControllerReader.Steering;
             finalmotor = motor;
 
-            bool clutchPressed = inputControllerReader.Clutch > clutchThreshold;
+            // В одиночной игре коробка автоматическая: сцепление не нужно, тормоз на месте включает заднюю
+            bool automatic = LocalPlayerRole.IsSolo;
+            bool clutchPressed = !automatic && inputControllerReader.Clutch > clutchThreshold;
 
-            if (clutchPressed) // коробас отрабатывает только если сцепа выжата
+            if (automatic)
+            {
+                ShiftAutomatically();
+                if (currentGear == 7)
+                {
+                    // Задним ходом S — газ, а W — тормоз
+                    float reverseThrottle = inputControllerReader.Brake > 0.2f ? inputControllerReader.Brake : 0f;
+                    brakeInput = throttleInput > 0.2f ? throttleInput : 0f;
+                    throttleInput = reverseThrottle;
+                    motor = maxMotorTorque * throttleInput;
+                    finalmotor = motor;
+                }
+            }
+            else if (clutchPressed) // коробас отрабатывает только если сцепа выжата
             {
                 if (inputControllerReader.Shifter1)
                 {
@@ -200,6 +223,44 @@ namespace RacingProject.Car
             HandleHatSwitchImpulse();
 
         }
+        // Передача по скорости и педалям: вперёд 1–6 по пределам скоростей, стоя на тормозе — задняя
+        private void ShiftAutomatically()
+        {
+            float forwardSpeed = Vector3.Dot(rb.linearVelocity, transform.forward) * 3.6f;
+            bool gas = inputControllerReader.Throttle > 0.2f;
+            bool brake = inputControllerReader.Brake > 0.2f;
+
+            if (currentGear == 7)
+            {
+                // Из задней — на первую, когда машина почти встала и нажат газ
+                if (gas && !brake && forwardSpeed > -autoReverseSpeed)
+                    currentGear = 1;
+            }
+            else if (brake && !gas && forwardSpeed < autoReverseSpeed)
+            {
+                currentGear = 7;
+            }
+            else if (currentGear == 0)
+            {
+                if (gas) currentGear = 1;
+            }
+            else
+            {
+                float limit = DamageLimit();
+                if (currentGear < 6 && forwardSpeed >= gearSpeedLimits[currentGear] * limit * autoUpshift)
+                    currentGear++;
+                else if (currentGear > 1 && forwardSpeed < gearSpeedLimits[currentGear - 1] * limit * autoDownshift)
+                    currentGear--;
+            }
+
+            if (GearText) GearText.text = currentGear == 7 ? "-1" : currentGear == 0 ? "N" : currentGear.ToString();
+        }
+
+        private float DamageLimit()
+        {
+            return Mathf.Lerp(minPower, 1f, DamageHealth());
+        }
+
         // 0 при нулевой прочности, 1 — пока прочность не ниже powerLossBelow
         private float DamageHealth()
         {
