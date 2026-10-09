@@ -17,6 +17,7 @@ namespace RacingProject.Hud
         [SerializeField] private CarControllerSample car;
         [SerializeField] private CarNitro nitro;
         [SerializeField] private VRGun gun;
+        [SerializeField] private CarRecovery recovery;
 
         [Header("Шкалы")]
         [SerializeField] private HudArcGauge speedGauge;
@@ -39,6 +40,9 @@ namespace RacingProject.Hud
         [SerializeField] private HudBar bossBar;
         [Tooltip("Надпись «ПЕРЕГРЕВ», мигает, пока пулемёт перегрет")]
         [SerializeField] private TMP_Text overheatWarning;
+        [Tooltip("Подсказка «удерживайте R», когда машина перевернулась или застряла: корень (с подложкой) и текст")]
+        [SerializeField] private GameObject recoveryRoot;
+        [SerializeField] private TMP_Text recoveryPrompt;
 
         // Тексты чисел меняются, только когда меняется число: так TMP не перестраивает меш каждый кадр
         private int shownGear = -1;
@@ -53,6 +57,26 @@ namespace RacingProject.Hud
             UpdateHealth();
             UpdateGun();
             UpdateRound();
+            UpdateRecovery();
+        }
+
+        private void UpdateRecovery()
+        {
+            if (recoveryPrompt == null || recovery == null) return;
+
+            bool show = recovery.Available;
+            GameObject root = recoveryRoot != null ? recoveryRoot : recoveryPrompt.gameObject;
+            if (root.activeSelf != show)
+                root.SetActive(show);
+            if (!show) return;
+
+            float progress = recovery.HoldProgress;
+            string text = (recovery.Flipped ? "Машина перевернулась" : "Машина застряла")
+                          + "\nУдерживайте <b>R</b>, чтобы поставить её на дорогу";
+            if (progress > 0f)
+                text += "  " + Mathf.RoundToInt(progress * 100f) + "%";
+            if (recoveryPrompt.text != text)
+                recoveryPrompt.text = text;
         }
 
         private void UpdateCar()

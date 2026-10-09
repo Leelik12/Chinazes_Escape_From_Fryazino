@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using LogitechG29.Sample.Input;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using RacingProject.Network;
 
@@ -17,6 +18,13 @@ namespace RacingProject.Car
 
         [SerializeField] private float maxMotorTorque;
         [SerializeField] private float maxSteeringAngle;
+        [Tooltip("Доля угла поворота колёс на highSpeedKmh: на скорости руль острее, и машину бросает из стороны в сторону")]
+        [SerializeField, Range(0.1f, 1f)] private float highSpeedSteerFactor = 0.4f;
+        [SerializeField] private float highSpeedKmh = 110f;
+        [Tooltip("С клавиатуры руль поворачивается плавно: доля полного поворота в секунду (руль G29 — без задержки)")]
+        [SerializeField] private float keyboardSteerSpeed = 3f;
+        [Tooltip("Скорость возврата руля к центру с клавиатуры, доля в секунду")]
+        [SerializeField] private float keyboardSteerReturn = 5f;
         [SerializeField] private float maxBrakeTorque = 10000f;
         [Tooltip("Сцепление выжато, если педаль нажата сильнее этого значения: можно переключать передачу, двигатель отсоединён от колёс")]
         [SerializeField, Range(0f, 1f)] private float clutchThreshold = 0.5f;
@@ -63,6 +71,8 @@ namespace RacingProject.Car
         private float throttleInput;
         private float motor;
         private float steering;
+        private float steerInput;
+        private bool keyboardSteering;
         private float finalmotor;
         private int currentGear;
         private float brakeInput;
@@ -104,7 +114,7 @@ namespace RacingProject.Car
 
             // Базовый момент
             motor = maxMotorTorque * throttleInput;
-            steering = maxSteeringAngle * inputControllerReader.Steering;
+            steering = maxSteeringAngle * SteerInput() * SpeedSteerFactor();
             finalmotor = motor;
 
             // В одиночной игре коробка автоматическая: сцепление не нужно, тормоз на месте включает заднюю
@@ -259,6 +269,36 @@ namespace RacingProject.Car
         private float DamageLimit()
         {
             return Mathf.Lerp(minPower, 1f, DamageHealth());
+        }
+
+        // Руль G29 даёт угол как есть, а клавиши A/D — сразу полный поворот, поэтому с клавиатуры он нарастает плавно
+        private float SteerInput()
+        {
+            float target = inputControllerReader.Steering;
+            Keyboard keyboard = Keyboard.current;
+            bool keys = keyboard != null && (keyboard.aKey.isPressed || keyboard.dKey.isPressed
+                                             || keyboard.leftArrowKey.isPressed || keyboard.rightArrowKey.isPressed);
+            // Клавиши отпущены — руль плавно возвращается к центру, пока не встретит угол руля G29
+            if (keys)
+                keyboardSteering = true;
+            else if (keyboardSteering && Mathf.Abs(target) > 0.01f)
+                keyboardSteering = false;
+
+            if (!keyboardSteering)
+            {
+                steerInput = target;
+                return steerInput;
+            }
+            bool returning = Mathf.Abs(target) < Mathf.Abs(steerInput) || target * steerInput < 0f;
+            float rate = returning ? keyboardSteerReturn : keyboardSteerSpeed;
+            steerInput = Mathf.MoveTowards(steerInput, target, rate * Time.fixedDeltaTime);
+            return steerInput;
+        }
+
+        private float SpeedSteerFactor()
+        {
+            float speedKmh = rb.linearVelocity.magnitude * 3.6f;
+            return Mathf.Lerp(1f, highSpeedSteerFactor, Mathf.Clamp01(speedKmh / highSpeedKmh));
         }
 
         // 0 при нулевой прочности, 1 — пока прочность не ниже powerLossBelow
