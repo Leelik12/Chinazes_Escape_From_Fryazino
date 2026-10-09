@@ -27,6 +27,13 @@ System.Action<GameObject, string[]> setup = (go, paths) => {
     var mfs = filters(go.transform, paths);
     arr.arraySize = mfs.Length;
     for (int i = 0; i < mfs.Length; i++) arr.GetArrayElementAtIndex(i).objectReferenceValue = mfs[i];
+    // Глубокие вмятины; детали (острова сетки) отрываются по урону, настройки отрыва — значения по умолчанию в CarDeformation
+    so.FindProperty("minImpactSpeed").floatValue = 3f;
+    so.FindProperty("depthPerSpeed").floatValue = 0.045f;
+    so.FindProperty("maxDepth").floatValue = 0.55f;
+    so.FindProperty("minRadius").floatValue = 0.7f;
+    so.FindProperty("maxRadius").floatValue = 1.8f;
+    so.FindProperty("maxTotalDent").floatValue = 0.9f;
     so.ApplyModifiedPropertiesWithoutUndo();
     log.AppendLine(go.name + ": " + mfs.Length + " сеток");
 };
