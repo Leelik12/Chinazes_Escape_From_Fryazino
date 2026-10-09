@@ -31,8 +31,8 @@ namespace RacingProject.Hud
 
         private readonly string title;
         private readonly Key toggleKey;
-        private readonly HudCorner corner;
-        private readonly int order;
+        private HudCorner corner;
+        private int order;
         private readonly float width;
 
         // Высота с прошлой отрисовки: по ней соседние панели считают своё смещение
@@ -48,6 +48,13 @@ namespace RacingProject.Hud
             this.order = order;
             this.width = width;
             Expanded = expanded;
+        }
+
+        // Перенести панель в другой угол экрана (например, чтобы не закрывать экранный HUD)
+        public void Place(HudCorner newCorner, int newOrder)
+        {
+            corner = newCorner;
+            order = newOrder;
         }
 
         // Вызывать из OnEnable/OnDisable владельца, чтобы соседи учитывали панель в раскладке

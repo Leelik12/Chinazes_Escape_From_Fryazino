@@ -24,6 +24,10 @@ namespace RacingProject.Desktop
         [Header("Прицел")]
         [SerializeField] private float aimDistance = 150f;
         [SerializeField] private LayerMask aimMask = ~0;
+        [Tooltip("Коллайдеры внутри этого объекта прицел пропускает (камера от третьего лица смотрит сквозь свою машину)")]
+        [SerializeField] private Transform ignoreRoot;
+
+        private readonly RaycastHit[] hits = new RaycastHit[32];
 
         public Vector3 AimPoint { get; private set; }
         // Пока курсор свободен (нажат Esc), клик возвращает захват, а не стреляет
@@ -35,9 +39,7 @@ namespace RacingProject.Desktop
             if (aimCamera == null) return;
 
             Transform cam = aimCamera.transform;
-            AimPoint = Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, aimDistance, aimMask, QueryTriggerInteraction.Ignore)
-                ? hit.point
-                : cam.position + cam.forward * aimDistance;
+            AimPoint = FindAimHit(cam, out Vector3 point) ? point : cam.position + cam.forward * aimDistance;
 
             if (rightController != null)
             {
@@ -65,6 +67,27 @@ namespace RacingProject.Desktop
             Quaternion desired = Quaternion.LookRotation(direction, cam.up);
             Quaternion correction = desired * Quaternion.Inverse(muzzle.rotation);
             rightController.rotation = correction * rightController.rotation;
+        }
+
+        private bool FindAimHit(Transform cam, out Vector3 point)
+        {
+            point = Vector3.zero;
+            if (ignoreRoot == null)
+            {
+                bool found = Physics.Raycast(cam.position, cam.forward, out RaycastHit hit, aimDistance, aimMask, QueryTriggerInteraction.Ignore);
+                if (found) point = hit.point;
+                return found;
+            }
+
+            int count = Physics.RaycastNonAlloc(cam.position, cam.forward, hits, aimDistance, aimMask, QueryTriggerInteraction.Ignore);
+            float nearest = float.MaxValue;
+            for (int i = 0; i < count; i++)
+            {
+                if (hits[i].distance >= nearest || hits[i].collider.transform.IsChildOf(ignoreRoot)) continue;
+                nearest = hits[i].distance;
+                point = hits[i].point;
+            }
+            return nearest < float.MaxValue;
         }
     }
 }

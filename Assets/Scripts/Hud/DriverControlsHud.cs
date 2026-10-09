@@ -7,7 +7,7 @@ namespace RacingProject.Hud
 {
     // Подсказка по управлению водителя: клавиатура и руль Logitech G29.
     // Привязки взяты из InputController.inputactions, CarNitro и CarControllerSample.
-    // Стрелку панель не показывается
+    // Стрелку панель не показывается. В одиночной игре панель справа вверху
     public class DriverControlsHud : MonoBehaviour
     {
         [SerializeField] private Key toggleKey = Key.F1;
@@ -33,6 +33,11 @@ namespace RacingProject.Hud
         private void Update()
         {
             bool visible = LocalPlayerRole.Current != PlayerRole.Gunner;
+            // В одиночной игре слева внизу экранная приборка, поэтому подсказка уходит направо вверх, под телеметрию
+            if (LocalPlayerRole.IsSolo)
+                panel.Place(HudCorner.TopRight, 2);
+            else
+                panel.Place(HudCorner.BottomLeft, 0);
             if (visible) panel.Show();
             else panel.Hide();
 
@@ -48,6 +53,16 @@ namespace RacingProject.Hud
 
         private static string BuildText()
         {
+            if (LocalPlayerRole.IsSolo)
+                return
+                    "<color=#9a9a9a>одиночная игра — клавиатура и мышь</color>\n" +
+                    "Газ / тормоз и задний ход — <b>W</b> / <b>S</b>\n" +
+                    "Руль — <b>A</b> / <b>D</b>; коробка передач автоматическая\n" +
+                    "Нитро — <b>левый Shift</b>; мигалка — <b>L</b>\n" +
+                    "Обзор и прицел пулемёта — <b>мышь</b>, огонь — <b>ЛКМ</b>\n" +
+                    "<b>Esc</b> — отпустить курсор, <b>ЛКМ</b> — захватить\n" +
+                    "<color=#9a9a9a>HUD: F1 — управление, F2 — 2DOF, F3 — FutuRift, F4 — система</color>";
+
             string look = ViewModeService.IsVR
                 ? "Обзор — поворот головы"
                 : "Обзор — <b>мышь</b>; <b>Esc</b> — отпустить курсор, <b>ЛКМ</b> — захватить";
