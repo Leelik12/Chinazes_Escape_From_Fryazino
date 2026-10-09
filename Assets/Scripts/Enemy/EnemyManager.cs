@@ -57,13 +57,15 @@ namespace RacingProject.Enemy
 
         [Header("Настройки")]
         [Tooltip("Врагов в первой волне после стартовой")]
-        [SerializeField] private int enemiesPerWave = 2;
+        [SerializeField] private int enemiesPerWave = 4;
+        [Tooltip("Сколько врагов стартовой волны подъезжает после врагов на начальных точках")]
+        [SerializeField] private int initialReinforcements = 2;
 
         [Header("Сложность волн")]
         [Tooltip("Через сколько волн в волне становится на одного врага больше")]
         [SerializeField] private int extraEnemyEveryWaves = 2;
         [Tooltip("Больше врагов в одной волне не бывает")]
-        [SerializeField] private int maxEnemiesPerWave = 5;
+        [SerializeField] private int maxEnemiesPerWave = 10;
         [Tooltip("На сколько растёт здоровье врага за каждую волну (0.1 = +10%)")]
         [SerializeField] private float healthGrowthPerWave = 0.1f;
         [Tooltip("На сколько растёт урон пулемёта врага за каждую волну (0.1 = +10%)")]
@@ -178,6 +180,14 @@ namespace RacingProject.Enemy
             {
                 Debug.Log($"[EnemyManager] Сервер спавнит врага в {spawn.name}");
                 SpawnEnemyAt(spawn.position, spawn.rotation);
+            }
+
+            // Ещё несколько врагов стартовой волны подъезжают с обычных точек спавна
+            List<Transform> wavePoints = GetWaveSpawnPoints();
+            if (initialReinforcements > 0 && wavePoints.Count > 0)
+            {
+                pendingReinforcements = initialReinforcements;
+                StartCoroutine(SpawnReinforcements(wavePoints));
             }
         }
 

@@ -81,17 +81,45 @@ System.Func<Transform, Vector2, Vector2, float, RectTransform> panel = (src, anc
                                      anchor.y < 0.5f ? margin.y : -margin.y);
     return r;
 };
-panel(car.Find("DriverCluster"), new Vector2(0f, 0f), new Vector2(24f, 24f), 0.55f);
+var clusterCopy = panel(car.Find("DriverCluster"), new Vector2(0f, 0f), new Vector2(24f, 24f), 0.55f);
+// Подсказку «удерживайте R» в одиночной игре показывает крупная надпись по центру экрана, а не мелкая на приборке
+{
+    var copyPrompt = clusterCopy.Find("RecoveryPrompt");
+    if (copyPrompt != null) UnityEngine.Object.DestroyImmediate(copyPrompt.gameObject);
+    var so = new SerializedObject(clusterCopy.GetComponent<RacingProject.Hud.CockpitDisplay>());
+    so.FindProperty("recovery").objectReferenceValue = null;
+    so.FindProperty("recoveryRoot").objectReferenceValue = null;
+    so.FindProperty("recoveryPrompt").objectReferenceValue = null;
+    so.ApplyModifiedPropertiesWithoutUndo();
+}
 panel(car.Find("TacticalDisplay"), new Vector2(0.5f, 1f), new Vector2(0f, 16f), 0.5f);
 var heatSrc = car.GetComponentsInChildren<RacingProject.Hud.CockpitDisplay>(true);
 foreach (var cd in heatSrc) if (cd.name == "GunnerHeat") panel(cd.transform, new Vector2(1f, 0f), new Vector2(24f, 24f), 0.6f);
 
-// Прицел: точка и четыре штриха вокруг неё
+// Прицел: точка, тонкое кольцо и четыре штриха с тёмной обводкой (читаются и на небе, и на снегу).
+// Текстура кольца рисуется здесь же: 128×128, сглаженная окружность толщиной 4 пикселя
+const string ringPath = "Assets/Content/UI/CrosshairRing.png";
+{
+    var tex = new Texture2D(128, 128, TextureFormat.RGBA32, false);
+    for (int y = 0; y < 128; y++) for (int x = 0; x < 128; x++) {
+        float d = Vector2.Distance(new Vector2(x + 0.5f, y + 0.5f), new Vector2(64f, 64f));
+        float a = Mathf.Clamp01(2.5f - Mathf.Abs(d - 58f));
+        tex.SetPixel(x, y, new Color(1f, 1f, 1f, a));
+    }
+    System.IO.File.WriteAllBytes(ringPath, tex.EncodeToPNG());
+    UnityEngine.Object.DestroyImmediate(tex);
+    AssetDatabase.ImportAsset(ringPath);
+    var ti = (TextureImporter)AssetImporter.GetAtPath(ringPath);
+    ti.textureType = TextureImporterType.Sprite; ti.spriteImportMode = SpriteImportMode.Single;
+    ti.alphaIsTransparency = true; ti.mipmapEnabled = false; ti.SaveAndReimport();
+}
+var ringSprite = AssetDatabase.LoadAssetAtPath<Sprite>(ringPath);
 var cross = new GameObject("Crosshair", typeof(RectTransform)).GetComponent<RectTransform>();
 cross.gameObject.layer = hud.layer;
 cross.SetParent(hud.transform, false);
-cross.sizeDelta = new Vector2(40f, 40f);
-System.Action<string, Vector2, Vector2> mark = (mname, pos, size) => {
+cross.sizeDelta = new Vector2(64f, 64f);
+var tinted = new System.Collections.Generic.List<UnityEngine.UI.Graphic>();
+System.Func<string, Vector2, Vector2, Sprite, RectTransform> mark = (mname, pos, size, sprite) => {
     var g = new GameObject(mname, typeof(RectTransform), typeof(UnityEngine.UI.Image));
     g.layer = hud.layer;
     var r = (RectTransform)g.transform;
@@ -99,14 +127,61 @@ System.Action<string, Vector2, Vector2> mark = (mname, pos, size) => {
     r.anchoredPosition = pos;
     r.sizeDelta = size;
     var im = g.GetComponent<UnityEngine.UI.Image>();
-    im.color = new Color(1f, 1f, 1f, 0.85f);
+    im.sprite = sprite;
+    im.color = new Color(0.92f, 1f, 0.88f, 0.95f);
     im.raycastTarget = false;
+    var outline = g.AddComponent<UnityEngine.UI.Outline>();
+    outline.effectColor = new Color(0f, 0f, 0f, 0.55f);
+    outline.effectDistance = new Vector2(1f, -1f);
+    tinted.Add(im);
+    return r;
 };
-mark("Dot", Vector2.zero, new Vector2(4f, 4f));
-mark("Up", new Vector2(0f, 14f), new Vector2(2f, 10f));
-mark("Down", new Vector2(0f, -14f), new Vector2(2f, 10f));
-mark("Left", new Vector2(-14f, 0f), new Vector2(10f, 2f));
-mark("Right", new Vector2(14f, 0f), new Vector2(10f, 2f));
+mark("Ring", Vector2.zero, new Vector2(44f, 44f), ringSprite).GetComponent<UnityEngine.UI.Image>().color = new Color(0.92f, 1f, 0.88f, 0.5f);
+tinted.RemoveAt(tinted.Count - 1); // кольцо полупрозрачное и не краснеет
+mark("Dot", Vector2.zero, new Vector2(4f, 4f), null);
+var ticks = new[] {
+    mark("Up", new Vector2(0f, 14f), new Vector2(2f, 10f), null),
+    mark("Down", new Vector2(0f, -14f), new Vector2(2f, 10f), null),
+    mark("Left", new Vector2(-14f, 0f), new Vector2(10f, 2f), null),
+    mark("Right", new Vector2(14f, 0f), new Vector2(10f, 2f), null),
+};
+{
+    var ch = cross.gameObject.AddComponent<RacingProject.Hud.SoloCrosshair>();
+    var so = new SerializedObject(ch);
+    so.FindProperty("gun").objectReferenceValue = gun;
+    var t = so.FindProperty("ticks"); t.arraySize = ticks.Length;
+    for (int i = 0; i < ticks.Length; i++) t.GetArrayElementAtIndex(i).objectReferenceValue = ticks[i];
+    var g = so.FindProperty("tinted"); g.arraySize = tinted.Count;
+    for (int i = 0; i < tinted.Count; i++) g.GetArrayElementAtIndex(i).objectReferenceValue = tinted[i];
+    so.ApplyModifiedPropertiesWithoutUndo();
+}
+
+// Подсказка «удерживайте R» под прицелом: появляется, когда машина перевернулась или застряла
+{
+    var recovery = car.GetComponent<RacingProject.Car.CarRecovery>();
+    var promptRoot = new GameObject("RecoveryPrompt", typeof(RectTransform)).GetComponent<RectTransform>();
+    promptRoot.gameObject.layer = hud.layer;
+    promptRoot.SetParent(hud.transform, false);
+    promptRoot.anchoredPosition = new Vector2(0f, -170f);
+    promptRoot.sizeDelta = new Vector2(920f, 120f);
+    var back = promptRoot.gameObject.AddComponent<UnityEngine.UI.Image>();
+    back.color = new Color(0.03f, 0.05f, 0.03f, 0.8f); back.raycastTarget = false;
+    var label = new GameObject("Text", typeof(RectTransform)).AddComponent<TMPro.TextMeshProUGUI>();
+    label.gameObject.layer = hud.layer;
+    label.rectTransform.SetParent(promptRoot, false);
+    label.rectTransform.anchorMin = Vector2.zero; label.rectTransform.anchorMax = Vector2.one;
+    label.rectTransform.offsetMin = new Vector2(16f, 8f); label.rectTransform.offsetMax = new Vector2(-16f, -8f);
+    label.font = AssetDatabase.LoadAssetAtPath<TMPro.TMP_FontAsset>("Assets/Content/BlackOpsOne-Regular.asset");
+    label.fontSize = 32f; label.alignment = TMPro.TextAlignmentOptions.Center;
+    label.color = new Color(1f, 0.75f, 0.3f); label.raycastTarget = false;
+    promptRoot.gameObject.SetActive(false);
+    var display = hud.AddComponent<RacingProject.Hud.CockpitDisplay>();
+    var so = new SerializedObject(display);
+    so.FindProperty("recovery").objectReferenceValue = recovery;
+    so.FindProperty("recoveryRoot").objectReferenceValue = promptRoot.gameObject;
+    so.FindProperty("recoveryPrompt").objectReferenceValue = label;
+    so.ApplyModifiedPropertiesWithoutUndo();
+}
 
 var solo = rig.AddComponent<RacingProject.Desktop.SoloRig>();
 {

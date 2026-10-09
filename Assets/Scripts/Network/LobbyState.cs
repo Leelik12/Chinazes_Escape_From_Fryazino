@@ -13,6 +13,8 @@ namespace RacingProject.Network
         public bool partnerPresent;
         public bool driverReady;
         public bool gunnerReady;
+        // Одиночная игра: игрок и водитель, и стрелок, напарника нет
+        public bool solo;
 
         public bool Online => link == Link.Online;
         public int ReadyCount => (driverReady ? 1 : 0) + (gunnerReady ? 1 : 0);
@@ -36,6 +38,13 @@ namespace RacingProject.Network
             if (!inSession) return state;
 
             state.isHost = manager.IsServer;
+            if (room != null && room.Solo)
+            {
+                state.solo = true;
+                state.partnerPresent = true;
+                state.driverReady = state.gunnerReady = true;
+                return state;
+            }
             // Список подключённых есть только на сервере; клиент в сессии всегда видит хоста
             state.partnerPresent = !manager.IsServer || manager.ConnectedClientsIds.Count >= RoomController.RequiredPlayers;
             if (room != null)

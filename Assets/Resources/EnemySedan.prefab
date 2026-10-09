@@ -6143,6 +6143,7 @@ GameObject:
   - component: {fileID: 7678513949393096724}
   - component: {fileID: 832442598586666789}
   - component: {fileID: 7638985281087469763}
+  - component: {fileID: 25198387947280724}
   m_Layer: 0
   m_Name: EnemySedan
   m_TagString: Untagged
@@ -6462,14 +6463,20 @@ MonoBehaviour:
   - {fileID: 1034395128214217051}
   - {fileID: 2818717624773421284}
   - {fileID: 4019452777605084912}
-  minImpactSpeed: 4
-  depthPerSpeed: 0.025
-  maxDepth: 0.32
-  minRadius: 0.6
-  maxRadius: 1.4
-  maxTotalDent: 0.5
+  minImpactSpeed: 3
+  depthPerSpeed: 0.045
+  maxDepth: 0.55
+  minRadius: 0.7
+  maxRadius: 1.8
+  maxTotalDent: 0.9
   fullDentMass: 800
   hitCooldown: 0.3
+  partStrength: 0.4
+  partReach: 0.8
+  minPartSize: 0.2
+  maxPartSize: 4.2
+  maxPartsPerHit: 3
+  debrisLifetime: 25
 --- !u!114 &7638985281087469763
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6489,6 +6496,23 @@ MonoBehaviour:
   hitCooldown: 1.2
   pushPerSpeed: 120
   selfDamageScale: 0.6
+--- !u!114 &25198387947280724
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2604432941193830326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4a9bf079608bbc047860bfd32f80ed10, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  antiRoll: 0.9
+  downforceAt100: 4
+  airAngularDamping: 2.5
+  airLeveling: 4
+  rollDamping: 1.5
 --- !u!1 &2666817346989633140
 GameObject:
   m_ObjectHideFlags: 0
