@@ -54,6 +54,9 @@ namespace RacingProject.Enemy
         private const float SendAngleThreshold = 0.5f;
         private const float SyncLerpSpeed = 10f;
 
+        // Не стрелять, пока стрелок не высунулся из окна (ставит EnemyWindowGunner)
+        public bool HoldFire { get; set; }
+
         private readonly Dictionary<int, EnemyRocket> rockets = new Dictionary<int, EnemyRocket>();
         private readonly HashSet<PlayerHealth> splashTargets = new HashSet<PlayerHealth>();
         private Rigidbody targetBody;
@@ -135,7 +138,7 @@ namespace RacingProject.Enemy
                 return;
             }
 
-            if (Time.time < nextFireTime || distance < minRange || distance > maxRange) return;
+            if (HoldFire || Time.time < nextFireTime || distance < minRange || distance > maxRange) return;
             if (Vector3.Angle(transform.forward, aimDirection) > aimTolerance) return;
             if (!HasLineOfSight(muzzle, aimPoint)) return;
 
