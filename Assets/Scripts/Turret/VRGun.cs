@@ -54,6 +54,9 @@ namespace RacingProject.Turret
         [Header("Режим монитора")]
         [Tooltip("Прицел мышью: в режиме монитора курок — левая кнопка, выстрел летит в точку под центром экрана")]
         [SerializeField] private DesktopGunnerAim desktopAim;
+        [Tooltip("Одиночная игра: если точка прицела дальше этого угла от ствола (пулемёт упёрся в ограничитель), " +
+                 "пуля летит по стволу, а не сквозь машину")]
+        [SerializeField] private float soloMaxAimDeviation = 6f;
 
         [Header("Эффекты")]
         public ParticleSystem muzzleFlash;
@@ -73,6 +76,13 @@ namespace RacingProject.Turret
         [SerializeField, ColorUsage(false, true)] private Color tracerColor = new Color(6f, 1.6f, 0.4f);
 
         private float nextFireTime = 0f;
+
+        // Одиночная игра подменяет прицел стрелка прицелом камеры от третьего лица
+        public DesktopGunnerAim DesktopAim
+        {
+            get => desktopAim;
+            set => desktopAim = value;
+        }
         private int shotsSinceTracer;
 
         // --- Данные для синхронизации позиции ---
@@ -109,7 +119,7 @@ namespace RacingProject.Turret
 
         private void Update()
         {
-            if (HasAuthority)
+            if (IsLocallyControlled)
             {
                 HandleOverheat();
                 HandleFireInput();
@@ -157,6 +167,8 @@ namespace RacingProject.Turret
                 Vector3 direction = useDesktopAim
                     ? (desktopAim.AimPoint - firePoint.position).normalized
                     : firePoint.forward;
+                if (LocalPlayerRole.IsSolo && Vector3.Angle(direction, firePoint.forward) > soloMaxAimDeviation)
+                    direction = firePoint.forward;
 
                 // локальный выстрел
                 ShootLocal(firePoint.position, direction);

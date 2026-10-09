@@ -35,6 +35,13 @@ namespace RacingProject.Turret
         private float yaw;
         private float pitch;
 
+        // Одиночная игра подменяет прицел стрелка прицелом камеры от третьего лица
+        public DesktopGunnerAim DesktopAim
+        {
+            get => desktopAim;
+            set => desktopAim = value;
+        }
+
         private void Awake()
         {
             ApplyPose();
@@ -42,7 +49,7 @@ namespace RacingProject.Turret
 
         private void Update()
         {
-            if (LocalPlayerRole.Current != PlayerRole.Gunner) return;
+            if (!LocalPlayerRole.Controls(PlayerRole.Gunner)) return;
 
             Vector3 direction;
             if (!TryGetAimDirection(out direction)) return;

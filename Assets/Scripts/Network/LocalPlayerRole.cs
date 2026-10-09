@@ -7,7 +7,9 @@ namespace RacingProject.Network
     {
         None,
         Driver,
-        Gunner
+        Gunner,
+        // Одиночная игра на мониторе: один игрок и ведёт машину, и стреляет
+        Solo
     }
 
     // Задаётся RoomController при старте игры и сбрасывается при загрузке сцены.
@@ -19,6 +21,14 @@ namespace RacingProject.Network
         public static void Set(PlayerRole role)
         {
             Current = role;
+        }
+
+        public static bool IsSolo => Current == PlayerRole.Solo;
+
+        // Управляет ли локальный игрок тем, что задаёт эта роль: в одиночной игре — и водителем, и стрелком
+        public static bool Controls(PlayerRole role)
+        {
+            return role != PlayerRole.None && (Current == role || Current == PlayerRole.Solo);
         }
 
         // Физику машины считает хост (он же водитель), а без сети — сама игра.

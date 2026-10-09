@@ -13,6 +13,9 @@ namespace RacingProject.Network
 
         // До старта раунда ролей нет, и никто ничего не задаёт
         public bool HasAuthority => authority != PlayerRole.None && LocalPlayerRole.Current == authority;
+        // Управляет ли этим локальный ввод: в одиночной игре — у обеих ролей. Позы тел (их задаёт VR-трекинг)
+        // в одиночной игре по-прежнему берут HasAuthority и стоят в позе по умолчанию
+        public bool IsLocallyControlled => LocalPlayerRole.Controls(authority);
 
         // Пишет данные у автора и читает их у напарника
         public abstract void Serialize(SyncStream stream);

@@ -151,6 +151,7 @@ namespace RacingProject.Hud
             {
                 case PlayerRole.Driver: return "водитель";
                 case PlayerRole.Gunner: return "стрелок";
+                case PlayerRole.Solo: return "одиночная игра";
                 default: return "нет";
             }
         }

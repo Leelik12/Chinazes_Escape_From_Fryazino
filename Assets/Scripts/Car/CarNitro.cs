@@ -64,7 +64,7 @@ namespace RacingProject.Car
         {
             if (!IsServer || !IsSpawned) return;
 
-            bool pressed = LocalPlayerRole.Current == PlayerRole.Driver && IsPressed();
+            bool pressed = LocalPlayerRole.Controls(PlayerRole.Driver) && IsPressed();
             if (!active && pressed && charge >= minChargeToStart)
                 active = true;
             else if (active && (!pressed || charge <= 0f))

@@ -53,7 +53,7 @@ namespace RacingProject.Car
 
         private void Update()
         {
-            if (HasAuthority)
+            if (IsLocallyControlled)
             {
                 // Клавиша S тоже приходит в Brake через схему ввода руля
                 braking = input != null && input.Brake > brakeThreshold;
