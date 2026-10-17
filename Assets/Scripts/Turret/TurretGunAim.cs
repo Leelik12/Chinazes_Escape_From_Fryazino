@@ -16,7 +16,8 @@ namespace RacingProject.Turret
         [SerializeField] private Vector3 mountOffset = new Vector3(0f, 0f, 0.45f);
 
         [Header("Ограничения, градусы")]
-        [SerializeField] private float maxYaw = 120f;
+        [Tooltip("Предел рысканья в каждую сторону; 180 и больше — пулемёт крутится по кругу без упора")]
+        [SerializeField] private float maxYaw = 180f;
         [SerializeField] private float minPitch = -15f;
         [SerializeField] private float maxPitch = 45f;
         [Tooltip("Скорость поворота, градусы в секунду")]
@@ -56,11 +57,14 @@ namespace RacingProject.Turret
 
             // Направление в осях кольца люка: оно повёрнуто вместе с машиной
             Vector3 local = transform.parent.InverseTransformDirection(direction);
-            float targetYaw = Mathf.Clamp(Mathf.Atan2(local.x, local.z) * Mathf.Rad2Deg, -maxYaw, maxYaw);
+            float targetYaw = Mathf.Atan2(local.x, local.z) * Mathf.Rad2Deg;
+            bool fullCircle = maxYaw >= 180f;
+            if (!fullCircle) targetYaw = Mathf.Clamp(targetYaw, -maxYaw, maxYaw);
             float targetPitch = Mathf.Clamp(Mathf.Asin(Mathf.Clamp(local.normalized.y, -1f, 1f)) * Mathf.Rad2Deg, minPitch, maxPitch);
 
             float step = turnSpeed * Time.deltaTime;
-            yaw = Mathf.MoveTowards(yaw, targetYaw, step);
+            // По кругу — кратчайшим путём через корму, с упором — только в пределах сектора
+            yaw = fullCircle ? Mathf.DeltaAngle(0f, Mathf.MoveTowardsAngle(yaw, targetYaw, step)) : Mathf.MoveTowards(yaw, targetYaw, step);
             pitch = Mathf.MoveTowards(pitch, targetPitch, step);
             ApplyPose();
         }

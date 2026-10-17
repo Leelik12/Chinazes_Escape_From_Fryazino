@@ -12,8 +12,8 @@ namespace RacingProject.Car
         [Tooltip("Удары со скоростью сближения (по нормали) меньше этой не ранят, м/с")]
         [SerializeField] private float minImpactSpeed = 9f;
         [Tooltip("Урон на каждый м/с сверх порога")]
-        [SerializeField] private float damagePerSpeed = 10f;
-        [SerializeField] private int maxDamage = 200;
+        [SerializeField] private float damagePerSpeed = 5f;
+        [SerializeField] private int maxDamage = 100;
         [Tooltip("Предметы с Rigidbody легче этого сбиваются без урона, кг")]
         [SerializeField] private float harmlessMass = 300f;
         [Tooltip("Пауза между засчитанными ударами, с")]
