@@ -123,17 +123,19 @@ var title = text("Title", mc, "Escape from Fryazino", 30f, phosphor, TMPro.TextA
 title.font = titleFont; title.fontStyle = TMPro.FontStyles.UpperCase;
 hline(mc, M, 96f, W - 2 * M);
 
-// Меню лобби: скрытые LanLobby кнопки схлопываются в столбце. «Одиночная игра» видна только в режиме монитора
+// Меню лобби: скрытые LanLobby кнопки схлопываются в столбце. «Одиночная игра» и «Обучение» видны только в режиме монитора
 var list = node("MenuList", mc); place(list, M, 104f, 262f, 152f);
 var vl = list.gameObject.AddComponent<UnityEngine.UI.VerticalLayoutGroup>();
 vl.childControlHeight = true; vl.childControlWidth = true; vl.childForceExpandHeight = false; vl.childForceExpandWidth = true; vl.spacing = 1f;
 var bSolo = menuButton("Solo", list, "Одиночная игра", 262f, 29f);
+var bTutorial = menuButton("Tutorial", list, "Обучение", 262f, 29f);
 var bHost = menuButton("Host", list, "Создать игру", 262f, 29f);
 var bJoin = menuButton("Join", list, "Найти игру", 262f, 29f);
 var bPlay = menuButton("Play", list, "Готов", 262f, 29f);
 var bLeave = menuButton("Leave", list, "Отключиться", 262f, 29f);
 var bExit = menuButton("Exit", list, "Выйти из игры", 262f, 29f);
 UnityEditor.Events.UnityEventTools.AddPersistentListener(bSolo.onClick, lobby.OnSoloPressed);
+UnityEditor.Events.UnityEventTools.AddPersistentListener(bTutorial.onClick, lobby.OnTutorialPressed);
 UnityEditor.Events.UnityEventTools.AddPersistentListener(bHost.onClick, lobby.OnHostPressed);
 UnityEditor.Events.UnityEventTools.AddPersistentListener(bJoin.onClick, lobby.OnJoinPressed);
 UnityEditor.Events.UnityEventTools.AddPersistentListener(bPlay.onClick, room.OnReadyButtonPressed);
@@ -180,6 +182,7 @@ screenFx(main, mc, clock, cursor, new TMPro.TMP_Text[] { status });
 {
     var so = new SerializedObject(lobby);
     so.FindProperty("soloButton").objectReferenceValue = bSolo.gameObject;
+    so.FindProperty("tutorialButton").objectReferenceValue = bTutorial.gameObject;
     so.FindProperty("hostButton").objectReferenceValue = bHost.gameObject;
     so.FindProperty("joinButton").objectReferenceValue = bJoin.gameObject;
     so.FindProperty("joinButtonLabel").objectReferenceValue = bJoin.transform.Find("Text (TMP)").GetComponent<TMPro.TMP_Text>();

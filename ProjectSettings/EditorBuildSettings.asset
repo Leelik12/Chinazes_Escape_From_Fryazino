@@ -8,6 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SovietCity.unity
     guid: e4dcc99baaca70c439f233a6e4ad4913
+  - enabled: 1
+    path: Assets/Scenes/Tutorial.unity
+    guid: aa88424aacd0aff4cbc47d1b19946a31
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 9d6d511a87663dc4e873f2b8f1c619db, type: 3}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: fee2bedab792f38428db433e09ac002a, type: 2}

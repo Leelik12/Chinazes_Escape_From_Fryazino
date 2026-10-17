@@ -8,6 +8,7 @@ using RacingProject.Desktop;
 using RacingProject.Management;
 using RacingProject.Network;
 using RacingProject.Props;
+using RacingProject.Tutorial;
 
 namespace RacingProject.Turret
 {
@@ -209,6 +210,14 @@ namespace RacingProject.Turret
                 ExplosiveBarrel barrel = hit.collider.GetComponentInParent<ExplosiveBarrel>();
                 if (barrel != null)
                     barrel.RequestHit((int)damage);
+
+                TutorialTarget target = hit.collider.GetComponentInParent<TutorialTarget>();
+                if (target != null && !target.Destroyed)
+                {
+                    target.Hit((int)damage);
+                    if (hitMarkerPrefab != null)
+                        Instantiate(hitMarkerPrefab, hit.point, Quaternion.identity);
+                }
             }
         }
 

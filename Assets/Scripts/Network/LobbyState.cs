@@ -15,6 +15,8 @@ namespace RacingProject.Network
         public bool gunnerReady;
         // Одиночная игра: игрок и водитель, и стрелок, напарника нет
         public bool solo;
+        // Обучение: одиночная игра на полигоне
+        public bool tutorial;
 
         public bool Online => link == Link.Online;
         public int ReadyCount => (driverReady ? 1 : 0) + (gunnerReady ? 1 : 0);
@@ -41,6 +43,7 @@ namespace RacingProject.Network
             if (room != null && room.Solo)
             {
                 state.solo = true;
+                state.tutorial = room.Tutorial;
                 state.partnerPresent = true;
                 state.driverReady = state.gunnerReady = true;
                 return state;

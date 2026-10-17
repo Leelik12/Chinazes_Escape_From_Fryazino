@@ -75,7 +75,7 @@ namespace RacingProject.Desktop
         private static bool UpdateCursorLock(Mouse mouse)
         {
             // Esc обрабатывает меню паузы: оно и освобождает курсор
-            if (PauseMenu.IsOpen) return false;
+            if (PauseMenu.BlocksInput) return false;
             if (Cursor.lockState != CursorLockMode.Locked && mouse.leftButton.wasPressedThisFrame)
                 SetCursorLocked(true);
 

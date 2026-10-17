@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using RacingProject.Enemy;
 using RacingProject.Management;
+using RacingProject.Tutorial;
 
 namespace RacingProject.Network
 {
@@ -42,6 +43,8 @@ namespace RacingProject.Network
 
         // Одиночная игра: хост запущен без напарника, раунд не перезапускается, а возвращает в меню
         public bool Solo { get; private set; }
+        // Обучение: одиночная игра на полигоне из сцены Tutorial (TutorialCourse), без волн врагов
+        public bool Tutorial { get; private set; }
 
         // Во время раунда новые подключения не принимаются
         public bool GameStarted => IsSpawned && gameStarted.Value;
@@ -103,6 +106,15 @@ namespace RacingProject.Network
             hostReady.Value = true;
             gameStarted.Value = true;
             StartGameRpc();
+        }
+
+        // Вызывает LanLobby после запуска хоста обучения: полигон подгружается, пока бункер провожает экипаж
+        public void StartTutorial()
+        {
+            if (Tutorial) return;
+            Tutorial = true;
+            SceneManager.LoadSceneAsync(TutorialCourse.SceneName, LoadSceneMode.Additive);
+            StartSolo();
         }
 
         public void OnReadyButtonPressed()
@@ -200,7 +212,8 @@ namespace RacingProject.Network
                 Menu.SetActive(false);
             }
 
-            EnemyManager enemyManager = FindFirstObjectByType<EnemyManager>();
+            // В обучении волн нет: шаги ведёт TutorialCourse
+            EnemyManager enemyManager = Tutorial ? null : FindFirstObjectByType<EnemyManager>();
             if (enemyManager != null)
             {
                 enemyManager.StartGame();

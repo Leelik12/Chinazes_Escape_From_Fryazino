@@ -38,6 +38,8 @@ namespace RacingProject.Car
         public bool Available { get; private set; }
         public float HoldProgress => holdTime > 0f ? Mathf.Clamp01(hold / holdTime) : 0f;
         public bool Flipped => transform.up.y < 0.5f;
+        // Машину поставили на колёса (для обучения)
+        public event System.Action Recovered;
 
         private void Awake()
         {
@@ -94,6 +96,7 @@ namespace RacingProject.Car
             body.position = position;
             body.rotation = rotation;
             transform.SetPositionAndRotation(position, rotation);
+            Recovered?.Invoke();
         }
 
         // NavMesh для машин запечён под тип агента «Car» (по нему ездят враги); без него — тип по умолчанию

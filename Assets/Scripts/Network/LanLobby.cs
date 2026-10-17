@@ -19,6 +19,8 @@ namespace RacingProject.Network
         [Header("Кнопки")]
         [Tooltip("Одиночная игра: видна только в режиме монитора")]
         [SerializeField] private GameObject soloButton;
+        [Tooltip("Обучение: как и одиночная игра, видно только в режиме монитора")]
+        [SerializeField] private GameObject tutorialButton;
         [SerializeField] private GameObject hostButton;
         [SerializeField] private GameObject joinButton;
         [SerializeField] private TMP_Text joinButtonLabel;
@@ -37,6 +39,8 @@ namespace RacingProject.Network
         private static string hostNotice;
         // Адрес из -connect используется только при запуске игры, а не после каждого возврата в меню
         private static bool commandLineUsed;
+        // «Начать игру» в конце обучения: после возврата в меню сразу запускается одиночная игра
+        private static bool soloAfterReload;
 
         private readonly LanDiscovery discovery = new LanDiscovery();
         private RoomController room;
@@ -78,6 +82,13 @@ namespace RacingProject.Network
             manager.ConnectionApprovalCallback = ApproveConnection;
             wasConnected = manager.IsListening;
 
+            if (soloAfterReload)
+            {
+                soloAfterReload = false;
+                OnSoloPressed();
+                return;
+            }
+
             string address = commandLineUsed ? null : GetCommandLineAddress();
             commandLineUsed = true;
             if (address != null && !manager.IsListening)
@@ -101,22 +112,40 @@ namespace RacingProject.Network
             launchStatus = text;
         }
 
-        // Одиночная игра — хост только для этого компьютера: в сети не объявляется и никого не пускает
+        // Одиночная игра — хост только для этого компьютера, без сети (OfflineTransport): портов не открывает и никого не пускает
         public void OnSoloPressed()
         {
+            if (StartLocalHost())
+                room.StartSolo();
+        }
+
+        // Обучение — тоже одиночная игра, но на полигоне и без врагов
+        public void OnTutorialPressed()
+        {
+            if (StartLocalHost())
+                room.StartTutorial();
+        }
+
+        public static void StartSoloAfterReload()
+        {
+            soloAfterReload = true;
+        }
+
+        private bool StartLocalHost()
+        {
             NetworkManager manager = NetworkManager.Singleton;
-            if (manager == null || manager.IsListening || ViewModeService.IsVR) return;
+            if (manager == null || manager.IsListening || ViewModeService.IsVR) return false;
 
             discovery.Stop();
             hostNotice = null;
-            Transport.SetConnectionData("127.0.0.1", gamePort, "127.0.0.1");
+            UseOfflineTransport(manager);
             if (!manager.StartHost())
             {
-                idleStatus = "Не удалось начать игру: порт " + gamePort + " занят?";
-                return;
+                idleStatus = "Не удалось начать игру";
+                return false;
             }
             wasConnected = true;
-            room.StartSolo();
+            return true;
         }
 
         public void OnHostPressed()
@@ -126,7 +155,7 @@ namespace RacingProject.Network
 
             discovery.Stop();
             hostNotice = null;
-            Transport.SetConnectionData("127.0.0.1", gamePort, "0.0.0.0");
+            UseLanTransport(manager).SetConnectionData("127.0.0.1", gamePort, "0.0.0.0");
             if (!manager.StartHost())
             {
                 idleStatus = "Не удалось создать игру: порт " + gamePort + " занят?";
@@ -211,7 +240,7 @@ namespace RacingProject.Network
         {
             discovery.Stop();
             connectAddress = address;
-            Transport.SetConnectionData(address, port);
+            UseLanTransport(NetworkManager.Singleton).SetConnectionData(address, port);
             if (!NetworkManager.Singleton.StartClient())
                 idleStatus = "Не удалось подключиться к " + address;
         }
@@ -225,6 +254,7 @@ namespace RacingProject.Network
             if (launchStatus != null)
             {
                 SetActive(soloButton, false);
+                SetActive(tutorialButton, false);
                 SetActive(hostButton, false);
                 SetActive(joinButton, false);
                 SetActive(readyButton, false);
@@ -234,6 +264,7 @@ namespace RacingProject.Network
             }
 
             SetActive(soloButton, !online && !searching && !ViewModeService.IsVR);
+            SetActive(tutorialButton, !online && !searching && !ViewModeService.IsVR);
             SetActive(hostButton, !online && !searching);
             SetActive(joinButton, !online);
             SetActive(readyButton, online && inSession);
@@ -330,8 +361,22 @@ namespace RacingProject.Network
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
-        private static UnityTransport Transport =>
-            (UnityTransport)NetworkManager.Singleton.NetworkConfig.NetworkTransport;
+        // Сетевая игра — по UDP через UnityTransport из префаба NetworkManager
+        private static UnityTransport UseLanTransport(NetworkManager manager)
+        {
+            UnityTransport transport = manager.GetComponent<UnityTransport>();
+            manager.NetworkConfig.NetworkTransport = transport;
+            return transport;
+        }
+
+        // Одиночная игра и обучение — без сети: OfflineTransport не открывает сокетов и портов
+        private static void UseOfflineTransport(NetworkManager manager)
+        {
+            OfflineTransport transport = manager.GetComponent<OfflineTransport>();
+            if (transport == null)
+                transport = manager.gameObject.AddComponent<OfflineTransport>();
+            manager.NetworkConfig.NetworkTransport = transport;
+        }
 
         private static string GetCommandLineAddress()
         {

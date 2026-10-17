@@ -17,6 +17,10 @@ namespace RacingProject.Management
         [SerializeField] private LanLobby lobby;
 
         public static bool IsOpen { get; private set; }
+        // Другой экран поверх игры (итог обучения): пауза на Esc не открывается, мышь, как и в паузе, свободна
+        public static bool OverlayOpen { get; set; }
+        // Камера и пулемёт не слушают мышь
+        public static bool BlocksInput => IsOpen || OverlayOpen;
 
         private void Awake()
         {
@@ -32,12 +36,13 @@ namespace RacingProject.Management
                 AudioListener.pause = false;
             }
             IsOpen = false;
+            OverlayOpen = false;
         }
 
         private void Update()
         {
             bool inRound = LocalPlayerRole.Current != PlayerRole.None && !ViewModeService.IsVR;
-            if (!inRound)
+            if (!inRound || OverlayOpen)
             {
                 if (IsOpen) SetOpen(false);
                 return;

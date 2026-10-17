@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using RacingProject.Enemy;
+using RacingProject.Tutorial;
 
 namespace RacingProject.Props
 {
@@ -75,6 +76,10 @@ namespace RacingProject.Props
                 EnemyHealth enemy = collider.GetComponentInParent<EnemyHealth>();
                 if (enemy != null && PropNetwork.Instance.MarkDamaged(enemy))
                     enemy.RequestDamage(Mathf.RoundToInt(enemyDamage * falloff));
+
+                TutorialTarget target = collider.GetComponentInParent<TutorialTarget>();
+                if (target != null && PropNetwork.Instance.MarkDamaged(target))
+                    target.Hit(Mathf.RoundToInt(enemyDamage * falloff));
 
                 PlayerHealth player = collider.GetComponentInParent<PlayerHealth>();
                 if (player != null && PropNetwork.Instance.MarkDamaged(player))

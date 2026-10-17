@@ -109,7 +109,7 @@ namespace RacingProject.Desktop
         // Возвращает true, если курсор захвачен и мышь управляет камерой
         private static bool UpdateCursorLock(Mouse mouse)
         {
-            if (PauseMenu.IsOpen) return false;
+            if (PauseMenu.BlocksInput) return false;
             if (Cursor.lockState != CursorLockMode.Locked && mouse.leftButton.wasPressedThisFrame)
                 SetCursorLocked(true);
 

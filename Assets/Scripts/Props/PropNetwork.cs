@@ -30,6 +30,15 @@ namespace RacingProject.Props
             base.OnDestroy();
         }
 
+        // Бочка из подгруженной сцены (полигон обучения) получает номер после бочек города.
+        // Только для одиночной игры: у напарника такой бочки нет, и номера бы разошлись
+        public void Register(ExplosiveBarrel barrel)
+        {
+            barrel.Index = barrels.Length;
+            System.Array.Resize(ref barrels, barrels.Length + 1);
+            barrels[barrel.Index] = barrel;
+        }
+
         public void RequestBarrelHit(int index, int damage)
         {
             // Без сети (отладка в редакторе) всё считается на месте

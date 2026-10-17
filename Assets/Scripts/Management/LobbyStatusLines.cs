@@ -26,7 +26,7 @@ namespace RacingProject.Management
                 case LobbyState.Link.Searching: Set(link, "ПОИСК...", warn); break;
                 case LobbyState.Link.Connecting: Set(link, "ПОДКЛЮЧЕНИЕ...", warn); break;
                 case LobbyState.Link.Online when s.solo:
-                    Set(link, "ОДИНОЧНАЯ ИГРА", good);
+                    Set(link, s.tutorial ? "ОБУЧЕНИЕ" : "ОДИНОЧНАЯ ИГРА", good);
                     break;
                 case LobbyState.Link.Online:
                     Set(link, (s.isHost ? "ХОСТ" : "КЛИЕНТ") + (s.partnerPresent ? "  2/2" : "  1/2"), s.partnerPresent ? good : warn);
