@@ -30,6 +30,9 @@ namespace RacingProject.Management
             Debug.Log("Adding " + Obstacle.Length + " navMeshObstacle Components for Trees");
             foreach (TreeInstance tree in Obstacle)
             {
+                // Кусты (VegetationGenerator) без коллайдера проходимы — препятствие для навигации им не нужно
+                if (terrain.terrainData.treePrototypes[tree.prototypeIndex].prefab.GetComponent<Collider>() == null) continue;
+
                 Vector3 tempPos = new Vector3(tree.position.x * width, tree.position.y * hight, tree.position.z * lenght);
                 Quaternion tempRot = Quaternion.AngleAxis(tree.rotation * Mathf.Rad2Deg, Vector3.up);
 
