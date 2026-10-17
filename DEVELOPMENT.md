@@ -140,7 +140,7 @@
 
 File → Build Profiles → выбрать платформу (Windows для ПК-VR или Android для автономного Quest) → Build. Сцены в сборке: `Assets/Scenes/SovietCity.unity` и `Assets/Scenes/Tutorial.unity` (полигон обучения). Работа платформ 2DOF/FutuRift и руля G29 возможна только в Windows-сборке.
 
-Релизная сборка под Windows — без галочки Development Build, в `Builds/Release`. Версия (Player Settings → Version, сейчас `1.0.0`) выводится в шапке главного экрана меню (`VersionLabel`), иконка приложения — `Assets/Content/UI/AppIcon256.png` (256×256, вырезка из `Assets/Content/PostapokVolga.png`). Для выкладки папку сборки копируют без `*_BurstDebugInformation_DoNotShip` — это отладочные символы Burst, игре они не нужны.
+Релизная сборка под Windows — без галочки Development Build, в `Builds/Release`. Версия (Player Settings → Version, сейчас `1.1.0`) выводится в шапке главного экрана меню (`VersionLabel`), иконка приложения — `Assets/Content/UI/AppIcon256.png` (256×256, вырезка из `Assets/Content/PostapokVolga.png`). Для выкладки папку сборки копируют без `*_BurstDebugInformation_DoNotShip` — это отладочные символы Burst, игре они не нужны.
 
 XR Plug-in Management на время сборки добавляет свои настройки в Preloaded Assets, и Unity записывает их в `ProjectSettings/ProjectSettings.asset`. Редакторный скрипт `PreloadedAssetsBuildGuard` (`Assets/Scripts/Editor`) после успешной сборки возвращает прежний список и сохраняет настройки, поэтому файл не остаётся изменённым. Если сборка упала, список возвращается при первом обновлении редактора после неё. `Assets/Settings/UniversalRenderPipelineGlobalSettings.asset` Unity иногда пересохраняет после перекомпиляции скриптов: меняются только порядок записей и номера `rid`, такие правки можно откатывать.
 
