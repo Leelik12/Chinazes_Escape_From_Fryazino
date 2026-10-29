@@ -8,7 +8,7 @@ namespace RacingProject.Enemy
     // Гранатомёт РПГ на врага (УАЗ). Наводится и стреляет сервер: медленная граната с упреждением
     // по скорости игрока и небольшой ошибкой, от неё можно увернуться. Гранату в полёте все игроки
     // ведут сами по одной и той же прямой, попадание и урон считает сервер, взрыв рассылается всем
-    public class EnemyRocketLauncher : NetworkBehaviour
+    public class EnemyRocketLauncher : NetworkBehaviour, IRocketOwner
     {
         [Header("Target")]
         public Transform target;
@@ -57,6 +57,13 @@ namespace RacingProject.Enemy
         // Не стрелять, пока стрелок не высунулся из окна (ставит EnemyWindowGunner)
         public bool HoldFire { get; set; }
 
+        // Сложность волны (EnemyManager, сервер, до спавна): меньше — метче и чаще
+        public void ScaleDifficulty(float spreadMultiplier, float reloadMultiplier)
+        {
+            spreadAngle *= spreadMultiplier;
+            reloadTime *= reloadMultiplier;
+        }
+
         private readonly Dictionary<int, EnemyRocket> rockets = new Dictionary<int, EnemyRocket>();
         private readonly HashSet<PlayerHealth> splashTargets = new HashSet<PlayerHealth>();
         private Rigidbody targetBody;
@@ -65,14 +72,17 @@ namespace RacingProject.Enemy
 
         private void Start()
         {
-            if (target == null)
-            {
-                GameObject playerCar = GameObject.FindWithTag(Tags.Car);
-                if (playerCar != null)
-                    target = playerCar.transform;
-            }
-            if (target != null)
+            RefreshTarget();
+        }
+
+        // Цель ищется заново, если пропала (машину пересоздали, сцена догрузилась позже врага)
+        private bool RefreshTarget()
+        {
+            Transform previous = target;
+            if (!PlayerCarTarget.Refresh(ref target)) return false;
+            if (target != previous || targetBody == null)
                 targetBody = target.GetComponentInParent<Rigidbody>();
+            return true;
         }
 
         public override void OnNetworkSpawn()
@@ -119,7 +129,7 @@ namespace RacingProject.Enemy
 
         private void HandleAiming()
         {
-            if (target == null) return;
+            if (!RefreshTarget()) return;
 
             Vector3 muzzle = firePoint != null ? firePoint.position : transform.position;
             Vector3 aimPoint = target.position + Vector3.up * aimHeight;
@@ -223,10 +233,12 @@ namespace RacingProject.Enemy
                 foreach (Collider collider in player.GetComponentsInChildren<Collider>())
                 {
                     if (collider.isTrigger || collider is WheelCollider) continue;
-                    closest = Mathf.Min(closest, Vector3.Distance(point, collider.ClosestPoint(point)));
+                    // У невыпуклого MeshCollider ClosestPoint не работает — берём ближайшую точку его габаритов
+                    Vector3 nearest = collider is MeshCollider mesh && !mesh.convex ? collider.bounds.ClosestPoint(point) : collider.ClosestPoint(point);
+                    closest = Mathf.Min(closest, Vector3.Distance(point, nearest));
                 }
                 float falloff = Mathf.Lerp(1f, edgeDamage, closest / splashRadius);
-                player.RequestDamage(Mathf.RoundToInt(damage * falloff));
+                player.RequestDamage(Mathf.RoundToInt(damage * falloff), transform.position);
 
                 Rigidbody body = player.GetComponent<Rigidbody>();
                 if (body != null && !body.isKinematic)

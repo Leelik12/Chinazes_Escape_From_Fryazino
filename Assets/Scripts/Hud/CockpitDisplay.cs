@@ -2,6 +2,7 @@
 using UnityEngine;
 using RacingProject.Car;
 using RacingProject.Enemy;
+using RacingProject.Management;
 using RacingProject.Turret;
 
 namespace RacingProject.Hud
@@ -43,6 +44,12 @@ namespace RacingProject.Hud
         [Tooltip("Подсказка «удерживайте R», когда машина перевернулась или застряла: корень (с подложкой) и текст")]
         [SerializeField] private GameObject recoveryRoot;
         [SerializeField] private TMP_Text recoveryPrompt;
+        [Tooltip("Выстрелы РПГ стрелка: строка видна, когда гранатомёт есть")]
+        [SerializeField] private RocketLauncher rockets;
+        [SerializeField] private TMP_Text rocketsText;
+        [Tooltip("Поломки машины: пробитое колесо, радиатор, перегрев мотора (мигает)")]
+        [SerializeField] private CarDamageState damage;
+        [SerializeField] private TMP_Text damageWarning;
 
         // Тексты чисел меняются, только когда меняется число: так TMP не перестраивает меш каждый кадр
         private int shownGear = -1;
@@ -50,6 +57,8 @@ namespace RacingProject.Hud
         private int shownKills = -1;
         private int shownScore = -1;
         private int shownCombo = -1;
+        private int shownRockets = -1;
+        private int shownDamage = -1;
 
         private void Update()
         {
@@ -58,6 +67,41 @@ namespace RacingProject.Hud
             UpdateGun();
             UpdateRound();
             UpdateRecovery();
+            UpdateRockets();
+            UpdateDamage();
+        }
+
+        private void UpdateRockets()
+        {
+            if (rocketsText == null || rockets == null) return;
+            bool show = rockets.HasLauncher;
+            if (rocketsText.gameObject.activeSelf != show) rocketsText.gameObject.SetActive(show);
+            if (!show) return;
+            // Пустой гранатомёт — серым, заряжается — тусклым
+            int state = rockets.Ammo * 2 + (rockets.Ready ? 1 : 0);
+            if (state == shownRockets) return;
+            shownRockets = state;
+            string color = rockets.Ammo == 0 ? "#777777" : rockets.Ready ? "#ffd27a" : "#a08a5a";
+            rocketsText.text = $"<color={color}>РПГ ×{rockets.Ammo}</color>";
+        }
+
+        private void UpdateDamage()
+        {
+            if (damageWarning == null || damage == null) return;
+            int state = (damage.FlatCount > 0 ? 1 : 0) | (damage.RadiatorBroken ? 2 : 0) | (damage.Overheated ? 4 : 0);
+            bool show = state != 0;
+            if (damageWarning.gameObject.activeSelf != show) damageWarning.gameObject.SetActive(show);
+            if (!show) return;
+            if (state != shownDamage)
+            {
+                shownDamage = state;
+                string text = damage.Overheated ? "ПЕРЕГРЕВ МОТОРА" : damage.RadiatorBroken ? "РАДИАТОР" : "";
+                if (damage.FlatCount > 0) text += (text.Length > 0 ? " · " : "") + "КОЛЕСО";
+                damageWarning.text = text;
+            }
+            Color color = damageWarning.color;
+            color.a = damage.Overheated ? 0.35f + 0.65f * Mathf.Abs(Mathf.Sin(Time.time * 6f)) : 1f;
+            damageWarning.color = color;
         }
 
         private void UpdateRecovery()
@@ -71,8 +115,8 @@ namespace RacingProject.Hud
             if (!show) return;
 
             float progress = recovery.HoldProgress;
-            string text = (recovery.Flipped ? "Машина перевернулась" : "Машина застряла")
-                          + "\nУдерживайте <b>R</b>, чтобы поставить её на дорогу";
+            string text = (recovery.InWater ? "Машина в воде" : recovery.Flipped ? "Машина перевернулась" : "Машина застряла")
+                          + "\nУдерживайте " + GameKeys.Tag(GameAction.Recover) + ", чтобы поставить её на дорогу";
             if (progress > 0f)
                 text += "  " + Mathf.RoundToInt(progress * 100f) + "%";
             if (recoveryPrompt.text != text)

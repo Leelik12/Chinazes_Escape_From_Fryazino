@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Unity.Netcode;
 using System;
+using Random = UnityEngine.Random;
 using RacingProject.Props;
 
 namespace RacingProject.Enemy
@@ -14,6 +15,8 @@ namespace RacingProject.Enemy
         [SerializeField] private int scoreValue = 100;
         [Tooltip("Взрыв при гибели поджигает горящие бочки в этом радиусе и раскидывает разруху в полтора раза дальше")]
         [SerializeField] private float deathIgniteRadius = 7f;
+        [Tooltip("Горящий остов после взрыва (EnemyWreck)")]
+        [SerializeField] private EnemyWreck.Settings wreck = new EnemyWreck.Settings();
         private int currentHealth;
         private int scaledMaxHealth;
 
@@ -24,6 +27,11 @@ namespace RacingProject.Enemy
         public int ScoreValue => scoreValue;
         // Вызывается только на сервере
         public event Action<GameObject> OnDeath;
+        // Враг погиб: у обоих игроков, с точкой гибели и тем, чей урон его добил (для отметки убийства)
+        public static event Action<Vector3, ulong> Killed;
+
+        // Урон одного попадания с клиента больше этого не бывает: защита от подменённого клиента
+        private const int MaxRequestDamage = 500;
         // В Awake, чтобы здоровье было задано до первого урона
         void Awake()
         {
@@ -49,16 +57,23 @@ namespace RacingProject.Enemy
                 TakeDamageRpc(damage);
         }
 
+        // Урон, посчитанный самим сервером (ракета стрелка): убийство засчитывается тому, кто стрелял
+        public void ApplyServerDamage(int damage, ulong attacker)
+        {
+            if (!IsServer || !IsSpawned) return;
+            TakeDamage(damage, attacker);
+        }
+
         [Rpc(SendTo.Server)]
         private void TakeDamageRpc(int damage, RpcParams rpcParams = default)
         {
-            TakeDamage(damage, rpcParams.Receive.SenderClientId);
+            TakeDamage(Mathf.Clamp(damage, 0, MaxRequestDamage), rpcParams.Receive.SenderClientId);
         }
 
         private void TakeDamage(int damage, ulong sender)
         {
             // Урон, пришедший после смерти, не должен повторно засчитывать убийство
-            if (currentHealth <= 0) return;
+            if (currentHealth <= 0 || damage <= 0) return;
 
             currentHealth -= damage;
             healthFraction.Value = Mathf.Clamp01((float)currentHealth / Mathf.Max(1, scaledMaxHealth));
@@ -72,17 +87,26 @@ namespace RacingProject.Enemy
                 if (PropNetwork.Instance != null)
                     PropNetwork.Instance.IgniteInRadius(transform.position, deathIgniteRadius);
                 // RPC уходит раньше сообщения о деспавне, поэтому клиент успевает показать взрыв
-                ExplodeRpc(transform.position, transform.rotation);
+                Rigidbody body = GetComponent<Rigidbody>();
+                Vector3 velocity = body != null ? body.linearVelocity : Vector3.zero;
+                int seed = Random.Range(int.MinValue, int.MaxValue);
+                // RPC себе приходит только в следующем кадре, когда врага уже нет: остов на сервере — сразу
+                EnemyWreck.Spawn(gameObject, wreck, velocity, seed);
+                ExplodeRpc(transform.position, transform.rotation, velocity, seed, sender);
                 NetworkObject.Despawn();
             }
         }
 
         [Rpc(SendTo.Everyone)]
-        private void ExplodeRpc(Vector3 position, Quaternion rotation)
+        private void ExplodeRpc(Vector3 position, Quaternion rotation, Vector3 velocity, int seed, ulong killer)
         {
+            // Остов — копия ещё не исчезнувшей машины: у клиента RPC приходит раньше деспавна
+            if (!IsServer)
+                EnemyWreck.Spawn(gameObject, wreck, velocity, seed);
             if (explosionPrefab != null)
                 Instantiate(explosionPrefab, position, rotation);
             LooseProp.Blast(position, deathIgniteRadius * 1.5f, 10f);
+            Killed?.Invoke(position, killer);
         }
     }
 }

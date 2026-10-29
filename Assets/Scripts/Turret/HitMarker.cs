@@ -18,9 +18,26 @@ namespace RacingProject.Turret
 
         private static readonly int ColorId = Shader.PropertyToID("_Color");
 
+        [Header("Отметка убийства")]
+        [SerializeField] private Color killColor = new Color(1f, 0.25f, 0.15f, 1f);
+        [SerializeField] private float killSizeScale = 2.2f;
+        [SerializeField] private float killLifetime = 0.7f;
+
         private MaterialPropertyBlock block;
+        private bool kill;
         private Color baseColor = Color.white;
         private float startTime;
+
+        // Вызывается сразу после создания: крупнее, красная и висит дольше
+        public void ShowAsKill()
+        {
+            kill = true;
+            angularSize *= killSizeScale;
+            lifetime = killLifetime;
+            // Свой звук попадания не нужен — у убийства отдельный
+            AudioSource sound = GetComponent<AudioSource>();
+            if (sound != null) sound.enabled = false;
+        }
 
         private void Start()
         {
@@ -28,6 +45,7 @@ namespace RacingProject.Turret
             block = new MaterialPropertyBlock();
             if (markerRenderer != null && markerRenderer.sharedMaterial != null && markerRenderer.sharedMaterial.HasProperty(ColorId))
                 baseColor = markerRenderer.sharedMaterial.GetColor(ColorId);
+            if (kill) baseColor = killColor;
 
             Camera cam = Camera.main;
             if (cam != null)

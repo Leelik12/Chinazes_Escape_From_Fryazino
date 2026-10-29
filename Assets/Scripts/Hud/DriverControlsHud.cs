@@ -56,11 +56,11 @@ namespace RacingProject.Hud
             if (LocalPlayerRole.IsSolo)
                 return
                     "<color=#9a9a9a>одиночная игра — клавиатура и мышь</color>\n" +
-                    "Газ / тормоз и задний ход — <b>W</b> / <b>S</b>\n" +
-                    "Руль — <b>A</b> / <b>D</b>; коробка передач автоматическая\n" +
-                    "Нитро — <b>левый Shift</b>; мигалка — <b>L</b>\n" +
+                    "Газ / тормоз и задний ход — " + GameKeys.Tag(GameAction.Throttle) + " / " + GameKeys.Tag(GameAction.Brake) + "\n" +
+                    "Руль — " + GameKeys.Tag(GameAction.SteerLeft) + " / " + GameKeys.Tag(GameAction.SteerRight) + "; коробка передач автоматическая\n" +
+                    "Ручник — " + GameKeys.Tag(GameAction.Handbrake) + "; нитро — " + GameKeys.Tag(GameAction.Nitro) + "; мигалка — " + GameKeys.Tag(GameAction.Lights) + "; магнитола — " + GameKeys.Tag(GameAction.Radio) + "\n" +
                     "Обзор и прицел пулемёта — <b>мышь</b>, огонь — <b>ЛКМ</b>\n" +
-                    "<b>Esc</b> — пауза; перевернулись или застряли — удерживайте <b>R</b>\n" +
+                    "<b>Esc</b> — пауза; перевернулись или застряли — удерживайте " + GameKeys.Tag(GameAction.Recover) + "\n" +
                     "<color=#9a9a9a>HUD: F1 — управление, F2 — 2DOF, F3 — FutuRift, F4 — система</color>";
 
             string look = ViewModeService.IsVR
@@ -69,14 +69,16 @@ namespace RacingProject.Hud
 
             return
                 "<color=#9a9a9a>действие — клавиатура · руль G29</color>\n" +
-                "Газ / тормоз — <b>W</b> / <b>S</b> · правая / средняя педаль\n" +
-                "Руль — <b>A</b> / <b>D</b> · руль\n" +
+                "Газ / тормоз — " + GameKeys.Tag(GameAction.Throttle) + " / " + GameKeys.Tag(GameAction.Brake) + " · правая / средняя педаль\n" +
+                "Руль — " + GameKeys.Tag(GameAction.SteerLeft) + " / " + GameKeys.Tag(GameAction.SteerRight) + " · руль\n" +
+                "Ручник — " + GameKeys.Tag(GameAction.Handbrake) + " · рычаг ручника\n" +
                 "Сцепление — <b>F</b> · левая педаль\n" +
                 "Передачи 1–6 — <b>1</b>–<b>6</b> · коробка 1–6\n" +
                 "Задняя передача — <b>7</b> · коробка R\n" +
-                "Нитро — <b>левый Shift</b> · кнопка Right Bumper\n" +
+                "Нитро — " + GameKeys.Tag(GameAction.Nitro) + " · кнопка Right Bumper\n" +
                 "Толчок вперёд / назад, если застрял — крестовина вверх / вниз\n" +
-                "Перевернулись или застряли — удерживать <b>R</b> · кнопка Options\n" +
+                "Перевернулись или застряли — удерживать " + GameKeys.Tag(GameAction.Recover) + " · кнопка Options\n" +
+                "Магнитола вместо музыки боя — " + GameKeys.Tag(GameAction.Radio) + "\n" +
                 look + "\n" +
                 "<color=#ffd27a>Передача включается при выжатом сцеплении: сначала отпустите F, потом цифру</color>\n" +
                 "<color=#9a9a9a>HUD: F1 — управление, F2 — 2DOF, F3 — FutuRift, F4 — система</color>";

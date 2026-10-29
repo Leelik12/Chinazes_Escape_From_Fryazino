@@ -53,11 +53,7 @@ namespace RacingProject.Enemy
             if (wheelPivot != null)
                 wheelPivot.localRotation = pivotRest * Quaternion.AngleAxis(wheelAngle, Vector3.forward);
 
-            if (target == null)
-            {
-                GameObject playerCar = GameObject.FindWithTag(Tags.Car);
-                if (playerCar != null) target = playerCar.transform;
-            }
+            PlayerCarTarget.Refresh(ref target);
             bool look = false;
             if (target != null && car != null)
             {

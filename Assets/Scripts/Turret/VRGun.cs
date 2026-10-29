@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 using UnityEngine.UI;
+using RacingProject.Audio;
 using RacingProject.Enemy;
 using RacingProject.Desktop;
 using RacingProject.Management;
@@ -23,6 +24,16 @@ namespace RacingProject.Turret
         [Tooltip("Слои, в которые попадает выстрел. Триггеры (в том числе коллайдеры самого пистолета) игнорируются")]
         public LayerMask hitLayerMask = ~0;
 
+        [Header("Разброс и дальность")]
+        [Tooltip("Разброс холодного ствола, градусы")]
+        [SerializeField] private float coldSpread = 0.3f;
+        [Tooltip("Разброс у самого перегрева, градусы: растёт с квадратом нагрева, длинная очередь уходит в сторону")]
+        [SerializeField] private float hotSpread = 2.5f;
+        [Tooltip("До этого расстояния урон полный, м")]
+        [SerializeField] private float falloffStart = 45f;
+        [Tooltip("Доля урона на предельной дальности range")]
+        [SerializeField, Range(0f, 1f)] private float falloffMinDamage = 0.5f;
+
         [Header("Перегрев")]
         public float heatPerShot = 8f;
         public float heatCooldownRate = 5f;
@@ -32,9 +43,15 @@ namespace RacingProject.Turret
         private float currentHeat = 0f;
         private bool isOverheated = false;
 
+        // Свой выстрел пулемёта (у того, кто стреляет): вибрация контроллера (VRHaptics)
+        public static event System.Action LocalShot;
+
         // Нагрев 0–1 и признак перегрева для приборов: у напарника приходят по сети
         public float Heat01 => maxHeat > 0f ? currentHeat / maxHeat : 0f;
         public bool IsOverheated => isOverheated;
+        // Для звуков перегрева: последнее услышанное состояние (у напарника оно приходит по сети)
+        private bool heardOverheated;
+        private int shotsSinceCasing;
 
         [Header("Подвижные части")]
         [SerializeField] private Transform movablePart;
@@ -71,6 +88,8 @@ namespace RacingProject.Turret
         public float effectOffset = 0.01f;
         [Tooltip("Отметка попадания по врагу (видит только стрелок)")]
         [SerializeField] private GameObject hitMarkerPrefab;
+        [Tooltip("Звук отметки убийства: враг, добитый стрелком, взорвался")]
+        [SerializeField] private AudioClip killSound;
         [Tooltip("Трассер — каждая такая пуля (0 — без трассеров)")]
         [SerializeField] private int tracerEvery = 3;
         [Tooltip("Цвет трассера, HDR: яркость больше 1 даёт свечение")]
@@ -116,6 +135,27 @@ namespace RacingProject.Turret
 
             networkLocalPos = transform.localPosition;
             networkLocalRot = transform.localRotation;
+            EnemyHealth.Killed += OnEnemyKilled;
+        }
+
+        private void OnDestroy()
+        {
+            EnemyHealth.Killed -= OnEnemyKilled;
+        }
+
+        // Добил стрелок — крупная отметка над взрывом и отдельный звук
+        private void OnEnemyKilled(Vector3 position, ulong killer)
+        {
+            if (!IsLocallyControlled || Unity.Netcode.NetworkManager.Singleton == null
+                || killer != Unity.Netcode.NetworkManager.Singleton.LocalClientId) return;
+            if (hitMarkerPrefab != null)
+            {
+                GameObject marker = Instantiate(hitMarkerPrefab, position + Vector3.up * 1.5f, Quaternion.identity);
+                HitMarker hitMarker = marker.GetComponent<HitMarker>();
+                if (hitMarker != null) hitMarker.ShowAsKill();
+            }
+            if (audioSource != null && killSound != null)
+                audioSource.PlayOneShot(killSound);
         }
 
         private void Update()
@@ -130,6 +170,13 @@ namespace RacingProject.Turret
                 // Интерполяция позиции/вращения у других игроков
                 transform.localPosition = Vector3.Lerp(transform.localPosition, networkLocalPos, Time.deltaTime * 10f);
                 transform.localRotation = Quaternion.Slerp(transform.localRotation, networkLocalRot, Time.deltaTime * 10f);
+            }
+
+            // Шипение перегретого ствола и щелчок, когда он остыл — у обоих игроков
+            if (isOverheated != heardOverheated)
+            {
+                heardOverheated = isOverheated;
+                SoundLibrary.Play(isOverheated ? SoundLibrary.Sfx.GunOverheat : SoundLibrary.Sfx.GunCooled, transform.position);
             }
         }
 
@@ -160,24 +207,28 @@ namespace RacingProject.Turret
             bool firePressed = useDesktopAim
                 ? desktopAim.FirePressed
                 : RightTrigger.action.ReadValue<float>() > 0.8f;
+            if (PauseMenu.BlocksInput)
+                firePressed = false;
 
             if (firePressed && Time.time >= nextFireTime && !isOverheated)
             {
-                nextFireTime = Time.time + fireRate;
+                nextFireTime = Time.time + fireRate * RunUpgrades.FireInterval;
 
                 Vector3 direction = useDesktopAim
                     ? (desktopAim.AimPoint - firePoint.position).normalized
                     : firePoint.forward;
                 if (LocalPlayerRole.IsSolo && Vector3.Angle(direction, firePoint.forward) > soloMaxAimDeviation)
                     direction = firePoint.forward;
+                direction = ApplySpread(direction);
 
                 // локальный выстрел
                 ShootLocal(firePoint.position, direction);
+                LocalShot?.Invoke();
 
                 // напарник увидит выстрел по счётчику в Serialize
                 shotCount++;
 
-                currentHeat += heatPerShot;
+                currentHeat += heatPerShot * RunUpgrades.HeatPerShot;
                 if (currentHeat >= maxHeat)
                 {
                     currentHeat = maxHeat;
@@ -199,28 +250,48 @@ namespace RacingProject.Turret
 
             if (CastShot(origin, direction, out RaycastHit hit))
             {
+                int shotDamage = DamageAt(hit.distance);
                 EnemyHealth enemy = hit.collider.GetComponentInParent<EnemyHealth>();
                 if (enemy != null)
                 {
-                    enemy.RequestDamage((int)damage);
+                    enemy.RequestDamage(shotDamage);
                     if (hitMarkerPrefab != null)
                         Instantiate(hitMarkerPrefab, hit.point, Quaternion.identity);
                 }
 
                 ExplosiveBarrel barrel = hit.collider.GetComponentInParent<ExplosiveBarrel>();
                 if (barrel != null)
-                    barrel.RequestHit((int)damage);
+                    barrel.RequestHit(shotDamage);
 
                 TutorialTarget target = hit.collider.GetComponentInParent<TutorialTarget>();
                 if (target != null && !target.Destroyed)
                 {
-                    target.Hit((int)damage);
+                    target.Hit(shotDamage);
                     if (hitMarkerPrefab != null)
                         Instantiate(hitMarkerPrefab, hit.point, Quaternion.identity);
                 }
             }
         }
 
+
+        // Разброс растёт с нагревом ствола: короткими очередями стрелять точнее
+        private Vector3 ApplySpread(Vector3 direction)
+        {
+            float heat = Mathf.Clamp01(Heat01);
+            float spread = Mathf.Lerp(coldSpread, hotSpread, heat * heat);
+            if (spread <= 0f) return direction;
+            // Равномерно по кругу: угол отклонения и его направление вокруг оси выстрела
+            Quaternion around = Quaternion.AngleAxis(Random.Range(0f, 360f), direction);
+            Vector3 side = Vector3.Cross(direction, Mathf.Abs(direction.y) < 0.99f ? Vector3.up : Vector3.right).normalized;
+            return around * (Quaternion.AngleAxis(Random.Range(0f, spread), side) * direction);
+        }
+
+        // Урон с учётом расстояния и улучшения «бронебойные пули»
+        private int DamageAt(float distance)
+        {
+            float far = Mathf.Clamp01(Mathf.InverseLerp(falloffStart, range, distance));
+            return Mathf.Max(1, Mathf.RoundToInt(damage * RunUpgrades.GunDamage * Mathf.Lerp(1f, falloffMinDamage, far)));
+        }
 
         // Полёт пули без урона: трассер, искры и след. У напарника луч идёт из ствола по позе пулемёта из сети,
         // поэтому он видит те же попадания, что и стрелок
@@ -250,6 +321,18 @@ namespace RacingProject.Turret
             if (audioSource != null && shotSound != null) audioSource.PlayOneShot(shotSound);
             if (gunRecoil != null) gunRecoil.Kick();
             StartCoroutine(MoveRecoil());
+            // Гильзы звенят о крышу с задержкой падения; на каждый выстрел — слишком густо
+            if (++shotsSinceCasing >= 2)
+            {
+                shotsSinceCasing = 0;
+                StartCoroutine(PlayCasing(Random.Range(0.3f, 0.5f)));
+            }
+        }
+
+        private IEnumerator PlayCasing(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            SoundLibrary.Play(SoundLibrary.Sfx.Casing, transform.position - Vector3.up * 0.6f, Random.Range(0.5f, 0.85f));
         }
 
         private IEnumerator MoveRecoil()

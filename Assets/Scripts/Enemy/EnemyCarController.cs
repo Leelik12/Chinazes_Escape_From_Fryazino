@@ -159,6 +159,10 @@ namespace RacingProject.Enemy
         private Vector3 destination;
         // Стрелок держится сбоку-сзади от игрока, сторону выбирает при спавне
         private float slotSide;
+        // Место у игрока, назначенное EnemyManager: угол от его хода (0 — впереди, ±90 — по бокам, 180 — сзади).
+        // Пока не назначено, стрелок сам держится сбоку-сзади
+        private bool hasSlot;
+        private float slotAngle;
         private enum SwipePhase { None, Approach, Hit }
         private SwipePhase swipePhase;
         // Остаток фазы удара бортом, а между атаками — пауза до следующей
@@ -224,19 +228,23 @@ namespace RacingProject.Enemy
                 rb.isKinematic = false;
             }
 
-            if (target == null)
-            {
-                GameObject playerCar = GameObject.FindWithTag(Tags.Car);
-                if (playerCar != null) target = playerCar.transform;
-            }
-            if (target != null)
-                targetBody = target.GetComponentInParent<Rigidbody>();
+            RefreshTarget();
 
             MeasureCar();
             progressAnchor = transform.position;
             // Машина падает на точку спавна и разгоняется с места — это не застревание
             stuckTimer = -StuckGrace;
             lastRemotePosition = transform.position;
+        }
+
+        // Цель ищется заново, если пропала (машину пересоздали, сцена догрузилась позже врага)
+        private bool RefreshTarget()
+        {
+            Transform previous = target;
+            if (!PlayerCarTarget.Refresh(ref target)) return false;
+            if (target != previous || targetBody == null)
+                targetBody = target.GetComponentInParent<Rigidbody>();
+            return true;
         }
 
         // Габариты машины в её осях: с какого места пускать лучи на препятствия и какая колёсная база у руля
@@ -291,8 +299,11 @@ namespace RacingProject.Enemy
         private void HandleMovement()
         {
             UpdateWheelPoses();
-            if (target == null)
+            if (!RefreshTarget())
+            {
+                Drive(0f, 0f, 1f);
                 return;
+            }
 
             float dt = Time.fixedDeltaTime;
             Vector3 position = transform.position;
@@ -492,6 +503,36 @@ namespace RacingProject.Enemy
             Drive(steer, throttle, brake);
         }
 
+        // Таран бьёт напрямую, ему место у игрока не назначают
+        public bool HoldsSlot => !ramTarget && stoppingDistance > 0f;
+
+        // Роль в окружении игрока (EnemyManager): впереди — перекрывает дорогу, по бокам — фланги, сзади — догоняет
+        public void AssignSlot(float angle)
+        {
+            if (hasSlot && Mathf.Abs(Mathf.DeltaAngle(slotAngle, angle)) < 1f) return;
+            hasSlot = true;
+            slotAngle = angle;
+            // Удар бортом подходит с той же стороны, где стоит машина
+            if (Mathf.Abs(angle) > 5f && Mathf.Abs(angle) < 175f)
+                slotSide = angle > 0f ? -1f : 1f;
+            repathTimer = Mathf.Min(repathTimer, 0.1f);
+        }
+
+        // Сложность волны (сервер, до спавна): быстрее на поздних волнах
+        public void ScaleSpeed(float multiplier)
+        {
+            maxSpeed *= multiplier;
+            cornerSpeed *= multiplier;
+        }
+
+        // Перенос застрявшей или провалившейся машины (EnemyManager, только сервер)
+        public void Teleport(Vector3 position, Quaternion rotation)
+        {
+            PlaceAt(position, rotation);
+            corners.Clear();
+            waitInAmbush = false;
+        }
+
         // Стрелок едет в точку сбоку-сзади от игрока, таран и прочие — к самому игроку
         private Vector3 ChooseDestination(Vector3 targetVelocity)
         {
@@ -505,6 +546,13 @@ namespace RacingProject.Enemy
             back.Normalize();
             Vector3 side = Vector3.Cross(Vector3.up, back) * slotSide;
             Vector3 slot = goal + (back * 0.6f + side * 0.8f).normalized * stoppingDistance;
+            if (hasSlot)
+            {
+                // Угол от хода игрока по часовой: 90 — справа. Впереди место чуть дальше, чтобы успеть затормозить
+                Vector3 direction = Quaternion.AngleAxis(slotAngle, Vector3.up) * -back;
+                float reach = Mathf.Abs(slotAngle) < 45f ? stoppingDistance * 1.4f : stoppingDistance;
+                slot = goal + direction * reach;
+            }
             // Подход к удару бортом: место вровень с игроком, чуть впереди, чтобы догнать
             if (swipePhase == SwipePhase.Approach)
                 slot = goal + side * swipeSideOffset - back * 2f;
@@ -777,10 +825,11 @@ namespace RacingProject.Enemy
         {
             Vector3 origin = transform.position + transform.up * probeHeight;
             float radius = Mathf.Max(0.3f, halfWidth * 0.6f);
-            RaycastHit[] hits = Physics.SphereCastAll(origin, radius, direction, length, obstacleMask, QueryTriggerInteraction.Ignore);
+            int count = Physics.SphereCastNonAlloc(origin, radius, direction, probeHits, length, obstacleMask, QueryTriggerInteraction.Ignore);
             float nearest = length;
-            foreach (RaycastHit hit in hits)
+            for (int i = 0; i < count; i++)
             {
+                RaycastHit hit = probeHits[i];
                 if (hit.distance <= 0f || hit.distance >= nearest) continue;
                 if (hit.normal.y > 0.6f) continue;
                 if (ownColliders.Contains(hit.collider)) continue;
@@ -806,6 +855,7 @@ namespace RacingProject.Enemy
 
         private static readonly float[] RelocateDistances = { 15f, 25f, 40f, 60f };
         private readonly Collider[] overlapBuffer = new Collider[16];
+        private readonly RaycastHit[] probeHits = new RaycastHit[32];
 
         // Крайний случай, пока игрок далеко: переставить машину вперёд по пути и повернуть по нему.
         // Ближняя точка часто упирается в то же препятствие, поэтому берём первую, где машине хватает места

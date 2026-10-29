@@ -2,6 +2,14 @@
 
 namespace RacingProject.Enemy
 {
+    // Гранатомёт, который выпустил гранату: врага (EnemyRocketLauncher) или стрелка игроков (RocketLauncher)
+    public interface IRocketOwner
+    {
+        bool IsServer { get; }
+        bool FindHit(Vector3 from, Vector3 step, float radius, out RaycastHit nearest);
+        void RocketHit(EnemyRocket rocket, Vector3 point, Vector3 normal);
+    }
+
     // Граната РПГ в полёте. Летит по прямой с постоянной скоростью у всех игроков одинаково,
     // попадание проверяет только копия на сервере (owner.IsServer), взрыв всем рассылает гранатомёт
     public class EnemyRocket : MonoBehaviour
@@ -14,11 +22,11 @@ namespace RacingProject.Enemy
 
         public int Id { get; private set; }
 
-        private EnemyRocketLauncher owner;
+        private IRocketOwner owner;
         private Vector3 velocity;
         private float dieTime;
 
-        public void Launch(EnemyRocketLauncher launcher, int id, Vector3 direction, float speed, float lifetime)
+        public void Launch(IRocketOwner launcher, int id, Vector3 direction, float speed, float lifetime)
         {
             owner = launcher;
             Id = id;

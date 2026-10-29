@@ -16,6 +16,14 @@ namespace RacingProject
 
         public event System.Action<int> OnDamageTaken;
         public event System.Action OnDeath;
+        // Откуда пришёл урон (точка в мире), у обоих игроков: для индикатора стороны попадания
+        public event System.Action<Vector3> DamageFrom;
+        // Только на сервере: урон и откуда он пришёл (для поломок машины, CarDamageState)
+        public event System.Action<int, Vector3> ServerHit;
+
+        // Урон одного запроса с клиента больше этого не бывает (граната босса с ростом по волнам — около 400):
+        // защита от подменённого клиента, который прислал бы огромный или отрицательный урон
+        private const int MaxRequestDamage = 600;
 
         public int CurrentHealth => currentHealth;
         public int MaxHealth => maxHealth;
@@ -65,11 +73,42 @@ namespace RacingProject
             }
         }
 
-        // Получено с клиента
+        // Урон с известным источником: игроки увидят, с какой стороны попали
+        public void RequestDamage(int damage, Vector3 source)
+        {
+            if (isDead || !IsSpawned) return;
+
+            if (IsServer)
+                ApplyDamage(damage, source);
+            else
+                RequestDamageFromRpc(damage, source);
+        }
+
+        // Получено с клиента: урон проверяется, клиенту нельзя доверять
         [Rpc(SendTo.Server)]
         private void RequestDamageRpc(int damage)
         {
+            ApplyDamage(Mathf.Clamp(damage, 0, MaxRequestDamage));
+        }
+
+        [Rpc(SendTo.Server)]
+        private void RequestDamageFromRpc(int damage, Vector3 source)
+        {
+            ApplyDamage(Mathf.Clamp(damage, 0, MaxRequestDamage), source);
+        }
+
+        private void ApplyDamage(int damage, Vector3 source)
+        {
+            if (isDead || damage <= 0) return;
             ApplyDamage(damage);
+            ServerHit?.Invoke(damage, source);
+            DamageFromRpc(source);
+        }
+
+        [Rpc(SendTo.Everyone)]
+        private void DamageFromRpc(Vector3 source)
+        {
+            DamageFrom?.Invoke(source);
         }
 
         // Здоровье меняет только сервер, остальным его рассылает NetworkVariable
@@ -78,6 +117,19 @@ namespace RacingProject
             if (isDead) return;
 
             networkHealth.Value = Mathf.Clamp(networkHealth.Value - damage, 0, maxHealth);
+        }
+
+        // Улучшение «бронелисты»: вызывается у обоих игроков, прибавка к прочности чинится сразу (на сервере)
+        public void IncreaseMaxHealth(int amount)
+        {
+            if (amount <= 0) return;
+            maxHealth += amount;
+            if (healthSlider != null)
+                healthSlider.maxValue = maxHealth;
+            if (IsServer && !isDead)
+                networkHealth.Value = Mathf.Min(networkHealth.Value + amount, maxHealth);
+            else if (HPBAR != null)
+                HPBAR.SetHealth(currentHealth, maxHealth);
         }
 
         // Ремонт: вызывает только сервер (ремкомплект). Возвращает false, если чинить нечего
