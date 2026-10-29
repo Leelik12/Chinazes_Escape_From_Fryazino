@@ -29,11 +29,16 @@ namespace RacingProject.Network
         [Header("Перезапуск")]
         [Tooltip("Пауза между гибелью машины и перезапуском: напарник получает последнее здоровье и отдачу гибели, оба видят взрыв и экран гибели")]
         [SerializeField] private float restartDelay = 4f;
+        [Tooltip("Вероятность дождя и грозы в раунде (WeatherController)")]
+        [SerializeField, Range(0f, 1f)] private float rainChance = 0.3f;
+        [SerializeField, Range(0f, 1f)] private float stormChance = 0.15f;
 
         // Пишет только сервер; клиент просит его через SetReadyRpc
         private readonly NetworkVariable<bool> hostReady = new NetworkVariable<bool>();
         private readonly NetworkVariable<bool> clientReady = new NetworkVariable<bool>();
         private readonly NetworkVariable<bool> gameStarted = new NetworkVariable<bool>();
+        // Погода раунда: 0 — ясно, 1 — дождь, 2 — гроза. Выбирает сервер при загрузке сцены, у обоих одна
+        private readonly NetworkVariable<byte> weather = new NetworkVariable<byte>();
 
         private bool isLocalReady = false;
         private bool rigsActivated = false;
@@ -54,6 +59,8 @@ namespace RacingProject.Network
         // Готовность водителя (хоста) и стрелка (клиента) для индикаторов меню и пульта
         public bool HostReady => IsSpawned && hostReady.Value;
         public bool ClientReady => IsSpawned && clientReady.Value;
+        // В обучении всегда ясно
+        public int Weather => IsSpawned && !Tutorial ? weather.Value : 0;
 
         private void Awake()
         {
@@ -72,7 +79,11 @@ namespace RacingProject.Network
         public override void OnNetworkSpawn()
         {
             if (IsServer)
+            {
                 NetworkManager.OnClientDisconnectCallback += OnClientDisconnected;
+                float roll = Random.value;
+                weather.Value = (byte)(roll < stormChance ? 2 : roll < stormChance + rainChance ? 1 : 0);
+            }
             if (soloPending)
                 StartSolo();
         }
@@ -252,9 +263,16 @@ namespace RacingProject.Network
 
             // Напарник вышел посреди игры — возвращаем оставшегося в меню
             if (gameStarted.Value)
+            {
                 RestartRound();
+            }
             else
+            {
+                // Новый напарник должен застать хост неготовым, иначе игра стартовала бы от одного его нажатия
                 clientReady.Value = false;
+                hostReady.Value = false;
+                isLocalReady = false;
+            }
         }
     }
 }

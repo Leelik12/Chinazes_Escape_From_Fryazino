@@ -28,7 +28,7 @@ namespace RacingProject.Tutorial
         private const float FlippedAngularDamping = 6f;
         private const string RampText = "Впереди трамплин на левой полосе.\nРазгонитесь и заскочите на него.";
         private const string RetryText = "Машина устояла. Развернитесь и заскочите\nна трамплин ещё раз — быстрее.";
-        private const string FlippedText = "Машина перевернулась — так бывает и в бою.\nУдерживайте <b>R</b>, и она встанет на колёса.";
+        private static string FlippedText => "Машина перевернулась — так бывает и в бою.\nУдерживайте " + GameKeys.Tag(GameAction.Recover) + ", и она встанет на колёса.";
 
         [Header("Полигон")]
         [SerializeField] private Transform start;
@@ -139,10 +139,10 @@ namespace RacingProject.Tutorial
             if (tactical != null) tactical.gameObject.SetActive(false);
             stepPanel.SetActive(true);
 
-            yield return Step(1, "Газ", "Нажмите <b>W</b>, чтобы поехать.\nДоедьте по дороге до зелёного маяка.",
+            yield return Step(1, "Газ", "Нажмите " + GameKeys.Tag(GameAction.Throttle) + ", чтобы поехать.\nДоедьте по дороге до зелёного маяка.",
                 driveBeacon, () => Reached(driveBeacon));
 
-            yield return Step(2, "Руль", "<b>A</b> и <b>D</b> поворачивают руль.\nПройдите повороты до следующего маяка.",
+            yield return Step(2, "Руль", "" + GameKeys.Tag(GameAction.SteerLeft) + " и " + GameKeys.Tag(GameAction.SteerRight) + " поворачивают руль.\nПройдите повороты до следующего маяка.",
                 turnBeacon, () => Reached(turnBeacon));
 
             yield return Step(3, "Тупик", "Сверните к гаражам и заедьте в тупик до маяка.",
@@ -150,7 +150,7 @@ namespace RacingProject.Tutorial
 
             float reverse = 0f;
             yield return Step(4, "Задний ход",
-                "<b>S</b> — тормоз, а на месте <b>S</b> включает задний ход.\nВыедьте из тупика задом.",
+                "" + GameKeys.Tag(GameAction.Brake) + " — тормоз, а на месте " + GameKeys.Tag(GameAction.Brake) + " включает задний ход.\nВыедьте из тупика задом.",
                 null, () =>
                 {
                     if (Vector3.Dot(body.linearVelocity, body.transform.forward) < -1.5f) reverse += Time.deltaTime;
@@ -158,7 +158,7 @@ namespace RacingProject.Tutorial
                 }, () => "Задний ход: " + Percent(reverse / 2f));
 
             float boost = 0f;
-            yield return Step(5, "Нитро", "Вернитесь на дорогу. На прямой нажмите левый <b>Shift</b> — нитро,\nкороткий мощный разгон.",
+            yield return Step(5, "Нитро", "Вернитесь на дорогу. На прямой нажмите " + GameKeys.Tag(GameAction.Nitro) + " — нитро,\nкороткий мощный разгон.",
                 null, () =>
                 {
                     if (nitro != null && nitro.Boosting) boost += Time.deltaTime;

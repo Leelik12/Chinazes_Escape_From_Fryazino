@@ -8,7 +8,8 @@ namespace RacingProject.Management
 {
     // Экран гибели: при уничтожении машины перед камерой игрока затемняется экран с итогом раунда
     // и рекордом. Табличка крепится к активной камере, поэтому видна и в VR, и на мониторе.
-    // Сцену перезагружает RoomController, вместе с ней исчезает и табличка
+    // Сцену перезагружает RoomController, вместе с ней исчезает и табличка. На мониторе табличка появляется
+    // через monitorDelay: сначала камера облетает горящую машину (ThirdPersonCamera)
     public class DeathScreen : MonoBehaviour
     {
         [SerializeField] private PlayerHealth carHealth;
@@ -20,6 +21,8 @@ namespace RacingProject.Management
         [Tooltip("Расстояние от камеры, м")]
         [SerializeField] private float distance = 0.6f;
         [SerializeField] private float fadeDuration = 0.8f;
+        [Tooltip("Задержка таблички на мониторе (облёт машины камерой), с")]
+        [SerializeField] private float monitorDelay = 3f;
         [SerializeField] private Color backgroundColor = new Color(0f, 0f, 0f, 0.85f);
         [SerializeField] private Color recordColor = new Color(1f, 0.8f, 0.2f);
 
@@ -48,21 +51,31 @@ namespace RacingProject.Management
         {
             if (shown) return;
             shown = true;
+            StartCoroutine(ShowAfterDelay());
+        }
+
+        private IEnumerator ShowAfterDelay()
+        {
+            if (!ViewModeService.IsVR && monitorDelay > 0f)
+                yield return new WaitForSeconds(monitorDelay);
 
             Camera cam = Camera.main;
-            if (cam == null) return;
+            if (cam == null) yield break;
 
             int kills = enemyManager != null ? enemyManager.Kills : 0;
             int wave = enemyManager != null ? enemyManager.Wave : 0;
             int score = enemyManager != null ? enemyManager.Score : 0;
             GameRecords.SubmitKills(kills);
             bool newRecord = GameRecords.SubmitScore(score);
+            // Талоны в гараж бункера — у каждого игрока свои
+            int coins = Garage.RunReward(score, wave);
+            Garage.AddCoins(coins);
 
-            CanvasGroup group = BuildOverlay(cam, wave, kills, score, newRecord);
-            StartCoroutine(FadeIn(group));
+            CanvasGroup group = BuildOverlay(cam, wave, kills, score, newRecord, coins);
+            yield return FadeIn(group);
         }
 
-        private CanvasGroup BuildOverlay(Camera cam, int wave, int kills, int score, bool newRecord)
+        private CanvasGroup BuildOverlay(Camera cam, int wave, int kills, int score, bool newRecord, int coins)
         {
             var root = new GameObject("DeathScreen", typeof(RectTransform), typeof(Canvas), typeof(CanvasGroup));
             root.transform.SetParent(cam.transform, false);
@@ -91,6 +104,7 @@ namespace RacingProject.Management
                 : $"Рекорд: {GameRecords.BestScore}";
             AddText(root.transform, "Машина уничтожена", 90f, new Vector2(0f, 160f));
             AddText(root.transform, $"Очки: {score}\nВолна {wave}    Убито: {kills}\n{record}", 56f, new Vector2(0f, -60f));
+            AddText(root.transform, $"Талоны в гараж: +{coins}  (всего {Garage.Coins})", 44f, new Vector2(0f, -250f));
 
             var group = root.GetComponent<CanvasGroup>();
             group.alpha = 0f;

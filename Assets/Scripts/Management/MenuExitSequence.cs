@@ -114,7 +114,7 @@ namespace RacingProject.Management
                     if (d >= 1f && !clanked[i])
                     {
                         clanked[i] = true;
-                        effects.PlayOneShot(BunkerSounds.Clank, 0.9f);
+                        effects.PlayOneShot(BunkerSounds.Clank(i), 0.9f);
                     }
                 }
 

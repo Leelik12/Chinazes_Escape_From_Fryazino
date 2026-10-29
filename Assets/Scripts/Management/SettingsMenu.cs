@@ -41,6 +41,10 @@ namespace RacingProject.Management
         [SerializeField] private TerminalSelector frameLimit;
         [Tooltip("Отладочные панели поверх экрана (F1–F4): управление, телеметрия, FPS и система")]
         [SerializeField] private TerminalSelector debugInfo;
+        [Tooltip("Поворот стиком в VR: плавный или рывками (VRComfort)")]
+        [SerializeField] private TerminalSelector vrTurn;
+        [Tooltip("Затемнение краёв обзора в VR при рывках машины")]
+        [SerializeField] private TerminalSelector vrVignette;
 
         [Header("Подсказка")]
         [SerializeField] private TMP_Text hint;
@@ -73,6 +77,8 @@ namespace RacingProject.Management
             Bind(frameLimit, GraphicsQuality.Option.FrameLimit);
             if (viewMode != null) viewMode.ValueChanged += i => ViewModeService.SetPreferDesktop(i == 1);
             if (debugInfo != null) debugInfo.ValueChanged += i => HudPanel.DebugVisible = i == 1;
+            if (vrTurn != null) vrTurn.ValueChanged += i => VRComfort.Turn = (VRComfort.TurnMode)i;
+            if (vrVignette != null) vrVignette.ValueChanged += i => VRComfort.Vignette = i == 1;
 
             SelectTab(0);
         }
@@ -132,6 +138,8 @@ namespace RacingProject.Management
             bool desktop = !ViewModeService.IsVR;
             if (viewMode != null) viewMode.SetOptions(ViewModes, desktop ? 1 : 0);
             if (debugInfo != null) debugInfo.SetOptions(OffOn, HudPanel.DebugVisible ? 1 : 0);
+            if (vrTurn != null) vrTurn.SetOptions(VRComfort.TurnNames, (int)VRComfort.Turn);
+            if (vrVignette != null) vrVignette.SetOptions(OffOn, VRComfort.Vignette ? 1 : 0);
             SetInteractable(windowMode, desktop);
             SetInteractable(resolution, desktop);
             SetInteractable(vSync, desktop);

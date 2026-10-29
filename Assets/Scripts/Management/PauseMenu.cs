@@ -19,8 +19,8 @@ namespace RacingProject.Management
         public static bool IsOpen { get; private set; }
         // Другой экран поверх игры (итог обучения): пауза на Esc не открывается, мышь, как и в паузе, свободна
         public static bool OverlayOpen { get; set; }
-        // Камера и пулемёт не слушают мышь
-        public static bool BlocksInput => IsOpen || OverlayOpen;
+        // Камера и пулемёт не слушают мышь (и курок — на паузе в VR)
+        public static bool BlocksInput => IsOpen || OverlayOpen || VRPauseMenu.IsOpen;
 
         private void Awake()
         {

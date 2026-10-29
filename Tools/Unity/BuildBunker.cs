@@ -53,7 +53,7 @@ System.Func<string, float, Material> texMat = (name, metallic) => {
         ti.sRGBTexture = suffix == "";
         ti.alphaSource = TextureImporterAlphaSource.FromInput;
         ti.alphaIsTransparency = false;
-        ti.mipmapEnabled = true; ti.anisoLevel = 4; ti.maxTextureSize = 1024;
+        ti.mipmapEnabled = true; ti.anisoLevel = 4; ti.maxTextureSize = 2048;
         ti.SaveAndReimport();
     }
     var m = mat(name, Color.white, 1f, Color.black);

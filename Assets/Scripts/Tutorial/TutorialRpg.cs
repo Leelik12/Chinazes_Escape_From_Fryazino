@@ -59,7 +59,7 @@ namespace RacingProject.Tutorial
             Vector3 point = rocket.transform.position;
             rocket.Remove();
             if (explosionPrefab != null) Instantiate(explosionPrefab, point, Quaternion.LookRotation(-direction));
-            if (health != null) health.RequestDamage(damage);
+            if (health != null) health.RequestDamage(damage, firePoint.position);
             if (!target.isKinematic)
                 target.AddExplosionForce(explosionPush, point, splashRadius, 0.6f, ForceMode.Impulse);
             onHit?.Invoke();

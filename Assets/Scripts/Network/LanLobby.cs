@@ -1,14 +1,18 @@
-﻿using TMPro;
+﻿using System.Collections.Generic;
+using TMPro;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using RacingProject.Management;
 
 namespace RacingProject.Network
 {
     // Лобби в главном меню: одиночная игра (только на мониторе), создать игру (хост, водитель)
-    // или найти её в локальной сети (клиент, стрелок).
+    // или найти её в локальной сети (клиент, стрелок). Поиск собирает объявления хостов: одна подходящая игра —
+    // подключение сразу, несколько — список, игра выбирается цифрой; игры другой версии видны, но к ним не подключиться.
+    // После обрыва связи появляется «Переподключиться» к тому же адресу.
     // Состояние кнопок берётся из NetworkManager каждый кадр, поэтому переживает перезагрузку сцены
     [RequireComponent(typeof(RoomController))]
     public class LanLobby : MonoBehaviour
@@ -26,12 +30,16 @@ namespace RacingProject.Network
         [SerializeField] private TMP_Text joinButtonLabel;
         [SerializeField] private GameObject readyButton;
         [SerializeField] private GameObject leaveButton;
+        [Tooltip("Переподключиться к последнему хосту: видна после обрыва связи")]
+        [SerializeField] private GameObject reconnectButton;
         [SerializeField] private TMP_Text statusText;
 
         [Header("Сеть")]
         [SerializeField] private ushort gamePort = 7777;
         [Tooltip("Сколько секунд искать игру в сети")]
         [SerializeField] private float searchTimeout = 15f;
+        [Tooltip("После первой найденной игры ещё столько секунд ждём другие, чтобы предложить выбор")]
+        [SerializeField] private float collectTime = 1.5f;
 
         // Сообщение о разрыве соединения: показывается после перезагрузки сцены
         private static string pendingStatus;
@@ -41,6 +49,10 @@ namespace RacingProject.Network
         private static bool commandLineUsed;
         // «Начать игру» в конце обучения: после возврата в меню сразу запускается одиночная игра
         private static bool soloAfterReload;
+        // Последний хост, к которому подключались, и нужно ли предложить переподключение (после обрыва связи)
+        private static string lastAddress;
+        private static ushort lastPort;
+        private static bool offerReconnect;
 
         private readonly LanDiscovery discovery = new LanDiscovery();
         private RoomController room;
@@ -50,6 +62,10 @@ namespace RacingProject.Network
         private float searchEndTime;
         private bool wasConnected;
         private bool reloading;
+        // Найденные при поиске игры и момент, когда выбирать между ними (0 — подходящих ещё нет)
+        private readonly List<LanDiscovery.Announcement> foundGames = new List<LanDiscovery.Announcement>();
+        private float decideTime;
+        private bool choosing;
         // Сообщение о запуске раунда: кнопки прячутся, пока бункер провожает экипаж к выходу
         private string launchStatus;
 
@@ -177,10 +193,24 @@ namespace RacingProject.Network
                 return;
             }
 
+            foundGames.Clear();
+            decideTime = 0f;
+            choosing = false;
             if (discovery.StartListening())
                 searchEndTime = Time.unscaledTime + searchTimeout;
             else
                 idleStatus = "Порт поиска " + LanDiscovery.DiscoveryPort + " занят";
+        }
+
+        // Снова к хосту, с которым пропала связь
+        public void OnReconnectPressed()
+        {
+            NetworkManager manager = NetworkManager.Singleton;
+            if (manager == null || manager.IsListening || lastAddress == null) return;
+
+            offerReconnect = false;
+            idleStatus = "";
+            Connect(lastAddress, lastPort);
         }
 
         public void OnLeavePressed()
@@ -225,21 +255,85 @@ namespace RacingProject.Network
         {
             if (!discovery.IsListening) return;
 
-            if (discovery.TryReceive(out string address, out ushort port))
+            while (discovery.TryReceive(out LanDiscovery.Announcement game))
+                AddFound(game);
+
+            List<LanDiscovery.Announcement> compatible = CompatibleGames();
+            if (compatible.Count > 0 && decideTime <= 0f)
+                decideTime = Time.unscaledTime + collectTime;
+
+            if (choosing)
             {
-                Connect(address, port);
+                // Игра выбирается цифрой; в VR клавиатуры нет — подключаемся к первой
+                int picked = ViewModeService.IsVR ? 0 : PressedDigit();
+                if (picked >= 0 && picked < compatible.Count)
+                    Connect(compatible[picked].address, compatible[picked].port);
+                return;
+            }
+
+            if (decideTime > 0f && Time.unscaledTime >= decideTime)
+            {
+                if (compatible.Count == 1 || ViewModeService.IsVR)
+                    Connect(compatible[0].address, compatible[0].port);
+                else
+                    choosing = true;
             }
             else if (Time.unscaledTime > searchEndTime)
             {
                 discovery.Stop();
-                idleStatus = "Игра не найдена. Создана ли она на другом ПК в этой сети?";
+                idleStatus = foundGames.Count > 0
+                    ? "Найдена игра другой версии: " + Describe(foundGames[0]) + ", у вас v" + Application.version + ". Нужна одинаковая версия"
+                    : "Игра не найдена. Создана ли она на другом ПК в этой сети?";
             }
+        }
+
+        // Хост шлёт объявление каждую секунду и через все адаптеры (и loopback): одну игру храним один раз,
+        // с первым адресом, с которого она пришла
+        private void AddFound(LanDiscovery.Announcement game)
+        {
+            for (int i = 0; i < foundGames.Count; i++)
+            {
+                LanDiscovery.Announcement known = foundGames[i];
+                if (known.port == game.port && (known.address == game.address || known.hostName == game.hostName))
+                    return;
+            }
+            foundGames.Add(game);
+        }
+
+        private List<LanDiscovery.Announcement> CompatibleGames()
+        {
+            var compatible = new List<LanDiscovery.Announcement>();
+            foreach (LanDiscovery.Announcement game in foundGames)
+                if (game.Compatible) compatible.Add(game);
+            return compatible;
+        }
+
+        private static string Describe(LanDiscovery.Announcement game)
+        {
+            string version = string.IsNullOrEmpty(game.version) ? "старая версия" : "v" + game.version;
+            return game.hostName + " (" + game.address + ", " + version + ")";
+        }
+
+        // Нажатая цифра 1–9 как номер в списке (0-based), -1 — не нажата
+        private static int PressedDigit()
+        {
+            Keyboard keyboard = Keyboard.current;
+            if (keyboard == null) return -1;
+            for (int i = 0; i < 9; i++)
+            {
+                if (keyboard[Key.Digit1 + i].wasPressedThisFrame || keyboard[Key.Numpad1 + i].wasPressedThisFrame)
+                    return i;
+            }
+            return -1;
         }
 
         private void Connect(string address, ushort port)
         {
             discovery.Stop();
+            choosing = false;
             connectAddress = address;
+            lastAddress = address;
+            lastPort = port;
             UseLanTransport(NetworkManager.Singleton).SetConnectionData(address, port);
             if (!NetworkManager.Singleton.StartClient())
                 idleStatus = "Не удалось подключиться к " + address;
@@ -263,16 +357,21 @@ namespace RacingProject.Network
                 return;
             }
 
+            // Переподключение занимает строку «Обучения», чтобы меню не выросло
+            bool reconnect = !online && !searching && offerReconnect && lastAddress != null;
             SetActive(soloButton, !online && !searching && !ViewModeService.IsVR);
-            SetActive(tutorialButton, !online && !searching && !ViewModeService.IsVR);
+            SetActive(tutorialButton, !online && !searching && !ViewModeService.IsVR && !reconnect);
             SetActive(hostButton, !online && !searching);
             SetActive(joinButton, !online);
+            SetActive(reconnectButton, reconnect);
             SetActive(readyButton, online && inSession);
             SetActive(leaveButton, online);
             SetText(joinButtonLabel, searching ? "Отмена" : "Найти игру");
 
             string status;
-            if (searching)
+            if (searching && choosing)
+                status = BuildChoiceStatus();
+            else if (searching)
                 status = "Поиск игры в сети... " + Mathf.CeilToInt(Mathf.Max(0f, searchEndTime - Time.unscaledTime)) + " с";
             else if (online && manager.IsServer && manager.ConnectedClientsIds.Count < RoomController.RequiredPlayers)
                 status = (string.IsNullOrEmpty(hostNotice) ? "" : hostNotice + "\n")
@@ -289,6 +388,19 @@ namespace RacingProject.Network
             else
                 status = idleStatus;
             SetText(statusText, status);
+        }
+
+        // Несколько игр в сети: список с номерами
+        private string BuildChoiceStatus()
+        {
+            var lines = new System.Text.StringBuilder("Найдено игр: " + foundGames.Count + ". Нажмите цифру, чтобы подключиться");
+            int number = 0;
+            foreach (LanDiscovery.Announcement game in foundGames)
+            {
+                lines.Append('\n');
+                lines.Append(game.Compatible ? (++number) + " — " + Describe(game) : "× " + Describe(game) + " — другая версия");
+            }
+            return lines.ToString();
         }
 
         private string GetReadyStatus()
@@ -340,9 +452,15 @@ namespace RacingProject.Network
             if (!wasConnected)
             {
                 // До игры дело не дошло — достаточно сообщения
+                // Отказ хоста приходит текстом («В игре уже два игрока»), служебные сообщения NGO о таймауте — нет
                 string reason = NetworkManager.Singleton.DisconnectReason;
-                idleStatus = string.IsNullOrEmpty(reason) ? "Не удалось подключиться к " + connectAddress : reason;
+                idleStatus = string.IsNullOrEmpty(reason) || reason.StartsWith("[Disconnect Event]")
+                    ? "Не удалось подключиться к " + connectAddress
+                    : reason;
                 Debug.Log("LanLobby: " + idleStatus);
+                // Не вышло переподключиться — кнопка остаётся, хост может ещё подняться
+                if (!wasHost && lastAddress != null && connectAddress == lastAddress)
+                    offerReconnect = true;
                 return;
             }
 
@@ -353,6 +471,8 @@ namespace RacingProject.Network
                 pendingStatus = !string.IsNullOrEmpty(reason) && reason.Contains("shutting down")
                     ? "Хост закрыл игру"
                     : "Соединение с хостом потеряно";
+                // Вышли не сами: у клиента в меню будет «Переподключиться»
+                offerReconnect = !wasHost && lastAddress != null;
             }
             Debug.Log("LanLobby: соединение закрыто, возврат в меню. " + pendingStatus);
 

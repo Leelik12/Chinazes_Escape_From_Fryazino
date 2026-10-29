@@ -8,13 +8,25 @@ using UnityEngine;
 
 namespace RacingProject.Network
 {
-    // Поиск игры в локальной сети: хост раз в секунду рассылает UDP broadcast с портом игры,
-    // клиент слушает порт обнаружения и берёт адрес хоста из отправителя пакета
+    // Поиск игры в локальной сети: хост раз в секунду рассылает UDP broadcast с портом игры, версией сборки
+    // и именем компьютера, клиент слушает порт обнаружения и берёт адрес хоста из отправителя пакета
     public sealed class LanDiscovery : IDisposable
     {
         public const int DiscoveryPort = 47777;
-        // Чужие программы на том же порту не примем за хост
+        // Чужие программы на том же порту не примем за хост. Подпись прежняя, чтобы игру старой версии
+        // (её пакет — только подпись и порт) было видно в списке как несовместимую
         private const string Signature = "RACINGPROJECT_LAN_1";
+
+        // Объявление хоста: адрес, порт, версия сборки (пусто — старая версия без неё) и имя компьютера
+        public struct Announcement
+        {
+            public string address;
+            public ushort port;
+            public string version;
+            public string hostName;
+
+            public bool Compatible => version == Application.version;
+        }
         private const float BroadcastInterval = 1f;
 
         private UdpClient socket;
@@ -32,7 +44,9 @@ namespace RacingProject.Network
             {
                 socket = new UdpClient { EnableBroadcast = true };
                 broadcastTargets = GetBroadcastTargets();
-                announcement = Encoding.UTF8.GetBytes(Signature + "|" + gamePort);
+                // Разделитель «|» в имени компьютера не встречается, но на всякий случай убираем
+                string hostName = Environment.MachineName.Replace("|", "");
+                announcement = Encoding.UTF8.GetBytes(Signature + "|" + gamePort + "|" + Application.version + "|" + hostName);
                 nextBroadcastTime = 0f;
             }
             catch (Exception e)
@@ -82,10 +96,9 @@ namespace RacingProject.Network
         }
 
         // Клиент вызывает каждый кадр; true, если пришло объявление хоста
-        public bool TryReceive(out string address, out ushort port)
+        public bool TryReceive(out Announcement found)
         {
-            address = null;
-            port = 0;
+            found = default;
             if (!IsListening)
                 return false;
 
@@ -96,9 +109,15 @@ namespace RacingProject.Network
                     IPEndPoint sender = null;
                     byte[] data = socket.Receive(ref sender);
                     string[] parts = Encoding.UTF8.GetString(data).Split('|');
-                    if (parts.Length == 2 && parts[0] == Signature && ushort.TryParse(parts[1], out port))
+                    if (parts.Length >= 2 && parts[0] == Signature && ushort.TryParse(parts[1], out ushort port))
                     {
-                        address = sender.Address.ToString();
+                        found = new Announcement
+                        {
+                            address = sender.Address.ToString(),
+                            port = port,
+                            version = parts.Length >= 3 ? parts[2] : "",
+                            hostName = parts.Length >= 4 ? parts[3] : sender.Address.ToString(),
+                        };
                         return true;
                     }
                 }
