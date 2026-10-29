@@ -56,6 +56,10 @@ namespace RacingProject.Management
 
         private IEnumerator ShowAfterDelay()
         {
+            // Сначала повтор последних секунд (DeathReplay), потом облёт горящей машины
+            yield return null;
+            while (DeathReplay.Instance != null && DeathReplay.Instance.Playing)
+                yield return null;
             if (!ViewModeService.IsVR && monitorDelay > 0f)
                 yield return new WaitForSeconds(monitorDelay);
 

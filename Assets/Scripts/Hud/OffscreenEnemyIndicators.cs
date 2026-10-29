@@ -64,7 +64,7 @@ namespace RacingProject.Hud
         private void Update()
         {
             arrows.Clear();
-            if (ViewModeService.IsVR || LocalPlayerRole.Current == PlayerRole.None) return;
+            if (ViewModeService.IsVR || LocalPlayerRole.Current == PlayerRole.None || DeathReplay.Active) return;
             AudioListener listener = ActiveListener.Current;
             Camera cam = listener != null ? listener.GetComponent<Camera>() : null;
             if (cam == null) cam = Camera.main;

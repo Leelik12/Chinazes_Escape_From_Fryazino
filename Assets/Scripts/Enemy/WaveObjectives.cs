@@ -405,7 +405,7 @@ namespace RacingProject.Enemy
 
         private void OnGUI()
         {
-            if (!IsSpawned || Current == Kind.None || ViewModeService.IsVR) return;
+            if (!IsSpawned || Current == Kind.None || ViewModeService.IsVR || DeathReplay.Active) return;
             if (LocalPlayerRole.Current == PlayerRole.None) return;
             if (style == null)
                 style = new GUIStyle(GUI.skin.box) { fontSize = 18, alignment = TextAnchor.MiddleCenter, wordWrap = false };

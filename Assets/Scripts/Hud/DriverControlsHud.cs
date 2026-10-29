@@ -47,7 +47,7 @@ namespace RacingProject.Hud
 
         private void OnGUI()
         {
-            if (LocalPlayerRole.Current == PlayerRole.Gunner) return;
+            if (LocalPlayerRole.Current == PlayerRole.Gunner || DeathReplay.Active) return;
             panel.Draw(BuildText());
         }
 

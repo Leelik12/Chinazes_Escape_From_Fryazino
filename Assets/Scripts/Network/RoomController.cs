@@ -240,7 +240,9 @@ namespace RacingProject.Network
 
         private IEnumerator RestartAfterDelay()
         {
-            yield return new WaitForSeconds(restartDelay);
+            // Повтор перед гибелью (DeathReplay) удлиняет паузу перед перезапуском
+            float replay = DeathReplay.Instance != null && !ViewModeService.IsVR ? DeathReplay.Instance.Duration : 0f;
+            yield return new WaitForSeconds(restartDelay + replay);
             // Одиночная игра закрывает хост, и LanLobby возвращает в меню с выбором режима
             if (Solo)
                 GetComponent<LanLobby>().OnLeavePressed();
