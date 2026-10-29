@@ -46,6 +46,8 @@ namespace RacingProject.Props
         // speed — прирост скорости у самого центра взрыва, м/с
         public static void Blast(Vector3 point, float radius, float speed)
         {
+            // Постройки-мелочь рядом разваливаются (радиус взрывов в игре — около 10 м)
+            BreakableProp.BlastBreak(point, radius / 10f);
             BlastBodies.Clear();
             foreach (Collider collider in Physics.OverlapSphere(point, radius, ~0, QueryTriggerInteraction.Ignore))
             {

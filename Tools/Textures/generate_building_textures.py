@@ -3,13 +3,15 @@
 # Запуск из корня проекта: python Tools/Textures/generate_building_textures.py (нужны numpy и Pillow).
 # На каждую текстуру пишутся два файла: <имя>.png — цвет, в альфе гладкость (Smoothness из Albedo Alpha в URP Lit),
 # и <имя>_Normal.png — карта нормалей (OpenGL, Y вверх), посчитанная из карты высот.
+# Разрешение 2048: шум строится по всему спектру, поэтому мелкие детали (волокна, поры, царапины) прорисовываются
+# сами; щели и впадины карты высот дополнительно затеняются в цвете (запечённое затенение, cavity).
 # Размер плитки в метрах указан у каждой текстуры: под него в Blender строится развёртка (Tools/Blender/private_sector).
 import os
 import numpy as np
 from PIL import Image
 
 OUT = os.path.join(os.path.dirname(__file__), "..", "..", "Assets", "Content", "PrivateSector", "Textures")
-S = 1024
+S = 2048
 rng = np.random.default_rng(1961)
 yy, xx = np.mgrid[0:S, 0:S] / S  # 0..1, y вниз
 
@@ -41,9 +43,29 @@ def rgb(r, g, b):
     return np.array([r, g, b], dtype=float) / 255.0
 
 
+def blur(a, sigma):
+    # Гауссово размытие с переносом через край (через БПФ, текстура бесшовная); sigma в пикселях
+    f = np.fft.fftfreq(S)
+    fx, fy = np.meshgrid(f, f)
+    return np.real(np.fft.ifft2(np.fft.fft2(a) * np.exp(-2 * (np.pi * sigma) ** 2 * (fx ** 2 + fy ** 2))))
+
+
+def cavity(height):
+    # Затенение впадин и лёгкий блик на выступах относительно окрестности ~1,5 % плитки
+    d = blur(height, S / 64) - height
+    sd = d.std()
+    if sd < 1e-6:
+        return np.ones((S, S))
+    d /= sd
+    return 1 - 0.14 * np.clip(d, 0, 3) / 3 + 0.05 * np.clip(-d, 0, 2) / 2
+
+
 def save(name, color, height, smooth, strength=4.0):
     os.makedirs(OUT, exist_ok=True)
-    col = np.clip(color, 0, 1)
+    height = np.broadcast_to(height, (S, S)).astype(float)
+    # Сила нормалей задана для 1024 пикселей: на большей текстуре перепад между соседними пикселями меньше
+    strength *= S / 1024
+    col = np.clip(color * cavity(height)[..., None], 0, 1)
     a = np.clip(np.broadcast_to(smooth, (S, S)), 0, 1)
     img = np.concatenate([col, a[..., None]], axis=2)
     Image.fromarray((img * 255).astype(np.uint8), "RGBA").save(os.path.join(OUT, name + ".png"))

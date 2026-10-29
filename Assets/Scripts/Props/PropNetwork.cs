@@ -10,17 +10,47 @@ namespace RacingProject.Props
     public class PropNetwork : NetworkBehaviour
     {
         public static PropNetwork Instance { get; private set; }
+        // Только сервер: взорвалась бочка или крупная цель (для рации и режиссёра)
+        public static event System.Action<ExplosiveBarrel> ServerExploded;
+
+        [Tooltip("Ещё группы со взрывающимися предметами (наполнение карты); номера идут после дочерних бочек")]
+        [SerializeField] private Transform[] extraRoots = new Transform[0];
 
         private ExplosiveBarrel[] barrels;
+        private BreakableProp[] breakables;
         // Чтобы машина из нескольких коллайдеров получила урон от одного взрыва один раз
         private readonly HashSet<Object> damagedThisBlast = new HashSet<Object>();
 
         private void Awake()
         {
             Instance = this;
-            barrels = GetComponentsInChildren<ExplosiveBarrel>(true);
+            // Порядок обхода иерархии одинаков у обоих игроков, поэтому номера совпадают
+            var all = new List<ExplosiveBarrel>(GetComponentsInChildren<ExplosiveBarrel>(true));
+            foreach (Transform root in extraRoots)
+                if (root != null)
+                    all.AddRange(root.GetComponentsInChildren<ExplosiveBarrel>(true));
+            barrels = all.ToArray();
             for (int i = 0; i < barrels.Length; i++)
                 barrels[i].Index = i;
+            breakables = BreakableProp.Ordered().ToArray();
+            for (int i = 0; i < breakables.Length; i++)
+                breakables[i].Index = i;
+        }
+
+        // Тот, кто считает физику машины (хост): постройка проломлена — у всех она разваливается
+        public void BreakProp(BreakableProp prop, Vector3 velocity, Vector3 point)
+        {
+            if (IsSpawned && IsServer)
+                BreakRpc(prop.Index, velocity, point);
+            else
+                prop.Break(velocity, point);
+        }
+
+        [Rpc(SendTo.Everyone)]
+        private void BreakRpc(int index, Vector3 velocity, Vector3 point)
+        {
+            if (index >= 0 && index < breakables.Length)
+                breakables[index].Break(velocity, point);
         }
 
         public override void OnDestroy()
@@ -39,6 +69,9 @@ namespace RacingProject.Props
             barrels[barrel.Index] = barrel;
         }
 
+        // Урон одного попадания по бочке с клиента больше этого не бывает
+        private const int MaxRequestDamage = 500;
+
         public void RequestBarrelHit(int index, int damage)
         {
             // Без сети (отладка в редакторе) всё считается на месте
@@ -48,10 +81,11 @@ namespace RacingProject.Props
                 BarrelHitRpc(index, damage);
         }
 
+        // Получено с клиента: урон проверяется, клиенту нельзя доверять
         [Rpc(SendTo.Server)]
         private void BarrelHitRpc(int index, int damage)
         {
-            ApplyBarrelHit(index, damage);
+            ApplyBarrelHit(index, Mathf.Clamp(damage, 0, MaxRequestDamage));
         }
 
         private void ApplyBarrelHit(int index, int damage)
@@ -84,6 +118,7 @@ namespace RacingProject.Props
             if (!barrel.TryDetonate()) return;
             damagedThisBlast.Clear();
             barrel.DealDamage();
+            ServerExploded?.Invoke(barrel);
             if (IsSpawned)
                 ExplodeRpc(barrel.Index);
             else

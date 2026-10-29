@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8872533268339559443}
+  - component: {fileID: 7518708464880038722}
   m_Layer: 0
   m_Name: Outhouse
   m_TagString: Untagged
@@ -32,6 +33,28 @@ Transform:
   - {fileID: 5971327047911415451}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7518708464880038722
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7060520637333402717}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb124d28d25f0b64fbc1230cd9c1a110, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  breakSpeed: 5
+  keepSpeed: 0.9
+  blastRadius: 7
+  debrisMass: 150
+  chunkSize: 1.2
+  glass: 0
+  parts:
+  - {fileID: 7309819131182584126}
+  sourceMeshes:
+  - {fileID: -2335955859051076117, guid: 6756f5e308f6f6145a7469974799ebfd, type: 3}
 --- !u!1001 &6148771583487670640
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -95,6 +118,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6756f5e308f6f6145a7469974799ebfd, type: 3}
       insertIndex: -1
       addedObject: {fileID: 322095404061304993}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 6756f5e308f6f6145a7469974799ebfd, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2486874626354183792}
   m_SourcePrefab: {fileID: 100100000, guid: 6756f5e308f6f6145a7469974799ebfd, type: 3}
 --- !u!4 &5971327047911415451 stripped
 Transform:
@@ -128,3 +154,20 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: -2335955859051076117, guid: 6756f5e308f6f6145a7469974799ebfd, type: 3}
+--- !u!114 &2486874626354183792
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6455271234862138401}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ded6816bdbff482438c61bd1d2925605, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!33 &7309819131182584126 stripped
+MeshFilter:
+  m_CorrespondingSourceObject: {fileID: -5754084199372789682, guid: 6756f5e308f6f6145a7469974799ebfd, type: 3}
+  m_PrefabInstance: {fileID: 6148771583487670640}
+  m_PrefabAsset: {fileID: 0}

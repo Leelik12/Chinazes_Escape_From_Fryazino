@@ -3,8 +3,12 @@
 # и экспортирует каждую модель в Assets/Models/PrivateSector/<имя>.fbx. Сцена пользователя не трогается.
 # Модели в метрах, низ — на z = 0, перед смотрит в −Y (в Unity это −Z, импортёр FBX увеличивает модели в 2 раза под масштаб мира).
 # Окна и двери не прорезаны: рамы, стёкла и наличники лежат поверх стен, так дешевле для VR.
+# У домов: угловые доски, продухи в цоколе, желоба и водосточные трубы, антенна на коньке, колпак на трубе,
+# перила крыльца, филёнки на двери, табличка с номером.
 # Развёртка — проекция каждой грани на её плоскость в метрах, делённых на размер плитки материала,
 # поэтому бесшовные текстуры из Tools/Textures/generate_building_textures.py ложатся без растяжений.
+# Перед экспортом каждая модель проходит polish: фаски на острых рёбрах и взвешенные нормали (средний полигонаж,
+# свет ложится на кромки), если модель не скруглена своими параметрами раньше.
 import bpy
 import bmesh
 import math
@@ -22,6 +26,7 @@ PREVIEW = {"PS_Logs": (0.45, 0.36, 0.27), "PS_Planks_Green": (0.27, 0.42, 0.3), 
            "PS_Planks_Raw": (0.45, 0.42, 0.38), "PS_Fence": (0.45, 0.42, 0.38), "PS_Brick": (0.55, 0.23, 0.16),
            "PS_Slate": (0.52, 0.53, 0.5), "PS_MetalRoof": (0.55, 0.55, 0.55), "PS_MetalGreen": (0.25, 0.36, 0.26),
            "PS_Plaster": (0.62, 0.6, 0.56), "PS_Trim": (0.85, 0.86, 0.83), "PS_Glass": (0.12, 0.15, 0.17)}
+SEG_SCALE = 2  # во сколько раз больше сегментов у круглых деталей, чем задано при построении
 
 
 class Builder:
@@ -88,6 +93,7 @@ class Builder:
 
     def cylinder(self, c, axis, r, length, mat, segs=8):
         # Цилиндр (торец бревна, столб) вдоль оси 'x' или 'y' с центром основания в c
+        segs *= SEG_SCALE
         c = Vector(c)
         # Базис правый (u × v = w), иначе бока или торцы смотрели бы внутрь
         if axis == "x":
@@ -272,6 +278,52 @@ def house(col, name, w, d, wall, roof, gable, shutters, wall_h=2.7, base_h=0.5, 
         cy = y0 + d * 0.62
         b.box((-0.32, cy - 0.32, zw), (0.32, cy + 0.32, zr + 0.9), "PS_Brick")
         b.box((-0.38, cy - 0.38, zr + 0.9), (0.38, cy + 0.38, zr + 1.0), "PS_Plaster")
+        # Жестяной колпак на четырёх стойках
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                b.box((sx * 0.3 - 0.02, cy + sy * 0.3 - 0.02, zr + 1.0), (sx * 0.3 + 0.02, cy + sy * 0.3 + 0.02, zr + 1.28), "PS_MetalRoof")
+        b.box((-0.48, cy - 0.48, zr + 1.28), (0.48, cy + 0.48, zr + 1.32), "PS_MetalRoof")
+    # Угловые доски у дощатых стен
+    if wall.startswith("PS_Planks"):
+        for cx, sx in ((x0, -1), (x1, 1)):
+            for cy, sy in ((y0, -1), (y1, 1)):
+                b.box((min(cx, cx + sx * 0.04), min(cy, cy + sy * 0.14), base_h), (max(cx, cx + sx * 0.04), max(cy, cy + sy * 0.14), zw), "PS_Trim")
+                b.box((min(cx, cx + sx * 0.14), min(cy, cy + sy * 0.04), base_h), (max(cx, cx + sx * 0.14), max(cy, cy + sy * 0.04), zw), "PS_Trim")
+    # Продухи в цоколе
+    for i in range(front_windows):
+        x = x0 + w * (i + 1) / (front_windows + 1)
+        b.box((x - 0.12, y0 - 0.07, 0.12), (x + 0.12, y0 - 0.05, 0.26), "PS_Glass")
+    for y in (y0 + d * 0.3, y0 + d * 0.7):
+        if veranda and y > y0 + d * 0.35:
+            continue  # цоколь веранды закрывает
+        b.box((x0 - 0.07, y - 0.12, 0.12), (x0 - 0.05, y + 0.12, 0.26), "PS_Glass")
+    # Желоба под свесом и водосточные трубы на задних углах (со стороны веранды её крыша заходит под свес)
+    over = 0.55 if log_corners else 0.45
+    ze = zw - over * math.tan(math.radians(pitch))
+    for side, xe, xw in ((-1, x0 - over, x0), (1, x1 + over, x1)):
+        if side < 0 and veranda:
+            continue
+        b.box((min(xe, xe - side * 0.14), y0 - 0.4, ze - 0.14), (max(xe, xe - side * 0.14), y1 + 0.4, ze - 0.04), "PS_MetalRoof")
+        py = y1 - 0.2
+        xa, xb = sorted((xe - side * 0.07, xw + side * 0.06))
+        b.box((xa, py - 0.05, ze - 0.3), (xb, py + 0.05, ze - 0.2), "PS_MetalRoof")
+        xa, xb = sorted((xw + side * 0.06, xw + side * 0.16))
+        b.box((xa, py - 0.05, 0.15), (xb, py + 0.05, ze - 0.2), "PS_MetalRoof")
+    # Телевизионная антенна на коньке
+    ay = y1 - 1.2
+    b.box((-0.03, ay - 0.03, zr), (0.03, ay + 0.03, zr + 2.4), "PS_MetalRoof")
+    for k, z in enumerate((zr + 1.7, zr + 2.0, zr + 2.3)):
+        half = 0.7 - k * 0.15
+        b.box((-half, ay - 0.015, z - 0.015), (half, ay + 0.015, z + 0.015), "PS_MetalRoof")
+    # Перила крыльца и филёнки на двери
+    for sy in (-0.85, 0.85):
+        b.box((x1, dy + sy - 0.03, base_h + 0.85), (x1 + 1.18, dy + sy + 0.03, base_h + 0.92), "PS_Planks_Raw")
+        for bx in (0.35, 0.7):
+            b.box((x1 + bx - 0.025, dy + sy - 0.025, base_h), (x1 + bx + 0.025, dy + sy + 0.025, base_h + 0.85), "PS_Planks_Raw")
+    for z0, z1 in ((0.15, 0.85), (1.1, 1.85)):
+        b.box((x1 + 0.05, dy - 0.3, base_h + z0), (x1 + 0.07, dy + 0.3, base_h + z1), "PS_Trim")
+    # Табличка с номером дома у двери
+    b.box((x1, dy + 1.15, base_h + 1.7), (x1 + 0.02, dy + 1.55, base_h + 1.95), "PS_MetalGreen")
     return b.finish(col)
 
 
@@ -391,27 +443,150 @@ def build_all():
     return scene, objs
 
 
-def export(scene, objs):
-    os.makedirs(OUT, exist_ok=True)
-    vl = scene.view_layers[0]
+def polish(obj, width=0.006, segments=2, angle=35.0):
+    # Скругление рёбер (фаска в segments сегментов по рёбрам острее angle) и сглаживание по углу с весом нормалей
+    # по площади: свет ложится на кромки, модель перестаёт выглядеть «коробками»
+    bev = obj.modifiers.new("Bevel", "BEVEL")
+    bev.width = width
+    bev.segments = segments
+    bev.limit_method = 'ANGLE'
+    bev.angle_limit = math.radians(angle)
+    bev.harden_normals = True
+    # Многоугольники после фаски бывают невыпуклыми — Unity такие отбрасывает; режем их на треугольники здесь
+    tri = obj.modifiers.new("Triangulate", "TRIANGULATE")
+    tri.min_vertices = 5
+    tri.ngon_method = 'CLIP'
+    tri.keep_custom_normals = True
+    wn = obj.modifiers.new("WeightedNormal", "WEIGHTED_NORMAL")
+    wn.keep_sharp = True
+    for poly in obj.data.polygons:
+        poly.use_smooth = True
+    obj.data.set_sharp_from_angle(angle=math.radians(angle))
+    # Модификаторы применяются через граф открытой сцены: модель на время вычисления кладётся в неё
+    temp = bpy.context.scene.collection
+    temp.objects.link(obj)
+    depsgraph = bpy.context.evaluated_depsgraph_get()
+    depsgraph.update()
+    old = obj.data
+    mesh = bpy.data.meshes.new_from_object(obj.evaluated_get(depsgraph), preserve_all_data_layers=True, depsgraph=depsgraph)
+    temp.objects.unlink(obj)
+    obj.modifiers.clear()
+    obj.data = mesh
+    bpy.data.meshes.remove(old)
+    # Имя меша = имя модели (по нему Unity находит меш в FBX); старый меш с таким именем от прошлых запусков уступает его
+    stale = bpy.data.meshes.get(obj.name)
+    if stale is not None and stale is not mesh:
+        stale.name = obj.name + "_old"
+    mesh.name = obj.name
+    obj["polished"] = True
+    return obj
+
+
+def auto_polish(obj):
+    # Фаска по размеру модели: 4 мм у мелочи, до 2 см у домов и ориентиров
+    size = max(obj.dimensions)
+    return polish(obj, width=min(0.02, max(0.004, size * 0.0025)), segments=1, angle=30.0)
+
+
+LOD_MIN_TRIS = 400  # у моделей легче этого LOD1 не делается
+LOD_RATIO = 0.35    # LOD1 — не больше этой доли треугольников полной модели
+
+
+def free_name(name):
+    # Имя занято объектом или мешем прошлого запуска — Blender дал бы новому суффикс .001
+    for coll in (bpy.data.objects, bpy.data.meshes):
+        old = coll.get(name)
+        if old is not None:
+            old.name = name + "_old"
+
+
+def make_lod(obj, ratio):
+    # Прореживание Decimate Collapse (материалы и развёртка сохраняются) — копия объекта, сам он не меняется
+    free_name(obj.name + "_LOD1")
+    lod = bpy.data.objects.new(obj.name + "_LOD1", obj.data.copy())
+    bpy.context.scene.collection.objects.link(lod)
+    dec = lod.modifiers.new("Decimate", "DECIMATE")
+    dec.decimate_type = 'COLLAPSE'
+    dec.ratio = ratio
+    dg = bpy.context.evaluated_depsgraph_get()
+    dg.update()
+    old = lod.data
+    mesh = bpy.data.meshes.new_from_object(lod.evaluated_get(dg), preserve_all_data_layers=True, depsgraph=dg)
+    bpy.context.scene.collection.objects.unlink(lod)
+    lod.modifiers.clear()
+    lod.data = mesh
+    bpy.data.meshes.remove(old)
+    mesh.name = lod.name
+    return lod
+
+
+def export_lods(build_all, full):
+    # Дальний вид (LOD1): та же модель, собранная заново без фасок и с исходным числом сегментов (SEG_SCALE = 1),
+    # то есть прежняя лёгкая версия с тем же силуэтом; если она всё ещё тяжелее LOD_RATIO от полной — прореживается.
+    # Прореживать саму полную модель нельзя: у фасок Decimate вытягивает шипы. LOD1 лежит в отдельном
+    # <имя>_LOD1.fbx, а не рядом в том же файле: второй объект в FBX сменил бы корень модели в Unity и сбросил бы
+    # всё, что префабы на нём настроили. LODGroup собирает Tools/Unity/BuildPropLods.cs.
+    # full — {имя: треугольников у полной модели}
+    global SEG_SCALE
+    keep = SEG_SCALE
+    SEG_SCALE = 1
+    try:
+        scene, objs = build_all()
+    finally:
+        SEG_SCALE = keep
     for o in objs:
-        loc = o.location.copy()
-        o.location = (0, 0, 0)
-        for other in scene.objects:
-            other.select_set(False, view_layer=vl)
-        o.select_set(True, view_layer=vl)
-        vl.objects.active = o
+        tris = full.get(o.name, 0)
+        if tris < LOD_MIN_TRIS:
+            continue
+        low = tri_count(o)
+        if low > tris * LOD_RATIO:
+            o = make_lod(o, tris * LOD_RATIO / low)
+            scene.collection.objects.link(o)
+        else:
+            free_name(o.name + "_LOD1")
+            o.name = o.name + "_LOD1"
+            o.data.name = o.name
         path = os.path.join(OUT, o.name + ".fbx")
-        # Выделение передаём явно: иначе экспортёр берёт выделенное в сцене, открытой в окне
-        with bpy.context.temp_override(scene=scene, view_layer=vl, selected_objects=[o], active_object=o, object=o):
-            bpy.ops.export_scene.fbx(filepath=path, use_selection=True, object_types={'MESH'}, apply_unit_scale=True,
-                                     apply_scale_options='FBX_SCALE_ALL', axis_forward='-Z', axis_up='Y',
-                                     bake_space_transform=True, mesh_smooth_type='FACE', use_tspace=True,
-                                     add_leaf_bones=False, bake_anim=False, path_mode='STRIP')
-        o.location = loc
+        export_fbx(scene, o, path)
+        print("exported", path, tri_count(o), "of", tris, "tris")
+
+
+def tri_count(obj):
+    return sum(len(p.vertices) - 2 for p in obj.data.polygons)
+
+
+def export_fbx(scene, o, path):
+    vl = scene.view_layers[0]
+    for other in scene.objects:
+        other.select_set(False, view_layer=vl)
+    loc = o.location.copy()
+    o.location = (0, 0, 0)
+    # Выделение передаём явно: иначе экспортёр берёт выделенное в сцене, открытой в окне
+    with bpy.context.temp_override(scene=scene, view_layer=vl, selected_objects=[o], active_object=o, object=o):
+        bpy.ops.export_scene.fbx(filepath=path, use_selection=True, object_types={'MESH'}, apply_unit_scale=True,
+                                 apply_scale_options='FBX_SCALE_ALL', axis_forward='-Z', axis_up='Y',
+                                 bake_space_transform=True, mesh_smooth_type='FACE', use_tspace=True,
+                                 add_leaf_bones=False, bake_anim=False, path_mode='STRIP')
+    o.location = loc
+
+
+def export(scene, objs, lod_build=None):
+    # lod_build — build_all набора моделей: с ним рядом экспортируются и LOD1 (export_lods)
+    os.makedirs(OUT, exist_ok=True)
+    for o in objs:
+        if not o.get("polished"):
+            auto_polish(o)
+        path = os.path.join(OUT, o.name + ".fbx")
+        export_fbx(scene, o, path)
         print("exported", path, len(o.data.polygons), "faces")
+    if lod_build is not None:
+        export_lods(lod_build, {o.name: tri_count(o) for o in objs})
 
 
 if __name__ == "__main__":
+    # PS_ONLY=Имя1,Имя2 — экспортировать только эти модели (и их LOD1), остальные FBX не трогать
+    only = {n for n in os.environ.get("PS_ONLY", "").split(",") if n}
     sc, models = build_all()
-    export(sc, models)
+    if only:
+        models = [o for o in models if o.name in only]
+    export(sc, models, lod_build=build_all)
