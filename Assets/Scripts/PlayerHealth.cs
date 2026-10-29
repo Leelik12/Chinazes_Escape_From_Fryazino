@@ -141,6 +141,19 @@ namespace RacingProject
             return true;
         }
 
+        // Продолжение сохранённого забега (RunSave): только сервер, без события урона
+        public void RestoreHealth(int value)
+        {
+            if (!IsServer || isDead) return;
+            value = Mathf.Clamp(value, 1, maxHealth);
+            currentHealth = value;
+            networkHealth.Value = value;
+            if (HPBAR != null)
+                HPBAR.SetHealth(currentHealth, maxHealth);
+            else if (healthSlider != null)
+                healthSlider.value = currentHealth;
+        }
+
         // Обновлённое здоровье; события урона и смерти срабатывают у обоих игроков
         private void OnHealthChanged(int previous, int newHealth)
         {

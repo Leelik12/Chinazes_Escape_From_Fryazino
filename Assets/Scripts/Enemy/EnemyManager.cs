@@ -4,6 +4,7 @@ using UnityEngine;
 using Unity.Netcode;
 using TMPro;
 using RacingProject.Management;
+using RacingProject.Network;
 using RacingProject.Pickups;
 
 namespace RacingProject.Enemy
@@ -103,6 +104,8 @@ namespace RacingProject.Enemy
         [SerializeField] private float breakTime = 4f;
         [Tooltip("Дольше этого карточку не ждут — выбирается случайная, с")]
         [SerializeField] private float cardTimeout = 15f;
+        [Tooltip("Продолжение сохранённого забега: столько секунд до первой волны, с")]
+        [SerializeField] private float resumeDelay = 5f;
         [Tooltip("Ремонт машины во время передышки, прочности в секунду")]
         [SerializeField] private float breakRepairPerSecond = 40f;
         [Tooltip("Волна, зачищенная быстрее parTimeBase + parTimePerEnemy × врагов, приносит бонус за каждую сэкономленную секунду")]
@@ -147,6 +150,7 @@ namespace RacingProject.Enemy
         public int Score => score.Value;
         // Для приборов: множитель комбо и прочность босса 0–1 (меньше нуля — босса нет)
         public int Combo => combo.Value;
+        public int MaxCombo => maxCombo;
         public float BossHealth01 => bossHealth.Value;
         public bool BreakActive => breakActive.Value;
         // Сервер: в этой волне жив босс (на такие волны задания не выдаются, WaveObjectives)
@@ -214,6 +218,7 @@ namespace RacingProject.Enemy
             score.OnValueChanged += OnKillsChanged;
             combo.OnValueChanged += OnKillsChanged;
             bossHealth.OnValueChanged += OnBossHealthChanged;
+            if (carHealth != null) carHealth.OnDeath += OnCarDied;
             UpdateUI();
         }
 
@@ -224,6 +229,13 @@ namespace RacingProject.Enemy
             score.OnValueChanged -= OnKillsChanged;
             combo.OnValueChanged -= OnKillsChanged;
             bossHealth.OnValueChanged -= OnBossHealthChanged;
+            if (carHealth != null) carHealth.OnDeath -= OnCarDied;
+        }
+
+        // Забег окончен: продолжать нечего
+        private void OnCarDied()
+        {
+            if (IsServer && LocalPlayerRole.IsSolo) RunSave.Clear();
         }
 
         // Сервер: очки за выживание, сброс комбо, прочность босса для UI, роли и страховка врагов, ремонт на ходу
@@ -279,8 +291,58 @@ namespace RacingProject.Enemy
                 combo.Value = 1;
                 wave.Value = 1;
                 nextSurvivalTime = Time.time + survivalInterval;
-                SpawnInitialEnemies();
+                // «Продолжить» в меню: забег с сохранённой волны (RunSave), иначе новый забег стирает сохранение
+                RunSave.Data saved = RunSave.ContinueRequested && LocalPlayerRole.IsSolo ? RunSave.Load() : null;
+                RunSave.ContinueRequested = false;
+                if (saved != null)
+                    StartCoroutine(ResumeRun(saved));
+                else
+                {
+                    if (LocalPlayerRole.IsSolo) RunSave.Clear();
+                    SpawnInitialEnemies();
+                }
             }
+        }
+
+        // Одиночная игра: улучшения, счёт и прочность из сохранения, короткая передышка — и следующая волна
+        private IEnumerator ResumeRun(RunSave.Data saved)
+        {
+            killedEnemies.Value = saved.kills;
+            score.Value = saved.score;
+            wave.Value = Mathf.Max(1, saved.wave);
+            for (int card = 0; card < saved.cards.Length && card < RunUpgrades.CardCount; card++)
+                for (int level = 0; level < saved.cards[card]; level++)
+                {
+                    RunUpgrades.Apply((RunUpgrades.Card)card);
+                    if ((RunUpgrades.Card)card == RunUpgrades.Card.Armor && carHealth != null)
+                        carHealth.IncreaseMaxHealth(RunUpgrades.ArmorPerLevel);
+                }
+            if (carHealth != null && saved.health > 0) carHealth.RestoreHealth(saved.health);
+            Turret.RocketLauncher launcher = FindFirstObjectByType<Turret.RocketLauncher>();
+            if (launcher != null && saved.rockets > launcher.Ammo) launcher.AddAmmo(saved.rockets - launcher.Ammo);
+
+            breakActive.Value = true;
+            yield return new WaitForSeconds(resumeDelay);
+            breakActive.Value = false;
+            SpawnRandomWave();
+        }
+
+        // Сервер, одиночная игра: снимок забега после зачищенной волны и выбранной карточки
+        private void SaveRun()
+        {
+            if (!LocalPlayerRole.IsSolo || carHealth == null || carHealth.IsDead) return;
+            var cards = new int[RunUpgrades.CardCount];
+            for (int i = 0; i < cards.Length; i++) cards[i] = RunUpgrades.Level((RunUpgrades.Card)i);
+            Turret.RocketLauncher launcher = FindFirstObjectByType<Turret.RocketLauncher>();
+            RunSave.Save(new RunSave.Data
+            {
+                wave = wave.Value,
+                score = score.Value,
+                kills = killedEnemies.Value,
+                cards = cards,
+                health = carHealth.CurrentHealth,
+                rockets = launcher != null ? launcher.Ammo : 0,
+            });
         }
 
         private void SpawnInitialEnemies()
@@ -463,6 +525,8 @@ namespace RacingProject.Enemy
             while (Time.time < breakEnd)
                 yield return null;
 
+            // Карточка к этому моменту применена у всех (CardChosenRpc)
+            SaveRun();
             breakActive.Value = false;
             SpawnRandomWave();
         }

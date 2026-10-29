@@ -9,7 +9,7 @@ using RacingProject.Management;
 
 namespace RacingProject.Network
 {
-    // Лобби в главном меню: одиночная игра (только на мониторе), создать игру (хост, водитель)
+    // Лобби в главном меню: одиночная игра (только на мониторе) и её продолжение с сохранённой волны (RunSave), создать игру (хост, водитель)
     // или найти её в локальной сети (клиент, стрелок). Поиск собирает объявления хостов: одна подходящая игра —
     // подключение сразу, несколько — список, игра выбирается цифрой; игры другой версии видны, но к ним не подключиться.
     // После обрыва связи появляется «Переподключиться» к тому же адресу.
@@ -23,6 +23,9 @@ namespace RacingProject.Network
         [Header("Кнопки")]
         [Tooltip("Одиночная игра: видна только в режиме монитора")]
         [SerializeField] private GameObject soloButton;
+        [Tooltip("Продолжить сохранённый одиночный забег: видна, если сохранение есть")]
+        [SerializeField] private GameObject continueButton;
+        [SerializeField] private TMP_Text continueButtonLabel;
         [Tooltip("Обучение: как и одиночная игра, видно только в режиме монитора")]
         [SerializeField] private GameObject tutorialButton;
         [SerializeField] private GameObject hostButton;
@@ -133,6 +136,17 @@ namespace RacingProject.Network
         {
             if (StartLocalHost())
                 room.StartSolo();
+        }
+
+        // Одиночная игра с сохранённой волны: сохранение применит EnemyManager при старте забега
+        public void OnContinuePressed()
+        {
+            if (!RunSave.Exists) return;
+            RunSave.ContinueRequested = true;
+            if (StartLocalHost())
+                room.StartSolo();
+            else
+                RunSave.ContinueRequested = false;
         }
 
         // Обучение — тоже одиночная игра, но на полигоне и без врагов
@@ -348,6 +362,7 @@ namespace RacingProject.Network
             if (launchStatus != null)
             {
                 SetActive(soloButton, false);
+                SetActive(continueButton, false);
                 SetActive(tutorialButton, false);
                 SetActive(hostButton, false);
                 SetActive(joinButton, false);
@@ -360,6 +375,9 @@ namespace RacingProject.Network
             // Переподключение занимает строку «Обучения», чтобы меню не выросло
             bool reconnect = !online && !searching && offerReconnect && lastAddress != null;
             SetActive(soloButton, !online && !searching && !ViewModeService.IsVR);
+            bool canContinue = !online && !searching && !ViewModeService.IsVR && RunSave.Exists;
+            SetActive(continueButton, canContinue);
+            if (canContinue) SetText(continueButtonLabel, $"Продолжить: волна {RunSave.NextWave}");
             SetActive(tutorialButton, !online && !searching && !ViewModeService.IsVR && !reconnect);
             SetActive(hostButton, !online && !searching);
             SetActive(joinButton, !online);
