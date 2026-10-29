@@ -10,8 +10,10 @@ namespace RacingProject.Enemy
     // — обрыв ЛЭП: штаб предупреждает, и через warnTime опора у дороги впереди падает поперёк неё
     //   (провода под током искрят на асфальте — PowerLines), дорога перекрыта, надо объезжать;
     // — сброс снабжения: штаб называет точку на дороге, через dropDelay там ложатся ящик выстрелов к РПГ
-    //   и ремкомплект (RocketCrates, RepairKits — их видят оба игрока).
-    // Сами события по сети не передаются: падение опоры, ящики и рация рассылают своё
+    //   и ремкомплект (RocketCrates, RepairKits — их видят оба игрока);
+    // — электричка: штаб предупреждает о поезде через ближний к машине переезд, и он проходит по линии
+    //   (ElectricTrain): закрывает переезды, сносит врагов на путях, машину бьёт.
+    // Сами события по сети не передаются: падение опоры, ящики, поезд и рация рассылают своё
     public class MapEvents : MonoBehaviour
     {
         [SerializeField] private EnemyManager enemyManager;
@@ -34,14 +36,19 @@ namespace RacingProject.Enemy
         [SerializeField] private Vector2 dropDistance = new Vector2(150f, 320f);
         [SerializeField] private float dropDelay = 20f;
 
+        [Header("Электричка")]
+        [Tooltip("Переезд не дальше этого от машины, м")]
+        [SerializeField] private float crossingDistance = 500f;
+
         private enum Pending { None, Pole, Drop }
+        private enum Kind { Pole, Drop, Train }
 
         private float nextEvent = -1f;
         private Pending pending;
         private float pendingAt;
         private Vector3 pendingPoint;
         private Vector2Int pendingPole;
-        private bool lastWasPole;
+        private Kind lastKind = Kind.Train;
         private readonly List<Vector3> poles = new List<Vector3>();
         private readonly List<Vector2Int> poleIds = new List<Vector2Int>();
         private readonly List<int> picks = new List<int>();
@@ -70,9 +77,17 @@ namespace RacingProject.Enemy
             if (Time.time < nextEvent) return;
             nextEvent = Time.time + Random.Range(eventInterval.x, eventInterval.y);
 
-            // Чередуются; если для одного нет места — другое
-            bool started = lastWasPole ? StartDrop() || StartPole() : StartPole() || StartDrop();
+            // По кругу: опора, сброс, поезд; если для очередного нет места — следующее
+            bool started = false;
+            for (int i = 1; i <= 3 && !started; i++) started = Begin((Kind)(((int)lastKind + i) % 3));
             if (!started) nextEvent = Time.time + 20f;
+        }
+
+        private bool Begin(Kind kind)
+        {
+            bool started = kind == Kind.Pole ? StartPole() : kind == Kind.Drop ? StartDrop() : StartTrain();
+            if (started) lastKind = kind;
+            return started;
         }
 
         private bool StartPole()
@@ -104,7 +119,6 @@ namespace RacingProject.Enemy
             pendingAt = Time.time + warnTime;
             pendingPole = poleIds[pick];
             pendingPoint = center;
-            lastWasPole = true;
             Say($"Внимание! Рушится ЛЭП {Where(poles[pick])} — дорогу перекроет, провода под током. Объезжайте!");
             return true;
         }
@@ -116,8 +130,32 @@ namespace RacingProject.Enemy
             pending = Pending.Drop;
             pendingAt = Time.time + dropDelay;
             pendingPoint = point;
-            lastWasPole = false;
             Say($"Вертушка сбросит вам ящики {Where(point)} через {Mathf.RoundToInt(dropDelay)} секунд: выстрелы к РПГ и ремкомплект.");
+            return true;
+        }
+
+        private bool StartTrain()
+        {
+            ElectricTrain train = ElectricTrain.Instance;
+            if (train == null || train.Running) return false;
+            RailCrossing nearest = null;
+            float best = crossingDistance;
+            foreach (RailCrossing crossing in train.Crossings)
+            {
+                if (crossing == null) continue;
+                Vector3 to = crossing.transform.position - carHealth.transform.position;
+                to.y = 0f;
+                if (to.magnitude < best)
+                {
+                    best = to.magnitude;
+                    nearest = crossing;
+                }
+            }
+            if (nearest == null) return false;
+            int dir = Random.value < 0.5f ? 1 : -1;
+            if (!train.Launch(dir)) return false;
+            int seconds = Mathf.RoundToInt(train.TimeTo(nearest.TrackDistance, dir) / 5f) * 5;
+            Say($"Электричка пройдёт через переезд {Where(nearest.transform.position)} примерно через {seconds} секунд. На путях не стойте!");
             return true;
         }
 
