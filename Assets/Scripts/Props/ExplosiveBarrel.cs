@@ -50,6 +50,8 @@ namespace RacingProject.Props
         public float ChainDelay => chainDelay;
         // Крупная цель (резервуар, машина): для рации и режиссёра
         public bool IsLarge => blastCount > 1;
+        // Взрыв у этого игрока (для достижений)
+        public static event System.Action<ExplosiveBarrel> BarrelExploded;
 
         private int currentHitPoints;
 
@@ -120,6 +122,7 @@ namespace RacingProject.Props
         {
             if (Exploded) return;
             Exploded = true;
+            BarrelExploded?.Invoke(this);
 
             Vector3 point = transform.position;
             foreach (GameObject fire in fireObjects)

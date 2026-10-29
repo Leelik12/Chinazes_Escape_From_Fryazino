@@ -75,6 +75,12 @@ namespace RacingProject.Hud
         private float radioStart;
         private float radioUntil;
 
+        // Новое достижение (Achievements): панель сверху справа
+        private CanvasGroup achievementGroup;
+        private TextMeshProUGUI achievementText;
+        private float achievementStart;
+        private float achievementUntil;
+
         private void Awake()
         {
             BuildUi();
@@ -88,6 +94,7 @@ namespace RacingProject.Hud
             enemyManager.CardsOffered += OnCardsOffered;
             enemyManager.CardChosen += OnCardChosen;
             RadioChatter.Message += OnRadio;
+            Achievements.Unlocked += OnAchievement;
         }
 
         private void OnDisable()
@@ -98,6 +105,7 @@ namespace RacingProject.Hud
             enemyManager.CardsOffered -= OnCardsOffered;
             enemyManager.CardChosen -= OnCardChosen;
             RadioChatter.Message -= OnRadio;
+            Achievements.Unlocked -= OnAchievement;
         }
 
         private void OnRadio(RadioChatter.Speaker speaker, string text)
@@ -108,6 +116,16 @@ namespace RacingProject.Hud
             radioText.maxVisibleCharacters = 0;
             radioStart = Time.time;
             radioUntil = Time.time + 2.5f + text.Length / 16f;
+            PlaceVrPanel(true);
+        }
+
+        private void OnAchievement(Achievements.Id id)
+        {
+            achievementText.text = $"{Achievements.Title(id)}\n<size=70%>{Achievements.Description(id)}</size>";
+            achievementText.maxVisibleCharacters = 0;
+            achievementStart = Time.time;
+            achievementUntil = Time.time + 4.5f;
+            Play(cardPickSound);
             PlaceVrPanel(true);
         }
 
@@ -190,8 +208,13 @@ namespace RacingProject.Hud
             if (radio)
                 radioText.maxVisibleCharacters = Mathf.FloorToInt((now - radioStart) * TypeSpeed * 1.3f);
 
+            bool achievement = now < achievementUntil;
+            achievementGroup.alpha = achievement ? Mathf.Clamp01((achievementUntil - now) / 0.5f) : 0f;
+            if (achievement)
+                achievementText.maxVisibleCharacters = Mathf.FloorToInt((now - achievementStart) * TypeSpeed * 1.3f);
+
             // В VR стрелку в паре раньше надписи не показывались; теперь панель видна обоим, но только во время раунда
-            bool visible = LocalPlayerRole.Current != PlayerRole.None && (banner || showCards || chosen || radio);
+            bool visible = LocalPlayerRole.Current != PlayerRole.None && (banner || showCards || chosen || radio || achievement);
             root.alpha = visible ? 1f : 0f;
             root.blocksRaycasts = visible && showCards && !choiceSent;
             if (vrMode && visible) PlaceVrPanel(false);
@@ -333,6 +356,23 @@ namespace RacingProject.Hud
             radioText = CreateText(radioGo.transform, "Text", textFont, 23f, TextLight, new Vector2(0f, -12f), new Vector2(780f, 66f), false);
             radioText.alignment = TextAlignmentOptions.TopLeft;
             radioText.textWrappingMode = TextWrappingModes.Normal;
+
+            // Достижение: панель сверху справа, подпись «достижение» и название с описанием
+            var achievementGo = new GameObject("Achievement", typeof(RectTransform), typeof(Image), typeof(CanvasGroup));
+            achievementGo.transform.SetParent(go.transform, false);
+            var achievementRect = (RectTransform)achievementGo.transform;
+            achievementRect.anchoredPosition = new Vector2(620f, 420f);
+            achievementRect.sizeDelta = new Vector2(560f, 112f);
+            achievementGo.GetComponent<Image>().color = Panel;
+            achievementGroup = achievementGo.GetComponent<CanvasGroup>();
+            achievementGroup.alpha = 0f;
+            achievementGroup.blocksRaycasts = false;
+            var achievementFrom = CreateText(achievementGo.transform, "From", textFont, 17f, PhosphorDim, new Vector2(0f, 38f), new Vector2(520f, 24f), true);
+            achievementFrom.alignment = TextAlignmentOptions.Left;
+            achievementFrom.text = "достижение получено";
+            achievementText = CreateText(achievementGo.transform, "Text", titleFont, 26f, Phosphor, new Vector2(0f, -12f), new Vector2(520f, 66f), false);
+            achievementText.alignment = TextAlignmentOptions.TopLeft;
+            achievementText.textWrappingMode = TextWrappingModes.Normal;
 
             var row = new GameObject("Cards", typeof(RectTransform));
             row.transform.SetParent(go.transform, false);

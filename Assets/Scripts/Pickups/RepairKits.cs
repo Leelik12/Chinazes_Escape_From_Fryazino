@@ -176,11 +176,15 @@ namespace RacingProject.Pickups
             }
         }
 
+        // Ремкомплект подобран: у обоих игроков (для достижений)
+        public static event System.Action PickedUp;
+
         [Rpc(SendTo.Everyone)]
         private void PickedUpRpc()
         {
             if (pickupSound != null)
                 pickupSound.Play();
+            PickedUp?.Invoke();
         }
 
         private void OnMaskChanged(int previous, int current)
