@@ -143,8 +143,9 @@ namespace RacingProject.Enemy
             hitThisShell.Clear();
             foreach (Collider c in Physics.OverlapSphere(point, blastRadius, ~0, QueryTriggerInteraction.Ignore))
             {
-                // Невыпуклый MeshCollider не умеет ClosestPoint — берём его габариты
-                Vector3 nearest = c is MeshCollider mesh && !mesh.convex ? c.bounds.ClosestPoint(point) : c.ClosestPoint(point);
+                // ClosestPoint умеют только простые формы и выпуклый меш; невыпуклый меш, террейн и колёса — по габаритам
+                bool simple = c is BoxCollider || c is SphereCollider || c is CapsuleCollider || c is MeshCollider mesh && mesh.convex;
+                Vector3 nearest = simple ? c.ClosestPoint(point) : c.bounds.ClosestPoint(point);
                 float falloff = 1f - Mathf.Clamp01(Vector3.Distance(point, nearest) / blastRadius);
 
                 PlayerHealth player = c.GetComponentInParent<PlayerHealth>();

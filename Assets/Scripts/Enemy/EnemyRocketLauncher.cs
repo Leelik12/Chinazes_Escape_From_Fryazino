@@ -233,8 +233,9 @@ namespace RacingProject.Enemy
                 foreach (Collider collider in player.GetComponentsInChildren<Collider>())
                 {
                     if (collider.isTrigger || collider is WheelCollider) continue;
-                    // У невыпуклого MeshCollider ClosestPoint не работает — берём ближайшую точку его габаритов
-                    Vector3 nearest = collider is MeshCollider mesh && !mesh.convex ? collider.bounds.ClosestPoint(point) : collider.ClosestPoint(point);
+                    // ClosestPoint умеют только простые формы и выпуклый меш; невыпуклый меш, террейн и колёса — по габаритам
+                    bool simple = collider is BoxCollider || collider is SphereCollider || collider is CapsuleCollider || collider is MeshCollider mesh && mesh.convex;
+                    Vector3 nearest = simple ? collider.ClosestPoint(point) : collider.bounds.ClosestPoint(point);
                     closest = Mathf.Min(closest, Vector3.Distance(point, nearest));
                 }
                 float falloff = Mathf.Lerp(1f, edgeDamage, closest / splashRadius);

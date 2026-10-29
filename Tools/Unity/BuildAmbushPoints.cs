@@ -32,6 +32,11 @@ foreach (var c in candidates) {
         var q = c + Quaternion.Euler(0, k * 45f, 0) * Vector3.forward * (ring * 12f);
         UnityEngine.AI.NavMeshHit hit;
         if (!UnityEngine.AI.NavMesh.SamplePosition(q, out hit, 10f, filter)) continue;
+        // Место под машину должно быть свободно: наполнение карты (бензовозы, шкафы, брошенные машины) NavMesh не вырезает
+        bool blocked = false;
+        foreach (var col in Physics.OverlapBox(hit.position + Vector3.up * 1.2f, new Vector3(1.5f, 0.9f, 3f), Quaternion.identity, ~0, QueryTriggerInteraction.Ignore))
+            if (!(col is TerrainCollider) && col.GetComponentInParent<RacingProject.Enemy.RoadNetwork>() == null && col.bounds.size.y > 0.4f) { blocked = true; break; }
+        if (blocked) continue;
         var road = Vector3.zero; float best = float.MaxValue;
         foreach (var r in roadPts) { float dd = (r - hit.position).sqrMagnitude; if (dd < best) { best = dd; road = r; } }
         if (!UnityEngine.AI.NavMesh.CalculatePath(hit.position, road, filter, path) || path.status != UnityEngine.AI.NavMeshPathStatus.PathComplete) continue;
