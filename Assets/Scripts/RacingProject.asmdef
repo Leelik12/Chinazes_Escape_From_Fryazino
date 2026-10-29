@@ -14,7 +14,8 @@
         "UnityEngine.UI",
         "Futurift",
         "TwoDOF",
-        "LogitechG29.Sample"
+        "LogitechG29.Sample",
+        "Inputter.Runtime"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
