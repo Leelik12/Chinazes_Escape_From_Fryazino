@@ -79,3 +79,6 @@ crashlytics-build.properties
 
 # Кэш Python скриптов Tools/
 __pycache__/
+
+# Скриншоты и сравнения из редактора
+/Captures/
