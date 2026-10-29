@@ -7,7 +7,8 @@ namespace RacingProject.Car
     // Вращение мешей колёс машины игроков.
     // У хоста (водителя) поворот берётся из WheelCollider, у второго игрока машина кинематическая и коллайдеры
     // не крутятся, поэтому вращение считается по пройденному пути, а угол руля приходит по сети.
-    // Позиция мешей не меняется: пивоты стоят в центре колеса, подвеска на виде не отражается
+    // Позиция мешей не меняется: пивоты стоят в центре колеса, подвеска на виде не отражается. Пробитое колесо
+    // (CarDamageState) опускается на высоту спущенной шины
     public class CarWheelVisuals : RoleSyncedBehaviour
     {
         [Serializable]
@@ -21,12 +22,26 @@ namespace RacingProject.Car
         [SerializeField] private WheelVisual[] wheels;
 
         private float networkSteerAngle;
+        private Vector3[] basePositions;
+        private float[] flatDrop;
         private float remoteSpin;
         private Vector3 lastPosition;
 
         private void Start()
         {
             lastPosition = transform.position;
+            basePositions = new Vector3[wheels.Length];
+            flatDrop = new float[wheels.Length];
+            for (int i = 0; i < wheels.Length; i++)
+                if (wheels[i].mesh != null) basePositions[i] = wheels[i].mesh.localPosition;
+        }
+
+        // Спущенное колесо: drop — насколько опустить меш, м (0 — целое)
+        public void SetFlat(WheelCollider collider, float drop)
+        {
+            if (flatDrop == null) Start();
+            for (int i = 0; i < wheels.Length; i++)
+                if (wheels[i].collider == collider) flatDrop[i] = drop;
         }
 
         // После физики и сетевой интерполяции позиции машины
@@ -36,6 +51,7 @@ namespace RacingProject.Car
                 UpdateFromColliders();
             else
                 UpdateFromMovement();
+            ApplyFlats();
 
             lastPosition = transform.position;
         }
@@ -70,6 +86,25 @@ namespace RacingProject.Car
                 if (wheel.collider == null || wheel.mesh == null) continue;
                 float steer = wheel.steering ? networkSteerAngle : 0f;
                 wheel.mesh.rotation = wheel.collider.transform.rotation * Quaternion.Euler(remoteSpin, steer, 0f);
+            }
+        }
+
+        private void ApplyFlats()
+        {
+            if (flatDrop == null) return;
+            for (int i = 0; i < wheels.Length; i++)
+            {
+                if (wheels[i].mesh == null) continue;
+                Vector3 position = basePositions[i];
+                if (flatDrop[i] > 0f)
+                {
+                    // Сдвиг вниз в осях машины, переведённый в локальные оси родителя меша
+                    Transform parent = wheels[i].mesh.parent;
+                    Vector3 down = -transform.up * flatDrop[i];
+                    if (parent != null) down = parent.InverseTransformVector(down);
+                    position += down;
+                }
+                wheels[i].mesh.localPosition = position;
             }
         }
 

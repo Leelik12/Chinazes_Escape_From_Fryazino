@@ -55,6 +55,17 @@ namespace LogitechG29.Sample.Input
             UnRegisterDebugOnActions();
         }
 
+        // Переназначение клавиши клавиатуры: привязку с путём defaultPath (например "<Keyboard>/w") заменяет на newPath.
+        // Вызывается игрой при старте и после смены клавиш в настройках
+        public void OverrideKeyboardBinding(string defaultPath, string newPath)
+        {
+            if (_input == null) return;
+            foreach (InputAction action in _input.asset)
+                for (int i = 0; i < action.bindings.Count; i++)
+                    if (action.bindings[i].path == defaultPath)
+                        action.ApplyBindingOverride(i, newPath);
+        }
+
         #endregion
 
 

@@ -4,6 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using RacingProject.Management;
 using RacingProject.Network;
 
 namespace RacingProject.Car
@@ -78,7 +79,7 @@ namespace RacingProject.Car
             }
             else
             {
-                charge = Mathf.Min(1f, charge + Time.fixedDeltaTime / rechargeTime);
+                charge = Mathf.Min(1f, charge + Time.fixedDeltaTime * RunUpgrades.NitroRecharge / rechargeTime);
             }
 
             if (boosting.Value != active)
@@ -87,11 +88,20 @@ namespace RacingProject.Car
                 networkCharge.Value = charge;
         }
 
-        // Кнопка Right Bumper руля G29 или левый Shift на клавиатуре
+        // Сервер: подобранный баллон добавляет заряд; полный баллон не тратится (false)
+        public bool Refill(float amount)
+        {
+            if (!IsServer || charge >= 0.99f) return false;
+            charge = Mathf.Min(1f, charge + amount);
+            networkCharge.Value = charge;
+            return true;
+        }
+
+        // Кнопка Right Bumper руля G29 или клавиша нитро (по умолчанию левый Shift)
         private bool IsPressed()
         {
             bool wheel = inputControllerReader != null && inputControllerReader.RightBumper;
-            bool keyboard = Keyboard.current != null && Keyboard.current.leftShiftKey.isPressed;
+            bool keyboard = GameKeys.IsPressed(GameAction.Nitro);
             return wheel || keyboard;
         }
 

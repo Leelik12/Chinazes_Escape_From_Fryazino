@@ -1,5 +1,7 @@
 ﻿using RacingProject.Enemy;
+using RacingProject.Management;
 using RacingProject.Network;
+using RacingProject.Props;
 using UnityEngine;
 
 namespace RacingProject.Car
@@ -21,10 +23,20 @@ namespace RacingProject.Car
 
         private float nextHitTime;
 
+        // Скорость перед шагом физики: удар её уже погасил, а BreakableProp возвращает машине её долю
+        public Vector3 LastVelocity { get; private set; }
+        private Rigidbody body;
+
         private void Awake()
         {
             if (health == null)
                 health = GetComponent<PlayerHealth>();
+            body = GetComponent<Rigidbody>();
+        }
+
+        private void FixedUpdate()
+        {
+            if (body != null) LastVelocity = body.linearVelocity;
         }
 
         private void OnCollisionEnter(Collision collision)
@@ -41,11 +53,15 @@ namespace RacingProject.Car
             if (Mathf.Abs(Vector3.Dot(contact.normal, transform.up)) > 0.75f) return;
             float speed = Mathf.Abs(Vector3.Dot(collision.relativeVelocity, contact.normal));
             if (speed < minImpactSpeed) return;
+            // Постройка, которая от такого удара разваливается, машину не ранит
+            BreakableProp breakable = collision.collider.GetComponentInParent<BreakableProp>();
+            if (breakable != null && (breakable.Broken || speed >= breakable.BreakSpeed)) return;
 
             nextHitTime = Time.time + hitCooldown;
-            int damage = Mathf.Min(maxDamage, Mathf.RoundToInt((speed - minImpactSpeed) * damagePerSpeed));
+            // Улучшение «усиленный бампер» снижает урон от ударов
+            int damage = Mathf.Min(maxDamage, Mathf.RoundToInt((speed - minImpactSpeed) * damagePerSpeed * RunUpgrades.CrashDamageTaken));
             if (damage > 0)
-                health.RequestDamage(damage);
+                health.RequestDamage(damage, contact.point);
         }
     }
 }

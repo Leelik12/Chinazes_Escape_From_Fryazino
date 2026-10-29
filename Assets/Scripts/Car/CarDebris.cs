@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+using RacingProject.Audio;
 
 namespace RacingProject.Car
 {
@@ -38,6 +39,7 @@ namespace RacingProject.Car
         private float lifetime;
         private float age;
         private Vector3 fullScale;
+        private float nextClatterTime;
 
         // vertexIndices — вершины исходной сетки, triangles — индексы в этом списке по подсеткам (null — подсетка пуста)
         public static CarDebris Spawn(MeshFilter source, Mesh sourceMesh, SourceChannels channels, Vector3[] vertices, Vector3[] normals,
@@ -142,6 +144,17 @@ namespace RacingProject.Car
                 return;
             }
             transform.localScale = fullScale * k;
+        }
+
+        // Деталь звенит о дорогу и стены, пока летит и кувыркается; лёгкие касания и частые отскоки молчат
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (age > 8f || Time.time < nextClatterTime) return;
+            float speed = collision.relativeVelocity.magnitude;
+            if (speed < 2f) return;
+            nextClatterTime = Time.time + 0.15f;
+            Vector3 point = collision.contactCount > 0 ? collision.GetContact(0).point : transform.position;
+            SoundLibrary.Play(SoundLibrary.Sfx.DebrisClatter, point, Mathf.Clamp01(speed / 10f), Mathf.Lerp(1.15f, 0.9f, Mathf.Clamp01(speed / 12f)));
         }
 
         private void OnDestroy()

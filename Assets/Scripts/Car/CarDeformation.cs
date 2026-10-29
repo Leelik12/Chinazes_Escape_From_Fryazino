@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
@@ -89,6 +90,18 @@ namespace RacingProject.Car
 
         private readonly List<Body> parts = new List<Body>();
         private float nextHitTime;
+        private float nextImpactSoundTime;
+        // Скрежет о стену или другую машину 0–1: считает сервер по скольжению касаний, игрокам приходит байтом
+        private readonly NetworkVariable<byte> scrape = new NetworkVariable<byte>();
+        private float scrapeLocal;
+        private float scrapeTarget;
+
+        // Удар любой силы (для звука и искр): точка в мире и скорость сближения, м/с. Приходит у обоих игроков
+        public event Action<Vector3, float> Impacted;
+        // Оторвались детали: точка в мире, сколько деталей и было ли среди них стекло (окна, фары)
+        public event Action<Vector3, int, bool> PartsDetached;
+
+        public float Scrape01 => IsSpawned ? scrape.Value / 255f : scrapeLocal;
 
         private void Start()
         {
@@ -131,6 +144,14 @@ namespace RacingProject.Car
             }
         }
 
+        // Меш этого фильтра — своя копия CarDeformation (уничтожается вместе с машиной)
+        public bool Owns(MeshFilter filter)
+        {
+            foreach (Body body in parts)
+                if (body.filter == filter && body.mesh != null) return true;
+            return false;
+        }
+
         public override void OnDestroy()
         {
             foreach (Body body in parts)
@@ -160,6 +181,15 @@ namespace RacingProject.Car
             if (Vector3.Dot(normal, transform.up) > 0.75f) return;
 
             float speed = Mathf.Abs(Vector3.Dot(collision.relativeVelocity, normal));
+            // Звук слышен и у ударов слабее вмятины
+            if (speed >= 1.5f && Time.time >= nextImpactSoundTime)
+            {
+                nextImpactSoundTime = Time.time + 0.12f;
+                if (IsSpawned)
+                    ImpactRpc(transform.InverseTransformPoint(point), speed);
+                else
+                    Impacted?.Invoke(point, speed);
+            }
             if (speed < minImpactSpeed) return;
 
             float strength = 1f;
@@ -177,6 +207,36 @@ namespace RacingProject.Car
                 DentRpc(localPoint, localDir, depth, radius);
             else
                 Dent(localPoint, localDir, depth, radius);
+        }
+
+        [Rpc(SendTo.Everyone)]
+        private void ImpactRpc(Vector3 localPoint, float speed)
+        {
+            Impacted?.Invoke(transform.TransformPoint(localPoint), speed);
+        }
+
+        // Сервер: скорость скольжения вдоль касаний со стенами и машинами (не с землёй днищем и не с обломками)
+        private void OnCollisionStay(Collision collision)
+        {
+            if (IsSpawned && !IsServer) return;
+            if (collision.contactCount == 0 || collision.collider.GetComponentInParent<CarDebris>() != null) return;
+            Vector3 normal = collision.GetContact(0).normal;
+            if (Mathf.Abs(Vector3.Dot(normal, transform.up)) > 0.75f) return;
+            Vector3 slide = Vector3.ProjectOnPlane(collision.relativeVelocity, normal);
+            scrapeTarget = Mathf.Max(scrapeTarget, Mathf.Clamp01((slide.magnitude - 1.5f) / 14f));
+        }
+
+        private void FixedUpdate()
+        {
+            if (IsSpawned && !IsServer) return;
+            // Касание держится, пока его подтверждает OnCollisionStay; без него скрежет быстро стихает
+            scrapeLocal = Mathf.MoveTowards(scrapeLocal, scrapeTarget, Time.fixedDeltaTime * (scrapeTarget > scrapeLocal ? 8f : 4f));
+            scrapeTarget = 0f;
+            if (IsSpawned)
+            {
+                byte value = (byte)Mathf.RoundToInt(scrapeLocal * 255f);
+                if (value != scrape.Value) scrape.Value = value;
+            }
         }
 
         [Rpc(SendTo.Everyone)]
@@ -254,6 +314,36 @@ namespace RacingProject.Car
                     DentVertex(body, i, p, dir, d, r, r2, maxOffset);
             }
             body.dirty = true;
+        }
+
+        // Ближайшая к точке вершина кузова, смотрящая навстречу выстрелу (для следов пуль: коллайдеры машин —
+        // упрощённые коробки). Возвращает точку и нормаль в мире и сетку, к которой крепить след
+        public bool FindSurface(Vector3 worldPoint, Vector3 shotDir, float reach, out Vector3 point, out Vector3 normal, out Transform parent)
+        {
+            point = worldPoint;
+            normal = -shotDir;
+            parent = null;
+            float best = float.MaxValue;
+            foreach (Body body in parts)
+            {
+                if (body.layout == null) continue;
+                Transform t = body.filter.transform;
+                Vector3 p = t.InverseTransformPoint(worldPoint);
+                float r = reach / Mathf.Max(1e-4f, MaxAbs(t.lossyScale));
+                Vector3 dir = t.InverseTransformDirection(shotDir);
+                foreach (int i in Nearby(body, p, r))
+                {
+                    if (body.layout.islands[body.layout.vertexIsland[i]].detached) continue;
+                    if (body.normals != null && Vector3.Dot(body.normals[i], dir) > -0.2f) continue;
+                    float d = (body.vertices[i] - p).sqrMagnitude;
+                    if (d >= best) continue;
+                    best = d;
+                    point = t.TransformPoint(body.vertices[i]);
+                    normal = body.normals != null ? t.TransformDirection(body.normals[i]).normalized : -shotDir;
+                    parent = t;
+                }
+            }
+            return parent != null;
         }
 
         // Вершины из ячеек, задевающих куб со стороной 2r вокруг точки (в осях меша)
@@ -390,6 +480,28 @@ namespace RacingProject.Car
                 if (debrisVertices[g].Count > 0)
                     CarDebris.Spawn(body.filter, body.mesh, body.channels, body.vertices, body.normals, debrisVertices[g], debrisTriangles[g],
                         car, colliders, debrisLifetime);
+
+            // Для звука: середина оторванного и было ли среди него стекло (по имени материала подсетки)
+            Material[] materials = body.filter.GetComponent<Renderer>() is Renderer renderer ? renderer.sharedMaterials : new Material[0];
+            Vector3 center = Vector3.zero;
+            bool glass = false;
+            for (int g = 0; g < broken.Count; g++)
+            {
+                Island main = layout.islands[broken[g]];
+                center += (main.min + main.max) * 0.5f;
+                for (int s = 0; s < subMeshes && !glass; s++)
+                    if (debrisTriangles[g][s] != null && s < materials.Length && IsGlass(materials[s]))
+                        glass = true;
+            }
+            if (broken.Count > 0)
+                PartsDetached?.Invoke(body.filter.transform.TransformPoint(center / broken.Count), broken.Count, glass);
+        }
+
+        private static bool IsGlass(Material material)
+        {
+            if (material == null) return false;
+            string name = material.name.ToLowerInvariant();
+            return name.Contains("glass") || name.Contains("window") || name.Contains("light") || name.Contains("lamp");
         }
 
         private static void DentVertex(Body body, int i, Vector3 p, Vector3 dir, float depth, float r, float r2, float maxOffset)

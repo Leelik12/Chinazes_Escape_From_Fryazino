@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using RacingProject.Management;
 using RacingProject.Network;
 
 namespace RacingProject.Car
@@ -26,6 +27,22 @@ namespace RacingProject.Car
         [Tooltip("Скорость возврата руля к центру с клавиатуры, доля в секунду")]
         [SerializeField] private float keyboardSteerReturn = 5f;
         [SerializeField] private float maxBrakeTorque = 10000f;
+        [Tooltip("Доля тормозного усилия на передней оси: при торможении вес уходит вперёд, и передние колёса держат дорогу лучше")]
+        [SerializeField, Range(0f, 1f)] private float frontBrakeBias = 0.6f;
+        [Tooltip("АБС: если колесо проскальзывает сильнее этого, тормоз на нём ослабевает, и машина остаётся управляемой")]
+        [SerializeField] private float absSlip = 0.35f;
+        [Tooltip("Центр масс машины в её локальных координатах: чем ниже, тем меньше крен и тем труднее перевернуться")]
+        [SerializeField] private Vector3 centerOfMass = new Vector3(0f, -0.8f, 0f);
+
+        [Header("Ручник (пробел или рычаг)")]
+        [Tooltip("Тормозной момент ручника на задних колёсах")]
+        [SerializeField] private float handbrakeTorque = 8000f;
+        [Tooltip("Доля бокового сцепления задних колёс при затянутом ручнике: зад уходит в занос")]
+        [SerializeField, Range(0.1f, 1f)] private float handbrakeSideGrip = 0.45f;
+        [Tooltip("Скорость возврата сцепления после ручника, доля в секунду")]
+        [SerializeField] private float handbrakeGripReturn = 1.5f;
+        [Tooltip("Доля бокового сцепления на мокрой дороге (дождь, WeatherController): в поворотах машину легче сорвать в занос")]
+        [SerializeField, Range(0.5f, 1f)] private float wetSideGrip = 0.82f;
         [Tooltip("Сцепление выжато, если педаль нажата сильнее этого значения: можно переключать передачу, двигатель отсоединён от колёс")]
         [SerializeField, Range(0f, 1f)] private float clutchThreshold = 0.5f;
         [SerializeField] private float[] gearRatios = { 0f, 3.8f, 2.2f, 1.5f, 1.2f, 1f, 0.8f, -0.5f };
@@ -40,6 +57,8 @@ namespace RacingProject.Car
         [SerializeField, Range(0.1f, 1f)] private float autoDownshift = 0.6f;
         [Tooltip("Ниже этой скорости (км/ч) тормоз включает заднюю передачу, а газ — первую")]
         [SerializeField] private float autoReverseSpeed = 3f;
+        [Tooltip("Сколько секунд держать тормоз на месте, чтобы включилась задняя: короткое нажатие только тормозит")]
+        [SerializeField] private float autoReverseDelay = 0.35f;
 
         [Header("Звуки")]
         [SerializeField] private AudioSource Engine;
@@ -76,12 +95,44 @@ namespace RacingProject.Car
         private float finalmotor;
         private int currentGear;
         private float brakeInput;
+        private float reverseHold;
+        private bool handbrake;
+        private bool misfiring;
+        private float rearGrip = 1f;
+        private float appliedWetness;
+        private readonly Dictionary<WheelCollider, float> baseSideStiffness = new Dictionary<WheelCollider, float>();
+        // Боковое сцепление пробитых колёс (CarDamageState): множитель к обычному
+        private readonly Dictionary<WheelCollider, float> damageGrip = new Dictionary<WheelCollider, float>();
+
+        // Доля мощности мотора от поломок (перегрев при пробитом радиаторе), 1 — целый
+        public float DamagePower { get; set; } = 1f;
 
         // Для приборов: передача (0 — нейтраль, 7 — задняя) и скорость по Rigidbody
         public int CurrentGear => currentGear;
         public float SpeedKmh => rb != null ? rb.linearVelocity.magnitude * 3.6f : 0f;
         // Угол поворота модели руля, градусы (может быть больше 360)
         public float SteeringWheelAngle => currentVisualAngle;
+        // Ручник затянут (для камеры и звука)
+        public bool Handbrake => handbrake;
+        // Для звука мотора (CarEngineAudio): газ 0–1 и перебои разбитого мотора
+        public float Throttle => throttleInput;
+        public bool Misfiring => misfiring;
+
+        // Обороты 0–1: доля предела скорости включённой передачи. На нейтрали и при выжатом сцеплении мотор
+        // свободно раскручивается газом; с места на первой обороты не падают ниже доли газа (пробуксовка сцепления)
+        public float EngineRpm01
+        {
+            get
+            {
+                if (rb == null) return 0f;
+                float speed = Mathf.Abs(Vector3.Dot(rb.linearVelocity, transform.forward)) * 3.6f;
+                bool free = currentGear <= 0 || currentGear >= gearSpeedLimits.Length || gearSpeedLimits[currentGear] <= 0f
+                            || (!LocalPlayerRole.IsSolo && inputControllerReader != null && inputControllerReader.Clutch > clutchThreshold);
+                if (free) return throttleInput * 0.9f;
+                float rpm = speed / gearSpeedLimits[currentGear];
+                return Mathf.Clamp(Mathf.Max(rpm, throttleInput * 0.3f), 0f, 1.05f);
+            }
+        }
 
         [Header("Импульс для освобождения")]
         public float impulseForce = 5000f;      // сила импульса
@@ -95,10 +146,33 @@ namespace RacingProject.Car
         {
             Engine.Play();
             rb = GetComponent<Rigidbody>();
-            rb.centerOfMass = new Vector3(0, -0.8f, 0);
+            rb.centerOfMass = centerOfMass;
             if (health == null)
                 health = GetComponent<PlayerHealth>();
             ownerInterpolation = rb.interpolation;
+            foreach (var axleInfo in axleInfos)
+            {
+                baseSideStiffness[axleInfo.leftWheel] = axleInfo.leftWheel.sidewaysFriction.stiffness;
+                baseSideStiffness[axleInfo.rightWheel] = axleInfo.rightWheel.sidewaysFriction.stiffness;
+            }
+            GameKeys.ApplyTo(inputControllerReader);
+            GameKeys.Changed += OnKeysChanged;
+        }
+
+        private void OnDestroy()
+        {
+            GameKeys.Changed -= OnKeysChanged;
+        }
+
+        private void OnKeysChanged()
+        {
+            GameKeys.ApplyTo(inputControllerReader);
+        }
+
+        // Модель руля крутится в кадре отрисовки: из FixedUpdate она дёргалась при высокой частоте кадров
+        private void Update()
+        {
+            UpdateSteeringWheelVisual();
         }
 
         public void FixedUpdate()
@@ -111,6 +185,9 @@ namespace RacingProject.Car
             throttleInput = inputControllerReader.Throttle;
             // Тормоз
             brakeInput = inputControllerReader.Brake > 0.2f ? inputControllerReader.Brake : 0f;
+
+            // Ручник: пробел (или своя клавиша) либо рычаг ручника
+            handbrake = GameKeys.IsPressed(GameAction.Handbrake) || inputControllerReader.Handbrake > 0.5f;
 
             // Базовый момент
             motor = maxMotorTorque * throttleInput;
@@ -178,10 +255,11 @@ namespace RacingProject.Car
                 }
             }
 
-            // Разбитый мотор слабеет, а совсем разбитый ещё и чихает
+            // Разбитый мотор слабеет, а совсем разбитый ещё и чихает; улучшение «форсированный мотор» добавляет тяги
             bool misfire;
             float power = EnginePower(out misfire);
-            finalmotor *= power;
+            misfiring = misfire;
+            finalmotor *= power * RunUpgrades.EngineTorque * DamagePower;
 
             // Ограничение скорости по передаче
             float currentSpeed = rb.linearVelocity.magnitude * 3.6f;
@@ -202,7 +280,6 @@ namespace RacingProject.Car
 
             // UI
             UpdateGauges();
-            UpdateSteeringWheelVisual();
 
             // Передача момента и тормоза на колёса
             foreach (var axleInfo in axleInfos)
@@ -220,11 +297,17 @@ namespace RacingProject.Car
                     axleInfo.leftWheel.motorTorque = wheelTorque;
                     axleInfo.rightWheel.motorTorque = wheelTorque;
 
-                    // Тормоз работает независимо от сцепления
-                    axleInfo.leftWheel.brakeTorque = brakeInput * maxBrakeTorque;
-                    axleInfo.rightWheel.brakeTorque = brakeInput * maxBrakeTorque;
                 }
+
+                // Тормоза на обеих осях (независимо от сцепления), ручник — только задние колёса
+                float share = axleInfo.steering ? frontBrakeBias : 1f - frontBrakeBias;
+                float brakeTorque = brakeInput * maxBrakeTorque * 2f * share;
+                bool rear = !axleInfo.steering;
+                ApplyBrake(axleInfo.leftWheel, brakeTorque, rear);
+                ApplyBrake(axleInfo.rightWheel, brakeTorque, rear);
             }
+            UpdateRearGrip();
+            UpdateWetGrip();
             // обновляем кулдаун импульса
             if (impulseTimer > 0f)
                 impulseTimer -= Time.fixedDeltaTime;
@@ -233,6 +316,69 @@ namespace RacingProject.Car
             HandleHatSwitchImpulse();
 
         }
+        // Тормоз колеса с АБС; на задних колёсах ручник блокирует колесо без АБС
+        private void ApplyBrake(WheelCollider wheel, float torque, bool rear)
+        {
+            if (torque > 0f && absSlip > 0f && wheel.GetGroundHit(out WheelHit hit) && Mathf.Abs(hit.forwardSlip) > absSlip)
+                torque *= 0.35f;
+            if (rear && handbrake)
+            {
+                torque = Mathf.Max(torque, handbrakeTorque);
+                wheel.motorTorque = 0f;
+            }
+            wheel.brakeTorque = torque;
+        }
+
+        // С ручником задние колёса теряют боковое сцепление, после — плавно его возвращают
+        private void UpdateRearGrip()
+        {
+            float target = handbrake ? handbrakeSideGrip : 1f;
+            float rate = handbrake ? 6f : handbrakeGripReturn;
+            float grip = Mathf.MoveTowards(rearGrip, target, rate * Time.fixedDeltaTime);
+            if (Mathf.Approximately(grip, rearGrip)) return;
+            rearGrip = grip;
+            foreach (var axleInfo in axleInfos)
+            {
+                if (axleInfo.steering) continue;
+                SetSideGrip(axleInfo.leftWheel, rearGrip);
+                SetSideGrip(axleInfo.rightWheel, rearGrip);
+            }
+        }
+
+        // Дорога мокнет постепенно: сцепление пересчитывается, когда мокрота заметно изменилась
+        private void UpdateWetGrip()
+        {
+            float wetness = WheelEffects.Wetness;
+            if (Mathf.Abs(wetness - appliedWetness) < 0.02f) return;
+            appliedWetness = wetness;
+            foreach (var axleInfo in axleInfos)
+            {
+                float factor = axleInfo.steering ? 1f : rearGrip;
+                SetSideGrip(axleInfo.leftWheel, factor);
+                SetSideGrip(axleInfo.rightWheel, factor);
+            }
+        }
+
+        // Пробитое колесо держит дорогу хуже: factor — доля обычного бокового сцепления
+        public void SetDamageGrip(WheelCollider wheel, float factor)
+        {
+            if (!baseSideStiffness.ContainsKey(wheel)) return;
+            damageGrip[wheel] = factor;
+            bool rear = false;
+            foreach (var axleInfo in axleInfos)
+                if (!axleInfo.steering && (axleInfo.leftWheel == wheel || axleInfo.rightWheel == wheel)) rear = true;
+            SetSideGrip(wheel, rear ? rearGrip : 1f);
+        }
+
+        private void SetSideGrip(WheelCollider wheel, float factor)
+        {
+            WheelFrictionCurve friction = wheel.sidewaysFriction;
+            if (damageGrip.TryGetValue(wheel, out float damaged)) factor *= damaged;
+            factor *= Mathf.Lerp(1f, wetSideGrip, appliedWetness);
+            friction.stiffness = baseSideStiffness[wheel] * factor;
+            wheel.sidewaysFriction = friction;
+        }
+
         // Передача по скорости и педалям: вперёд 1–6 по пределам скоростей, стоя на тормозе — задняя
         private void ShiftAutomatically()
         {
@@ -240,13 +386,17 @@ namespace RacingProject.Car
             bool gas = inputControllerReader.Throttle > 0.2f;
             bool brake = inputControllerReader.Brake > 0.2f;
 
+            // Задняя включается, только если тормоз на месте держат autoReverseDelay секунд
+            bool holdingToReverse = brake && !gas && forwardSpeed < autoReverseSpeed;
+            reverseHold = holdingToReverse ? reverseHold + Time.fixedDeltaTime : 0f;
+
             if (currentGear == 7)
             {
                 // Из задней — на первую, когда машина почти встала и нажат газ
                 if (gas && !brake && forwardSpeed > -autoReverseSpeed)
                     currentGear = 1;
             }
-            else if (brake && !gas && forwardSpeed < autoReverseSpeed)
+            else if (holdingToReverse && reverseHold >= autoReverseDelay)
             {
                 currentGear = 7;
             }
@@ -271,13 +421,11 @@ namespace RacingProject.Car
             return Mathf.Lerp(minPower, 1f, DamageHealth());
         }
 
-        // Руль G29 даёт угол как есть, а клавиши A/D — сразу полный поворот, поэтому с клавиатуры он нарастает плавно
+        // Руль G29 даёт угол как есть, а клавиши руля — сразу полный поворот, поэтому с клавиатуры он нарастает плавно
         private float SteerInput()
         {
             float target = inputControllerReader.Steering;
-            Keyboard keyboard = Keyboard.current;
-            bool keys = keyboard != null && (keyboard.aKey.isPressed || keyboard.dKey.isPressed
-                                             || keyboard.leftArrowKey.isPressed || keyboard.rightArrowKey.isPressed);
+            bool keys = GameKeys.IsPressed(GameAction.SteerLeft) || GameKeys.IsPressed(GameAction.SteerRight);
             // Клавиши отпущены — руль плавно возвращается к центру, пока не встретит угол руля G29
             if (keys)
                 keyboardSteering = true;
@@ -370,7 +518,8 @@ namespace RacingProject.Car
         {
             if (steeringWheelVisual == null) return;
 
-            float targetAngle = inputControllerReader.Steering * visualWheelRotationAngle;
+            // Итоговый руль: с клавиатуры — плавно нарастающий, с G29 — как есть
+            float targetAngle = steerInput * visualWheelRotationAngle;
             currentVisualAngle = Mathf.Lerp(currentVisualAngle, targetAngle, Time.deltaTime * steeringSmoothness);
             steeringWheelVisual.localRotation = Quaternion.Euler(steeringWheelTilt, 0f, -currentVisualAngle);
         }

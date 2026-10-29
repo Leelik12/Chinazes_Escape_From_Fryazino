@@ -2,7 +2,9 @@
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.InputSystem;
+using RacingProject.Management;
 using RacingProject.Network;
+using RacingProject.Props;
 
 namespace RacingProject.Car
 {
@@ -23,6 +25,8 @@ namespace RacingProject.Car
         [SerializeField] private float holdTime = 1.2f;
         [Tooltip("Где искать дорогу и проходимое место, м")]
         [SerializeField] private float searchRadius = 60f;
+        [Tooltip("Где искать берег, если машина утонула, м")]
+        [SerializeField] private float waterSearchRadius = 450f;
         [Tooltip("Насколько выше точки NavMesh ставится начало машины, м")]
         [SerializeField] private float dropHeight = 2f;
 
@@ -38,6 +42,7 @@ namespace RacingProject.Car
         public bool Available { get; private set; }
         public float HoldProgress => holdTime > 0f ? Mathf.Clamp01(hold / holdTime) : 0f;
         public bool Flipped => transform.up.y < 0.5f;
+        public bool InWater => body != null && WaterVolume.UnderwaterTime(body) > 0f;
         // Машину поставили на колёса (для обучения)
         public event System.Action Recovered;
 
@@ -61,10 +66,10 @@ namespace RacingProject.Car
             // Отпущенный газ (чтобы нажать R) застревание не сбрасывает — только движение
             if (body.linearVelocity.magnitude * 3.6f >= stuckSpeedKmh) stuckTime = 0f;
             else if (pushing) stuckTime += dt;
-            Available = flippedTime > flippedDelay || stuckTime > stuckDelay;
+            // Из воды можно вытащить сразу, как машина ушла под поверхность
+            Available = flippedTime > flippedDelay || stuckTime > stuckDelay || WaterVolume.UnderwaterTime(body) > 1f;
 
-            Keyboard keyboard = Keyboard.current;
-            bool holding = (keyboard != null && keyboard.rKey.isPressed) || (input != null && input.Options);
+            bool holding = GameKeys.IsPressed(GameAction.Recover) || (input != null && input.Options);
             hold = Available && holding ? hold + dt : 0f;
             if (hold >= holdTime)
                 Recover();
@@ -81,6 +86,9 @@ namespace RacingProject.Car
             int agent = CarAgentType();
             NavMeshQueryFilter road = new NavMeshQueryFilter { agentTypeID = agent, areaMask = 1 << NavMesh.GetAreaFromName(RoadArea) };
             NavMeshQueryFilter any = new NavMeshQueryFilter { agentTypeID = agent, areaMask = NavMesh.AllAreas };
+            // Из озера — сначала на ближайший берег (дно закрыто для NavMesh), от него уже ищется дорога
+            if (WaterVolume.UnderwaterTime(body) > 0f && NavMesh.SamplePosition(position, out NavMeshHit shore, waterSearchRadius, any))
+                position = shore.position;
             if (NavMesh.SamplePosition(position, out NavMeshHit hit, searchRadius, road)
                 || NavMesh.SamplePosition(position, out hit, searchRadius, any))
                 position = hit.position;

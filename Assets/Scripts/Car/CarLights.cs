@@ -1,6 +1,7 @@
 ﻿using LogitechG29.Sample.Input;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using RacingProject.Management;
 using RacingProject.Network;
 
 namespace RacingProject.Car
@@ -57,7 +58,7 @@ namespace RacingProject.Car
             {
                 // Клавиша S тоже приходит в Brake через схему ввода руля
                 braking = input != null && input.Brake > brakeThreshold;
-                if (Keyboard.current != null && Keyboard.current.lKey.wasPressedThisFrame)
+                if (GameKeys.WasPressedThisFrame(GameAction.Lights))
                     lightBarOn = !lightBarOn;
             }
 
